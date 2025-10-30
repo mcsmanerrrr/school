@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maner Central School - Maner, Patna 801108</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; 
+        }
+        .school-primary {
+            background-color: #343a40;
+        }
+        .school-primary-text {
+            color: #343a40;
+        }
+        .school-accent-bg {
+            background-color: #00b8e6;
+        }
+        .school-accent-text {
+            color: #00b8e6;
+        }
+        .institutional-border {
+            border-bottom: 4px solid #00b8e6;
+        }
+        .sidebar-link {
+            transition: all 0.2s;
+        }
+        .sidebar-link:hover {
+            background-color: #f8f9fa; 
+            border-left-color: #343a40;
+        }
+        .marquee-container {
+            background-color: #00b8e6;
+            color: #FFFFFF;
+            font-weight: 600;
+            border-bottom: 2px solid #343a40;
+            overflow: hidden;
+        }
+        .hero-banner {
+            background-image: url('https://i.ibb.co/bjf4nqgV/image.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .hero-overlay {
+            background-color: rgba(52, 58, 64, 0.7);
+        }
+        .principal-image {
+             min-width: 60px;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+        }
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+            color: white;
+            padding: 1rem 0.75rem 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="school-primary shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <img class="h-12 w-auto md:h-16 mr-2 md:mr-4" src="https://i.ibb.co/v4pQdBh5/image.png" alt="Maner Central School Logo">
+                    <div>
+                        <span class="text-white text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight block leading-tight">Maner Central School</span>
+                        <span class="text-white text-xs sm:text-sm md:text-lg font-light block leading-none">Patna, Bihar (CBSE)</span>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6 items-center">
+                    <a href="#" class="text-white font-medium hover:text-gray-300 transition duration-150 py-3">Home</a>
+                    <a href="#" class="text-white font-medium hover:text-gray-300 transition duration-150 py-3">About Us</a>
+                    <a href="#" class="text-white font-medium hover:text-gray-300 transition duration-150 py-3">Academics</a>
+                    <a href="#" class="text-white font-medium hover:text-gray-300 transition duration-150 py-3">Faculty</a>
+                </nav>
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-md text-white hover:bg-gray-700 transition duration-150">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden pb-3 bg-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="text-white hover:bg-gray-600 block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="#" class="text-white hover:bg-gray-600 block px-3 py-2 rounded-md text-base font-medium">About Us</a>
+                <a href="#" class="text-white hover:bg-gray-600 block px-3 py-2 rounded-md text-base font-medium">Academics</a>
+                <a href="#" class="text-white hover:bg-gray-600 block px-3 py-2 rounded-md text-base font-medium">Faculty</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="marquee-container py-2">
+        <div class="max-w-7xl mx-auto px-4 flex items-center">
+            <span class="school-primary-text bg-white px-3 py-0.5 rounded-full mr-4 uppercase text-xs font-extrabold flex-shrink-0">NOTICE</span>
+            <marquee class="flex-1 text-sm" id="marquee-notices">Connecting to Database...</marquee>
+        </div>
+    </div>
+
+    <main>
+        <section class="hero-banner shadow-lg">
+            <div class="hero-overlay py-12 md:py-24">
+                <div class="max-w-7xl mx-auto px-4 text-center text-white">
+                    <h1 class="text-3xl sm:text-4xl lg:text-7xl font-extrabold mb-4 tracking-tight">
+                        Maner Central School
+                    </h1>
+                    <p class="text-base sm:text-lg font-light mb-6 max-w-3xl mx-auto">
+                        <span class="font-bold">A Kamala Educational (Social) Welfare and Trust Conducting Institute</span><br>
+                        Nurturing potential and shaping futures through holistic development and academic rigor in Patna.
+                    </p>
+                    <a href="https://www.manercentralschool.in/admission" class="inline-block school-accent-bg text-gray-900 font-bold py-3 px-8 rounded-full text-md sm:text-lg shadow-2xl hover:bg-cyan-400 transition duration-300 transform hover:scale-105">
+                        Apply for Admission
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <section class="lg:col-span-2 space-y-6 order-2 lg:order-1">
+                <div class="bg-white p-5 rounded-lg shadow-md border-t-8 border-school-accent-bg">
+                    <h2 class="text-lg sm:text-xl font-extrabold school-primary-text mb-3 institutional-border inline-block pb-1">
+                        MANER CENTRAL SCHOOL AT A GLANCE
+                    </h2>
+                    <p class="text-gray-700 mb-4 text-sm leading-relaxed">
+                        Maner Central School is a premier Co-educational institution located in Patna, Bihar. We are dedicated to providing a comprehensive CBSE curriculum from Pre-Nursery to Class XII, focusing on intellectual, physical, and moral development.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-gray-100 p-3 rounded-md border border-gray-200">
+                            <p class="school-primary-text text-xl font-bold">16+</p>
+                            <p class="text-xs text-gray-600">Years of Educational Service</p>
+                        </div>
+                        <div class="bg-gray-100 p-3 rounded-md border border-gray-200">
+                            <p class="school-primary-text text-xl font-bold">2000+</p>
+                            <p class="text-xs text-gray-600">Students Enrolled</p>
+                        </div>
+                        <div class="bg-gray-100 p-3 rounded-md border border-gray-200">
+                            <p class="school-primary-text text-xl font-bold">A+</p>
+                            <p class="text-xs text-gray-600">Infrastructure & Labs</p>
+                        </div>
+                        <div class="bg-gray-100 p-3 rounded-md border border-gray-200">
+                            <p class="school-primary-text text-xl font-bold">100%</p>
+                            <p class="text-xs text-gray-600">Pass Rate (CBSE)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-lg shadow-md">
+                    <h2 class="text-lg sm:text-xl font-extrabold school-primary-text mb-4 institutional-border inline-block pb-1">
+                        MESSAGES FROM THE LEADERSHIP
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-4 border border-gray-100 rounded-lg shadow-sm">
+                            <h3 class="text-md font-extrabold school-accent-text mb-3">PRINCIPAL'S ADDRESS</h3>
+                            <div class="flex items-start space-x-4">
+                                <img class="principal-image w-16 h-16 rounded-full object-cover shadow-md flex-shrink-0" src="https://placehold.co/64x64/343a40/00b8e6?text=P1" alt="Principal Photo">
+                                <div>
+                                    <p class="font-bold text-gray-800">Manoj Kumar Singh</p>
+                                    <p class="text-xs text-gray-500 mb-2">Principal, Maner Central School</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 text-sm italic mt-3 leading-relaxed">
+                                "Our core vision is centered on creating a learning environment that encourages curiosity, resilience, and a deep sense of community. We strive to provide a foundation that is both academically rigorous and rich in ethical values."
+                            </p>
+                        </div>
+                        <div class="p-4 border border-gray-100 rounded-lg shadow-sm">
+                            <h3 class="text-md font-extrabold school-accent-text mb-3">DIRECTOR'S NOTE</h3>
+                            <div class="flex items-start space-x-4">
+                                <img class="principal-image w-16 h-16 rounded-full object-cover shadow-md flex-shrink-0" src="https://placehold.co/64x64/00b8e6/343a40?text=DIR" alt="Director Photo">
+                                <div>
+                                    <p class="font-bold text-gray-800">Anand Kumar Singh</p>
+                                    <p class="text-xs text-gray-500 mb-2">Director, Maner Central School</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 text-sm italic mt-3 leading-relaxed">
+                                "Our focus is on the strategic growth and global readiness of our students. We are committed to fostering an environment of innovation, ensuring our curriculum remains cutting-edge."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-lg shadow-md">
+                    <h2 class="text-lg sm:text-xl font-extrabold school-primary-text mb-3 institutional-border inline-block pb-1">
+                        LATEST NEWS & EVENTS
+                    </h2>
+                    <div class="space-y-4" id="latest-news-list">
+                        <div class="text-sm text-gray-500">Connecting to Database...</div>
+                    </div>
+                    <div class="mt-4 text-right">
+                        <a href="#" class="text-sm school-primary-text font-bold hover:underline">View All News &raquo;</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="lg:col-span-1 space-y-6 order-1 lg:order-2">
+                <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-school-primary-text">
+                    <h2 class="text-lg font-extrabold school-primary-text mb-3 institutional-border inline-block pb-1">
+                        ACADEMIC LINKS
+                    </h2>
+                    <ul class="space-y-1" id="academic-links-list">
+                        <li class="text-sm text-gray-500 p-2">Connecting to Database...</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-school-primary-text">
+                    <h2 class="text-lg font-extrabold school-primary-text mb-3 institutional-border inline-block pb-1">
+                        DOWNLOADS
+                    </h2>
+                    <ul class="space-y-1" id="downloads-list">
+                        <li class="text-sm text-gray-500 p-2">Connecting to Database...</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="lg:col-span-1 space-y-6 order-3 lg:order-3">
+                <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-school-accent-bg">
+                    <h2 class="text-lg sm:text-xl font-extrabold school-accent-text mb-3 institutional-border inline-block pb-1">
+                        OFFICIAL CIRCULARS
+                    </h2>
+                    <ul class="space-y-1" id="official-circulars-list">
+                        <li class="text-sm text-gray-500 p-2">Connecting to Database...</li>
+                    </ul>
+                    <a href="#" class="mt-4 inline-block text-sm school-accent-text font-bold hover:underline">Archive of Circulars &raquo;</a>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-school-accent-bg">
+                    <h2 class="text-lg sm:text-xl font-extrabold school-primary-text mb-3 institutional-border inline-block pb-1">
+                        IMPORTANT CONTACTS
+                    </h2>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="font-semibold">Admission Coordinator: <span class="block font-normal text-gray-600">930-806-9419 (10 AM - 3 PM)</span></li>
+                        <li class="font-semibold">General Enquiry / WhatsApp: <span class="block font-normal school-accent-text font-bold">930-806-9419</span></li>
+                        <li class="font-semibold">School Helpline: <span class="block font-normal text-gray-600">930-806-9419</span></li>
+                        <li class="font-semibold">Grievance Cell: <span class="block font-normal text-gray-600">grievance@mcs.in</span></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+        
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+            <h2 class="text-2xl sm:text-3xl font-extrabold school-primary-text mb-6 institutional-border inline-block pb-2">
+                SCHOOL GALLERY & MOMENTS
+            </h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
+                    <div class="gallery-item">
+                        <img class="w-full h-auto object-cover aspect-[4/3]" 
+                             src="https://placehold.co/400x300/343a40/00b8e6?text=ANNUAL+DAY" 
+                             alt="Students performing on Annual Day">
+                        <div class="gallery-caption">Annual Day Celebration 2025</div>
+                    </div>
+                </a>
+                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
+                    <div class="gallery-item">
+                        <img class="w-full h-auto object-cover aspect-[4/3]" 
+                             src="https://i.ibb.co/Gv03qy2r/image.png" 
+                             alt="Students working in the Science Lab">
+                        <div class="gallery-caption">Practical Session in Physics Lab</div>
+                    </div>
+                </a>
+                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
+                    <div class="gallery-item">
+                        <img class="w-full h-auto object-cover aspect-[4/3]" 
+                             src="https://i.ibb.co/h1YKcsF4/1.jpg" 
+                             alt="Athletes competing during Sports Meet">
+                        <div class="gallery-caption">Assembly</div>
+                    </div>
+                </a>
+                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
+                    <div class="gallery-item">
+                        <img class="w-full h-auto object-cover aspect-[4/3]" 
+                             src="https://i.ibb.co/d0PpS53n/5.jpg" 
+                             alt="Students in class">
+                        <div class="gallery-caption">Bright Future</div>
+                    </div>
+                </a>
+                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
+                    <div class="gallery-item">
+                        <img class="w-full h-auto object-cover aspect-[4/3]" 
+                             src="https://i.ibb.co/PZhdtKss/4.jpg" 
+                             alt="Students reading in library">
+                        <div class="gallery-caption">Mentorship</div>
+                    </div>
+                </a>
+                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
+                    <div class="gallery-item">
+                        <img class="w-full h-auto object-cover aspect-[4/3]" 
+                             src="https://i.ibb.co/KcwzYfWh/3.jpg" 
+                             alt="Students on field trip">
+                        <div class="gallery-caption">Appreciation</div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <a href="https://www.manercentralschool.in/gallery" class="inline-block school-accent-bg text-gray-900 font-bold py-3 px-8 rounded-full shadow-xl hover:bg-cyan-400 transition duration-300 transform hover:scale-105">
+                    View Complete Gallery
+                </a>
+            </div>
+        </section>
+
+        <section class="school-primary py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-xl sm:text-3xl font-extrabold text-white mb-2">Affiliated to the Central Board of Secondary Education (CBSE)</h2>
+                <p class="text-sm sm:text-lg text-gray-300 mb-6">
+                    Committed to providing quality education as per national standards.
+                </p>
+                <a href="https://www.cbse.gov.in/" class="inline-block school-accent-bg text-gray-900 font-bold py-3 px-8 rounded-full shadow-2xl hover:bg-cyan-400 transition duration-300 transform hover:scale-105 text-sm sm:text-base">
+                    Visit CBSE Official Website
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-base sm:text-lg font-bold school-accent-text mb-4">About MCS</h3>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#" class="hover:text-cyan-400 transition duration-150">Vision & Mission</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition duration-150">Infrastructure</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition duration-150">Careers at MCS</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-base sm:text-lg font-bold mb-4">Quick Access</h3>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#" class="hover:text-cyan-400 transition duration-150">Staff Login</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition duration-150">Alumni Registration</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition duration-150">Parent Corner</a></li>
+                </ul>
+            </div>
+            <div class="col-span-2 md:col-span-1">
+                <h3 class="text-base sm:text-lg font-bold mb-4">Locate Us</h3>
+                <p class="text-sm text-gray-400">
+                    Maner Central School Campus,<br>
+                    Ramadhar Nagar, Maner, Patna - 801108, Bihar<br>
+                    Phone: 930-806-9419
+                </p>
+            </div>
+            <div>
+                <h3 class="text-base sm:text-lg font-bold mb-4">Social Media</h3>
+                <p class="text-sm text-gray-400">
+                    Follow us for daily updates on student life and achievements!
+                </p>
+                <div class="mt-3 flex space-x-3 text-2xl">
+                    <span class="school-accent-text hover:text-white transition duration-150">F</span>
+                    <span class="school-accent-text hover:text-white transition duration-150">T</span>
+                    <span class="school-accent-text hover:text-white transition duration-150">I</span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 text-center text-gray-500 text-sm border-t border-gray-700 pt-4">
+            &copy; 2025 Maner Central School. All rights reserved.
+        </div>
+    </footer>
+
+    <script type="module">
+        const firebaseConfig = {
+            databaseURL: "https://mcs-school1-default-rtdb.firebaseio.com/"
+        };
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        let database;
+        let isDbReady = false;
+
+        function fetchAndRenderMarqueeNotices() {
+            const marqueeElement = document.getElementById('marquee-notices');
+            if (!marqueeElement || !isDbReady) return;
+
+            const noticesRef = ref(database, 'marquee_notices');
+            onValue(noticesRef, (snapshot) => {
+                let notices = [];
+                const data = snapshot.val();
+                
+                if (data) {
+                    Object.values(data).forEach((item) => {
+                        if (item.text) notices.push(item.text);
+                    });
+                }
+                
+                if (notices.length === 0) {
+                    marqueeElement.textContent = "No urgent notices currently available.";
+                } else {
+                    marqueeElement.innerHTML = notices.join(' &bull; &bull; &bull; ');
+                }
+            }, (error) => {
+                console.error('Database Error:', error);
+                marqueeElement.textContent = "Error loading notices.";
+            });
+        }
+
+        function fetchAndRenderSimpleList(pathName, elementId, linkClassName) {
+            const listElement = document.getElementById(elementId);
+            if (!listElement || !isDbReady) return;
+
+            const listRef = ref(database, pathName);
+            onValue(listRef, (snapshot) => {
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (!data) {
+                    listElement.innerHTML = '<li class="text-sm text-gray-500 p-2">No items available.</li>';
+                    return;
+                }
+
+                Object.values(data).forEach(item => {
+                    if (item.title) {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<a href="${item.url || '#'}" class="${linkClassName} block p-2 text-gray-700 font-medium border-l-2 border-transparent hover:border-l-4 border-school-primary-text hover:bg-gray-50">${item.title}</a>`;
+                        listElement.appendChild(li);
+                    }
+                });
+            }, (error) => {
+                console.error('Database Error:', error);
+                listElement.innerHTML = '<li class="text-sm text-red-500 p-2">Error loading data.</li>';
+            });
+        }
+
+        function fetchAndRenderNews() {
+            const listElement = document.getElementById('latest-news-list');
+            if (!listElement || !isDbReady) return;
+
+            const newsRef = ref(database, 'news');
+            onValue(newsRef, (snapshot) => {
+                listElement.innerHTML = '';
+                let items = [];
+                const data = snapshot.val();
+                
+                if (data) items = Object.values(data);
+                
+                if (items.length === 0) {
+                    listElement.innerHTML = '<div class="text-sm text-gray-500">No recent news available.</div>';
+                    return;
+                }
+
+                items.sort((a, b) => new Date(b.date) - new Date(a.date));
+                items = items.slice(0, 3);
+                
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = "border-b pb-2 pt-2";
+                    const category = item.category ? item.category.toUpperCase() : 'GENERAL';
+                    div.innerHTML = `
+                        <span class="text-xs school-accent-text font-semibold uppercase block">${item.date || 'N/A'} | ${category}</span>
+                        <a href="${item.url || '#'}" class="font-bold text-gray-800 hover:school-primary-text transition duration-150 text-sm">${item.title}</a>
+                    `;
+                    listElement.appendChild(div);
+                });
+            }, (error) => {
+                console.error('Database Error:', error);
+                listElement.innerHTML = '<div class="text-sm text-red-500">Error loading news.</div>';
+            });
+        }
+
+        function fetchAndRenderCirculars() {
+            const listElement = document.getElementById('official-circulars-list');
+            if (!listElement || !isDbReady) return;
+
+            const circularsRef = ref(database, 'circulars');
+            onValue(circularsRef, (snapshot) => {
+                listElement.innerHTML = '';
+                let items = [];
+                const data = snapshot.val();
+                
+                if (data) items = Object.values(data);
+                
+                if (items.length === 0) {
+                    listElement.innerHTML = '<li class="text-sm text-gray-500 p-2">No circulars available.</li>';
+                    return;
+                }
+
+                items.sort((a, b) => new Date(b.date) - new Date(a.date));
+                items = items.slice(0, 4);
+                
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = "p-2 border-b border-gray-100 hover:bg-gray-50 rounded-md";
+                    const newTag = item.isNew ? '<span class="text-xs school-accent-text font-bold mr-1">New!</span>' : '';
+                    li.innerHTML = `
+                        ${newTag}
+                        <a href="${item.url || '#'}" class="text-gray-800 text-sm">${item.title}</a>
+                        <span class="text-xs text-gray-500 block">Date: ${item.date || 'N/A'}</span>
+                    `;
+                    listElement.appendChild(li);
+                });
+            }, (error) => {
+                console.error('Database Error:', error);
+                listElement.innerHTML = '<li class="text-sm text-red-500 p-2">Error loading circulars.</li>';
+            });
+        }
+
+        async function initApp() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                database = getDatabase(app);
+                isDbReady = true;
+                
+                console.log("Realtime Database connected successfully!");
+
+                fetchAndRenderMarqueeNotices();
+                fetchAndRenderSimpleList('academic_links', 'academic-links-list', 'sidebar-link');
+                fetchAndRenderSimpleList('downloads', 'downloads-list', 'sidebar-link');
+                fetchAndRenderNews();
+                fetchAndRenderCirculars();
+                
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                const errorMessage = "Error: Database connection failed.";
+                document.getElementById('marquee-notices').textContent = errorMessage;
+                document.getElementById('latest-news-list').innerHTML = `<div class="text-sm text-red-500">${errorMessage}</div>`;
+                document.getElementById('official-circulars-list').innerHTML = `<li class="text-sm text-red-500 p-2">${errorMessage}</li>`;
+                document.getElementById('academic-links-list').innerHTML = `<li class="text-sm text-red-500 p-2">${errorMessage}</li>`;
+                document.getElementById('downloads-list').innerHTML = `<li class="text-sm text-red-500 p-2">${errorMessage}</li>`;
+            }
+            
+            document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+                const menu = document.getElementById('mobile-menu');
+                menu.classList.toggle('hidden');
+            });
+        }
+
+        window.onload = initApp;
+    </script>
+
+</body>
+</html>
+
+
+
+
+
