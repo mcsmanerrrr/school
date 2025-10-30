@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maner Central School | Parent Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        /* Added font-serif for the signature */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Great+Vibes&display=swap'); 
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+        }
+        .data-section {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+        }
+        .data-section:not(:last-child) {
+            margin-bottom: 2rem;
+        }
+
+        #attendance-progress-fill {
+            transition: width 0.5s ease-out;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #invoice-modal, #invoice-modal * {
+                visibility: visible;
+            }
+            #invoice-modal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background-color: white !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-start justify-center p-4 sm:p-8 bg-gray-50">
+
+    <!-- Main Container -->
+    <div id="app-container" class="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6 sm:p-10 mt-8">
+        
+        <!-- Header: School Name Added -->
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800">
+                <span class="text-indigo-600">Maner Central School</span>
+            </h1>
+            <p class="text-md text-gray-500 mt-2">Student Parent Portal | Comprehensive dashboard for your child's records.</p>
+        </header>
+
+        <!-- Initial Roll Number Lookup View -->
+        <section id="lookup-view">
+            <div class="max-w-md mx-auto p-8 bg-white rounded-xl border border-gray-200 shadow-md">
+                <h2 class="text-xl font-semibold text-center text-gray-700 mb-6">Enter Student Roll Number </h2>
+                <div id="message-box" class="hidden p-3 mb-4 text-sm rounded-lg" role="alert"></div>
+                <div class="space-y-4">
+                    <input type="text" id="roll-no-input" placeholder="Roll No. (e.g., 2024001)"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 text-base">
+                    <button id="lookup-btn"
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-sm transition duration-300 ease-in-out flex items-center justify-center text-base">
+                        <span id="lookup-btn-text">Search Profile</span>
+                        <svg id="lookup-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Student Profile View (Simple Dashboard) -->
+        <section id="profile-view" class="hidden">
+            <a href="#" id="logout-btn" class="no-print text-sm text-indigo-600 hover:text-indigo-800 font-medium mb-6 inline-flex items-center" onclick="showLookupView(event)">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Back to Search
+            </a>
+            
+            <!-- Student Header Block -->
+            <div id="profile-header" class="flex items-center space-x-4 p-4 mb-8 bg-indigo-50 rounded-lg border-l-4 border-indigo-600">
+                <img id="student-photo" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md" alt="Student Photo">
+                <div>
+                    <h3 id="student-name" class="text-2xl font-bold text-gray-800"></h3>
+                    <p class="text-md text-indigo-600 font-medium">Class: <span id="student-class" class="font-bold"></span></p>
+                    <p class="text-sm text-gray-500">Roll No: <span id="student-rollno" class="font-semibold"></span></p>
+                </div>
+            </div>
+
+            <div class="space-y-8">
+                
+                <!-- 1. FEE DETAILS SECTION (Payment Focused) -->
+                <div class="data-section bg-white p-6">
+                    <h2 class="text-xl font-semibold text-green-700 mb-4 border-b pb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        Fee Details
+                    </h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-gray-700 font-medium text-sm sm:text-base mb-6">
+                        <div class="p-2 bg-gray-50 rounded-lg">Total Fee: <span id="fee-total" class="font-extrabold text-green-800 block text-lg"></span></div>
+                        <div class="p-2 bg-gray-50 rounded-lg">Paid Amount: <span id="fee-paid" class="font-extrabold text-green-600 block text-lg"></span></div>
+                        <div class="p-2 bg-gray-50 rounded-lg">Due Date: <span id="fee-dueDate" class="font-bold text-red-500 block text-lg"></span></div>
+                        <div class="p-2 bg-gray-50 rounded-lg col-span-2 sm:col-span-1">Amount Due: <span id="fee-pending-label" class="font-bold text-red-600 block text-lg"></span></div>
+                    </div>
+
+                    <div class="pt-4 border-t border-green-200 flex flex-col md:flex-row justify-between items-center">
+                        <div class="text-2xl font-extrabold text-red-600 mb-4 md:mb-0">
+                            <span id="fee-pending" class="text-4xl"></span>
+                        </div>
+                        <button id="pay-fee-btn" onclick="initiateRazorpayPayment()" 
+                                class="no-print w-full md:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Pay Fee Now
+                        </button>
+                    </div>
+                    <p id="payment-message" class="text-center mt-3 text-sm font-semibold text-green-600 hidden"></p>
+                </div>
+
+
+                <!-- 2. ATTENDANCE SECTION -->
+                <div class="data-section bg-white p-6">
+                    <h2 class="text-xl font-semibold text-blue-700 mb-4 border-b pb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        Attendance
+                    </h2>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <!-- Left: Progress Bar -->
+                        <div class="flex-1 w-full">
+                            <p class="text-sm font-medium text-gray-600 mb-2">Yearly Attendance Percentage</p>
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div id="attendance-progress-fill" class="h-4 rounded-full bg-blue-500" style="width: 0%"></div>
+                            </div>
+                            <p id="attendance-percentage" class="text-3xl font-extrabold text-blue-700 mt-2 text-center sm:text-left"></p>
+                        </div>
+                        
+                        <!-- Right: Stats -->
+                        <div class="flex-1 grid grid-cols-3 gap-3 text-center w-full">
+                            <div class="p-3 bg-gray-50 rounded-lg border">
+                                <p id="att-present" class="text-xl font-bold text-green-600"></p>
+                                <p class="text-xs text-gray-500">Present</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-lg border">
+                                <p id="att-absent" class="text-xl font-bold text-red-600"></p>
+                                <p class="text-xs text-gray-500">Absent</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-lg border">
+                                <p id="att-total" class="text-xl font-bold text-gray-700"></p>
+                                <p class="text-xs text-gray-500">Total Days</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. ACADEMIC SECTION -->
+                <div class="data-section bg-white p-6">
+                    <h2 class="text-xl font-semibold text-indigo-700 mb-4 border-b pb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        Academic Performance (Latest Term)
+                    </h2 >
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marks (%)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="academic-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Results populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Invoice Modal (Hidden by default) -->
+    <div id="invoice-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl p-8 w-full max-w-sm sm:max-w-md shadow-2xl relative max-h-[95vh] overflow-y-auto">
+            <button class="no-print absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition" onclick="hideInvoiceModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            
+            <!-- School Header and Contact Details -->
+            <div class="text-center mb-6 border-b pb-4">
+                <h2 class="text-3xl font-bold text-gray-800">Maner Central School</h2>
+                <!-- CORRECTED ADDRESS -->
+                <p class="text-sm text-gray-500">Ramadhar Nagar, Maner, Patna - 801108, Bihar</p>
+                <!-- UPDATED CONTACT INFO -->
+                <p class="text-sm text-gray-500">Contact: 930-806-9419</p>
+            </div>
+
+            <h3 class="text-2xl font-bold text-green-600 mb-6 text-center">Fee Payment Receipt</h3>
+
+            <!-- Transaction and Student Details -->
+            <div id="invoice-content" class="text-gray-700 space-y-3 mb-6">
+                <div class="flex justify-between border-b border-dashed pb-1"><span>Student Name:</span> <span id="inv-student-name" class="font-semibold text-gray-800"></span></div>
+                <div class="flex justify-between border-b border-dashed pb-1"><span>Class:</span> <span id="inv-student-class" class="font-medium"></span></div>
+                <div class="flex justify-between border-b border-dashed pb-1"><span>Roll No:</span> <span id="inv-roll-no" class="font-medium"></span></div>
+                <!-- UPDATED TO SHOW REAL RAZORPAY PAYMENT ID -->
+                <div class="flex justify-between border-b border-dashed pb-1"><span>Payment ID (Razorpay):</span> <span id="inv-tx-id" class="font-mono text-sm break-all"></span></div>
+                <div class="flex justify-between border-b border-dashed pb-1"><span>Payment Date:</span> <span id="inv-date"></span></div>
+                <div class="flex justify-between border-b border-dashed pb-1"><span>Payment Status:</span> <span class="font-bold text-green-600">SUCCESS</span></div>
+            </div>
+            
+            <!-- Amount Box -->
+            <div class="bg-green-100 p-4 rounded-lg mt-4 text-center border border-green-300">
+                <p class="text-xl font-semibold text-green-800">AMOUNT PAID</p>
+                <p class="text-5xl font-extrabold text-green-700 mt-1"><span id="inv-amount-paid"></span></p>
+            </div>
+
+            <!-- Principal Signature Section -->
+            <div class="mt-8 pt-4 text-right">
+                <p class="text-xl text-gray-800 font-bold mb-1 border-t pt-2">Anand Kumar Singh</p>
+                <p class="text-sm font-medium text-gray-500">Principal, Maner Central School</p>
+            </div>
+
+
+            <p class="text-center text-sm text-gray-500 mt-6 italic">This is a system generated receipt and may not require a physical signature.</p>
+            
+            <button onclick="window.print()" class="no-print w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition duration-300 shadow-md">
+                Print / Download Invoice
+            </button>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getDatabase, ref, get, child, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+        // --- Configuration and Global Variables ---
+        // Placeholder for the Admin UID used in the database rules for full write access.
+        const ADMIN_UID_PLACEHOLDER = "8wLptTHEUATUZlNPAUAS0iIUUcc2"; 
+
+        console.warn("SECURITY NOTE: The system now uses granular security rules. The public user can ONLY update 'fees/paid', 'fees/pending' and 'fees/latestPaymentId'.");
+        
+        // IMPORTANT: Ensure this configuration points to your Firebase Realtime Database
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJfzkrdZqHWi0y9OTPQ-IpaJbA8JJkRSg",
+            authDomain: "paymcs-371be.firebaseapp.com",
+            databaseURL: "https://paymcs-371be-default-rtdb.firebaseio.com/",
+            projectId: "paymcs-371be",
+            storageBucket: "paymcs-371be.firebasestorage.app",
+            messagingSenderId: "676822362839",
+            appId: "1:676822362839:web:cc55be2492db86b5469e92"
+        };
+        const RAZORPAY_KEY_ID = "rzp_test_RYvWsOk90C6xSQ"; // Provided Test Key ID
+
+        let db;
+        let currentStudent = null;
+        let currentStudentKey = null;
+
+        // --- DOM Elements ---
+        const lookupView = document.getElementById('lookup-view');
+        const profileView = document.getElementById('profile-view');
+        const rollNoInput = document.getElementById('roll-no-input');
+        const lookupBtn = document.getElementById('lookup-btn');
+        const lookupBtnText = document.getElementById('lookup-btn-text');
+        const lookupSpinner = document.getElementById('lookup-spinner');
+        const messageBox = document.getElementById('message-box');
+        const payFeeBtn = document.getElementById('pay-fee-btn');
+        const paymentMessage = document.getElementById('payment-message');
+        const invoiceModal = document.getElementById('invoice-modal');
+
+        // --- Utility Functions ---
+
+        /** Shows an alert message in the lookup view. */
+        function showMessage(type, message) {
+            messageBox.textContent = message;
+            messageBox.className = 'p-4 mb-4 text-sm rounded-lg font-medium'; // Reset classes, thicker padding
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'text-red-700', 'border', 'border-red-300');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'text-green-700', 'border', 'border-green-300');
+            } else {
+                messageBox.classList.add('bg-blue-100', 'text-blue-700', 'border', 'border-blue-300');
+            }
+            messageBox.classList.remove('hidden');
+        }
+
+        /** Hides the alert message. */
+        function hideMessage() {
+            messageBox.classList.add('hidden');
+        }
+
+        /** Sets the loading state for the lookup button. */
+        function setLoading(isLoading) {
+            lookupBtn.disabled = isLoading;
+            if (isLoading) {
+                lookupBtnText.textContent = 'Searching...';
+                lookupSpinner.classList.remove('hidden');
+            } else {
+                lookupBtnText.textContent = 'Search Profile';
+                lookupSpinner.classList.add('hidden');
+            }
+        }
+
+        /** Renders all student data including Fees, Attendance, and Academics. */
+        function renderProfile(student) {
+            // --- 1. Profile Details ---
+            document.getElementById('student-photo').src = student.photo || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Placeholder';
+            document.getElementById('student-name').textContent = student.name;
+            document.getElementById('student-class').textContent = student.class;
+            document.getElementById('student-rollno').textContent = student.rollNo;
+
+            // --- 2. Fees Details ---
+            document.getElementById('fee-total').textContent = formatCurrency(student.fees.total);
+            document.getElementById('fee-paid').textContent = formatCurrency(student.fees.paid);
+            document.getElementById('fee-pending').textContent = formatCurrency(student.fees.pending);
+            document.getElementById('fee-pending-label').textContent = student.fees.pending > 0 ? formatCurrency(student.fees.pending) : 'All Paid';
+            document.getElementById('fee-dueDate').textContent = student.fees.dueDate;
+            
+            // Payment button state
+            payFeeBtn.disabled = student.fees.pending <= 0;
+            paymentMessage.classList.toggle('hidden', student.fees.pending > 0);
+            paymentMessage.textContent = student.fees.pending <= 0 ? 'All fees are paid!' : '';
+
+            // --- 3. Attendance Details ---
+            const attendance = student.attendance;
+            // Handle case where total might be zero or missing percentage in mock data
+            const totalDays = attendance.total || 1; 
+            const percentage = attendance.percentage || Math.round((attendance.present / totalDays) * 100);
+            
+            document.getElementById('att-present').textContent = attendance.present;
+            document.getElementById('att-absent').textContent = attendance.absent;
+            document.getElementById('att-total').textContent = attendance.total;
+            
+            document.getElementById('attendance-percentage').textContent = `${percentage}%`;
+            document.getElementById('attendance-progress-fill').style.width = `${percentage}%`;
+            document.getElementById('attendance-progress-fill').classList.remove('bg-blue-500', 'bg-red-500', 'bg-yellow-500');
+            
+            // Set progress bar color based on percentage
+            if (percentage >= 90) {
+                document.getElementById('attendance-progress-fill').classList.add('bg-green-500');
+            } else if (percentage >= 75) {
+                document.getElementById('attendance-progress-fill').classList.add('bg-yellow-500');
+            } else {
+                document.getElementById('attendance-progress-fill').classList.add('bg-red-500');
+            }
+
+
+            // --- 4. Academic Details (Table) ---
+            const tableBody = document.getElementById('academic-table-body');
+            tableBody.innerHTML = ''; // Clear previous results
+            
+            student.subjects.forEach(subject => {
+                const row = tableBody.insertRow();
+                row.className = 'hover:bg-gray-50';
+                
+                // Subject Name
+                let cell = row.insertCell();
+                cell.textContent = subject.name;
+                cell.className = 'px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900';
+                
+                // Marks
+                cell = row.insertCell();
+                cell.textContent = `${subject.marks}%`;
+                cell.className = 'px-6 py-3 whitespace-nowrap text-sm text-gray-700';
+                
+                // Grade (Colored badge)
+                cell = row.insertCell();
+                const gradeSpan = document.createElement('span');
+                let colorClass = 'bg-gray-100 text-gray-800';
+                if (subject.grade.startsWith('A')) {
+                    colorClass = 'bg-green-100 text-green-800';
+                } else if (subject.grade.startsWith('B')) {
+                    colorClass = 'bg-blue-100 text-blue-800';
+                } else if (subject.grade.startsWith('C')) {
+                    colorClass = 'bg-yellow-100 text-yellow-800';
+                } else {
+                    colorClass = 'bg-red-100 text-red-800';
+                }
+                gradeSpan.className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${colorClass}`;
+                gradeSpan.textContent = subject.grade;
+                cell.appendChild(gradeSpan);
+                cell.className = 'px-6 py-3 whitespace-nowrap text-sm';
+            });
+        }
+
+        /** Formats a number into Indian Rupee currency string. */
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(amount);
+        }
+
+        /** Shows the profile view and hides the lookup view. */
+        function showProfileView() {
+            lookupView.classList.add('hidden');
+            profileView.classList.remove('hidden');
+        }
+
+        /** Shows the lookup view and hides the profile view. */
+        window.showLookupView = (event) => {
+            if (event) event.preventDefault();
+            profileView.classList.add('hidden');
+            lookupView.classList.remove('hidden');
+            currentStudent = null;
+            currentStudentKey = null;
+            rollNoInput.value = '';
+            hideMessage();
+        }
+
+        /** Displays the invoice modal. */
+        function showInvoiceModal(txId, amount) {
+            // Added class name to the receipt details
+            document.getElementById('inv-student-name').textContent = currentStudent.name;
+            document.getElementById('inv-student-class').textContent = currentStudent.class; 
+            document.getElementById('inv-roll-no').textContent = currentStudent.rollNo;
+            
+            // Displaying the REAL Razorpay Payment ID
+            document.getElementById('inv-tx-id').textContent = txId; 
+            
+            document.getElementById('inv-date').textContent = new Date().toLocaleString();
+            document.getElementById('inv-amount-paid').textContent = formatCurrency(amount);
+            invoiceModal.classList.remove('hidden');
+        }
+
+        /** Hides the invoice modal. */
+        window.hideInvoiceModal = () => {
+            invoiceModal.classList.add('hidden');
+        }
+
+
+        // --- Firebase Logic ---
+
+        // 1. Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+
+        // 3. Roll Number Lookup Handler
+        lookupBtn.addEventListener('click', async () => {
+            
+            const rollNo = rollNoInput.value.trim();
+            if (!rollNo) {
+                showMessage('error', 'Please enter a valid Roll Number.');
+                return;
+            }
+
+            hideMessage();
+            setLoading(true);
+
+            try {
+                // Fetch ALL students from the 'students' node
+                const studentsRef = ref(db, 'students');
+                const snapshot = await get(studentsRef);
+
+                let foundStudent = null;
+                let foundKey = null;
+
+                if (snapshot.exists()) {
+                    const students = snapshot.val();
+                    // Iterate through students to find the matching rollNo
+                    for (const key in students) {
+                        // Ensure comparison works regardless of whether DB value is string or number
+                        const dbRollNo = String(students[key].rollNo);
+
+                        if (dbRollNo === rollNo) {
+                            foundStudent = students[key];
+                            foundKey = key;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundStudent) {
+                    currentStudent = foundStudent;
+                    currentStudentKey = foundKey;
+                    renderProfile(foundStudent);
+                    showProfileView();
+                    showMessage('success', `Welcome, parent of ${foundStudent.name}!`);
+                } else {
+                    showMessage('error', `Roll Number "${rollNo}" not found in the records. Ensure student data is present in the database.`);
+                }
+
+            } catch (error) {
+                console.error("Firebase lookup error:", error);
+                showMessage('error', 'An error occurred while connecting to the database.');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+
+        // 4. Update Fees in Firebase RTDB
+        // UPDATED: Now accepts paymentId
+        async function updateStudentFees(amountPaid, paymentId) {
+            if (!currentStudentKey || !currentStudent) return;
+
+            const newPaid = currentStudent.fees.paid + amountPaid;
+            const newPending = currentStudent.fees.total - newPaid;
+
+            // CRITICAL: The path now targets the specific 'fees' node.
+            const feesRef = ref(db, `students/${currentStudentKey}/fees`);
+            
+            // CRITICAL: The payload now includes the real payment ID.
+            const updates = {
+                'paid': newPaid,
+                'pending': newPending,
+                'latestPaymentId': paymentId, // Storing the actual Razorpay Payment ID
+            };
+
+            try {
+                // This will fail if the Firebase rules prevent this write access
+                await update(feesRef, updates);
+                
+                // Update local state and re-render the UI
+                currentStudent.fees.paid = newPaid;
+                currentStudent.fees.pending = newPending;
+                currentStudent.fees.latestPaymentId = paymentId; // Update local state
+                renderProfile(currentStudent);
+
+                // Show invoice with the REAL ID
+                showInvoiceModal(paymentId, amountPaid);
+
+                // Reset button state
+                payFeeBtn.textContent = 'Pay Fee Now';
+                payFeeBtn.disabled = currentStudent.fees.pending <= 0;
+
+            } catch (error) {
+                // Check if the error is a Firebase permission error (due to rules violation)
+                if (error.code && error.code.includes('PERMISSION_DENIED')) {
+                     console.error("Firebase permission denied. Write failed due to security rule violation. (Parent attempted unauthorized change or rule is incorrect).", error);
+                     showMessage('error', 'Payment successful, but failed to update the payment record. Please contact school admin.');
+                } else {
+                     console.error("Firebase update failed:", error);
+                     showMessage('error', 'An unexpected error occurred during the database update.');
+                }
+                payFeeBtn.textContent = 'Pay Fee Now';
+                payFeeBtn.disabled = false;
+            }
+        }
+
+
+        // --- Razorpay Integration Logic ---
+
+        window.initiateRazorpayPayment = function() {
+            if (!currentStudent || currentStudent.fees.pending <= 0) return;
+
+            const amountToPay = currentStudent.fees.pending;
+            
+            // Razorpay amount is in paise (cents), so multiply by 100
+            const amountInPaise = amountToPay * 100;
+
+            payFeeBtn.disabled = true;
+            payFeeBtn.textContent = 'Opening Payment Gateway...';
+
+            const options = {
+                key: RAZORPAY_KEY_ID, 
+                amount: amountInPaise, 
+                currency: "INR",
+                name: "School Fee Payment",
+                description: `Fee Payment for ${currentStudent.name} (Roll No: ${currentStudent.rollNo})`,
+                image: "https://placehold.co/100x100/4f46e5/ffffff?text=SCHOOL",
+                // UPDATED HANDLER: Captures the real Payment ID and passes it to updateStudentFees
+                handler: function (response) {
+                    const paymentId = response.razorpay_payment_id;
+                    updateStudentFees(amountToPay, paymentId);
+                },
+                modal: {
+                    ondismiss: function() {
+                        // Payment modal closed without success
+                        payFeeBtn.disabled = false;
+                        payFeeBtn.textContent = 'Pay Fee Now';
+                        console.log("Payment window closed by user.");
+                    }
+                },
+                prefill: {
+                    // Placeholder parent info
+                    name: currentStudent.name + ' Parent', 
+                    email: "parent.email@example.com",
+                    contact: "9999999999" 
+                },
+                theme: {
+                    color: "#4f46e5" // Indigo theme color
+                }
+            };
+
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
+        }
+
+    </script>
+</body>
+</html>

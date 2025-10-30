@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCS Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .login-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .admin-bg {
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .login-card {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-header {
+            background: #3a4149;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            font-size: 18px;
+            margin: -24px -24px 20px -24px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-primary {
+            background: #00bcd4;
+            color: white;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 15px;
+        }
+        
+        .btn-primary:hover {
+            background: #00acc1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        }
+        
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+        
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+        
+        .item-row {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+        
+        .item-row:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+        
+        .label-text {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .header-bar {
+            background: #3a4149;
+            color: white;
+            padding: 20px 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="login-gradient flex items-center justify-center p-4">
+        <div class="login-card glass-card w-full max-w-md p-8">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-extrabold text-gray-800 mb-2">Admin Login</h1>
+                <p class="text-gray-600 font-medium">Maner Central School</p>
+            </div>
+            
+            <div id="login-error" class="hidden mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                <p class="text-sm text-red-700 font-medium" id="error-text"></p>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="label-text">Email Address</label>
+                    <input type="email" id="login-email" required class="input-field" placeholder="admin@mcs.in">
+                </div>
+                
+                <div>
+                    <label class="label-text">Password</label>
+                    <input type="password" id="login-password" required class="input-field" placeholder="••••••••">
+                </div>
+                
+                <button type="submit" id="login-btn" class="btn-primary">
+                    <span id="login-btn-text">Sign In</span>
+                    <span id="login-btn-loading" class="hidden">Authenticating...</span>
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-xs text-gray-500">
+                🔒 Secure admin portal - Authorized access only
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-dashboard" class="hidden admin-bg">
+        <div class="header-bar flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">MCS Admin Pannel</h1>
+                <p class="text-sm text-gray-300 mt-1">Logged in as <span id="admin-email" class="font-semibold"></span></p>
+            </div>
+            <button id="logout-btn" class="logout-btn">Logout</button>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 pb-12">
+            
+            <div class="section-title">
+                Add New Content 🚀
+            </div>
+            
+            <div class="grid-3">
+                <div class="section-card">
+                    <div class="card-header">Marquee Notice</div>
+                    <form id="form-marquee">
+                        <div class="mb-4">
+                            <label class="label-text">Notice Text (incl. **bold**)</label>
+                            <textarea id="marquee-text" required class="input-field" rows="4" placeholder="Enter notice text..."></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="label-text">Display Order (Lower is first)</label>
+                            <input type="number" id="marquee-order" class="input-field" value="1" min="1">
+                        </div>
+                        <button type="submit" class="btn-primary">Add Marquee Notice</button>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <div class="card-header">Latest News (Links Only)</div>
+                    <form id="form-news">
+                        <div class="mb-4">
+                            <label class="label-text">Title</label>
+                            <input type="text" id="news-title" required class="input-field" placeholder="News title">
+                        </div>
+                        <div class="mb-4">
+                            <label class="label-text">Link URL</label>
+                            <input type="url" id="news-url" class="input-field" placeholder="https://...">
+                        </div>
+                        <div class="mb-4">
+                            <label class="label-text">Date (YYYY-MM-DD)</label>
+                            <input type="date" id="news-date" required class="input-field">
+                        </div>
+                        <div class="mb-4">
+                            <label class="label-text">Category (Optional)</label>
+                            <input type="text" id="news-category" class="input-field" placeholder="e.g., academic">
+                        </div>
+                        <button type="submit" class="btn-primary">Add News Item</button>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <div class="card-header">Official Circulars</div>
+                    <form id="form-circulars">
+                        <div class="mb-4">
+                            <label class="label-text">Circular Title</label>
+                            <input type="text" id="circular-title" required class="input-field" placeholder="E.g., Fee Payment Schedule...">
+                        </div>
+                        <div class="mb-4">
+                            <label class="label-text">Link URL (PDF)</label>
+                            <input type="url" id="circular-url" required class="input-field" placeholder="https://mcs.in/circulars/...">
+                        </div>
+                        <div class="mb-4">
+                            <label class="label-text">Date (YYYY-MM-DD)</label>
+                            <input type="date" id="circular-date" required class="input-field">
+                        </div>
+                        <div class="mb-4">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="circular-new" class="checkbox-input">
+                                Mark as "New!"
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-primary">Add Circular</button>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <div class="card-header">📸 Event/Gallery Image</div>
+                    <form id="form-gallery">
+                        <div class="mb-4">
+                            <label class="label-text">Image Title/Caption</label>
+                            <input type="text" id="gallery-title" required class="input-field" placeholder="E.g., Sports Day 2025 Photo 1">
+                        </div>
+                        <div class="mb-4">
+                            <label class="label-text">Image URL (Full Path)</label> 
+                            <input type="url" id="gallery-url" required class="input-field" placeholder="https://mcs.in/images/photo.jpg">
+                        </div>
+                        <div class="mb-4">
+                            <label class="label-text">Date (YYYY-MM-DD)</label>
+                            <input type="date" id="gallery-date" required class="input-field">
+                        </div>
+                        <button type="submit" class="btn-primary">Add Gallery Image</button>
+                    </form>
+                </div>
+                </div>
+
+            <div class="section-title mt-12">
+                Current Database Content 📋
+            </div>
+
+            <div class="section-card">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">📢 Marquee Notices</h3>
+                <div id="list-marquee"></div>
+            </div>
+
+            <div class="section-card">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">📰 Latest News (Links Only)</h3>
+                <div id="list-news"></div>
+            </div>
+
+            <div class="section-card">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">📸 Gallery Images</h3>
+                <div id="list-gallery"></div>
+            </div>
+            <div class="section-card">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">📋 Official Circulars</h3>
+                <div id="list-circulars"></div>
+            </div>
+
+            <div class="section-card">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">🔗 Academic Links</h3>
+                
+                <form id="form-academic-links" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="label-text">Link Title</label>
+                            <input type="text" id="academic-link-title" required class="input-field" placeholder="e.g., CBSE Portal">
+                        </div>
+                        <div>
+                            <label class="label-text">URL</label>
+                            <input type="url" id="academic-link-url" required class="input-field" placeholder="https://...">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Academic Link</button>
+                </form>
+                
+                <div id="list-academic"></div>
+            </div>
+
+            <div class="section-card">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">📥 Downloads</h3>
+                
+                <form id="form-downloads" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="label-text">Document Title</label>
+                            <input type="text" id="download-title" required class="input-field" placeholder="e.g., Admission Form">
+                        </div>
+                        <div>
+                            <label class="label-text">URL</label>
+                            <input type="url" id="download-url" required class="input-field" placeholder="https://...">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Download</button>
+                </form>
+                
+                <div id="list-downloads"></div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- Custom Alert/Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-3"></div>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="custom-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm p-6 text-center">
+            <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-4"></h3>
+            <p id="modal-message" class="text-gray-600 mb-6"></p>
+            <div id="modal-actions" class="flex justify-end space-x-3">
+                <button id="modal-cancel" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg font-semibold hover:bg-gray-300 transition">Cancel</button>
+                <button id="modal-confirm" class="px-4 py-2 text-white bg-indigo-600 rounded-lg font-semibold hover:bg-indigo-700 transition">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Updated Firebase Configuration and SDK Imports
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOlLdFHePu9BeAg-hgpefTez1leuNcGg4",
+            authDomain: "mcs-school1.firebaseapp.com",
+            projectId: "mcs-school1",
+            storageBucket: "mcs-school1.firebasestorage.app",
+            messagingSenderId: "867300205787",
+            appId: "1:867300205787:web:2127d06bfede974be458fe",
+            databaseURL: "https://mcs-school1-default-rtdb.firebaseio.com"
+        };
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const loginScreen = document.getElementById('login-screen');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const errorText = document.getElementById('error-text');
+        const logoutBtn = document.getElementById('logout-btn');
+        const adminEmailSpan = document.getElementById('admin-email');
+
+        // Utility function to show a toast message (replacing alert)
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `${colors[type]} text-white p-4 rounded-lg shadow-xl text-sm font-semibold transform transition-all duration-300 ease-out translate-x-full opacity-0`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full', 'opacity-0');
+            }, 10);
+
+            // Animate out and remove
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 4000);
+        }
+
+        // Utility function to show a confirmation modal (replacing confirm)
+        function showConfirm(title, message, confirmText = 'Confirm', onConfirm) {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            const confirmBtn = document.getElementById('modal-confirm');
+            confirmBtn.textContent = confirmText;
+            
+            modal.classList.remove('hidden');
+
+            const handleConfirm = () => {
+                modal.classList.add('hidden');
+                confirmBtn.removeEventListener('click', handleConfirm);
+                document.getElementById('modal-cancel').removeEventListener('click', handleCancel);
+                onConfirm();
+            };
+
+            const handleCancel = () => {
+                modal.classList.add('hidden');
+                confirmBtn.removeEventListener('click', handleConfirm);
+                document.getElementById('modal-cancel').removeEventListener('click', handleCancel);
+            };
+
+            confirmBtn.addEventListener('click', handleConfirm);
+            document.getElementById('modal-cancel').addEventListener('click', handleCancel);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                adminEmailSpan.textContent = user.email;
+                loginScreen.classList.add('hidden');
+                adminDashboard.classList.remove('hidden');
+                initializeDashboard();
+            } else {
+                loginScreen.classList.remove('hidden');
+                adminDashboard.classList.add('hidden');
+            }
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                let message = 'Invalid credentials. Please try again.';
+                if (error.code === 'auth/invalid-credential') {
+                    message = 'Invalid email or password.';
+                }
+                errorText.textContent = message;
+                loginError.classList.remove('hidden');
+                setTimeout(() => loginError.classList.add('hidden'), 5000);
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            // Replaced confirm() with showConfirm()
+            showConfirm('Confirm Logout', 'Are you sure you want to sign out of the Admin Panel?', 'Logout', () => {
+                signOut(auth);
+            });
+        });
+
+        function initializeDashboard() {
+            loadMarqueeNotices();
+            loadNews();
+            loadCirculars();
+            loadAcademicLinks();
+            loadDownloads();
+            loadGalleryImages();
+            
+            // Marquee Notice Form
+            document.getElementById('form-marquee').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = document.getElementById('marquee-text').value;
+                const order = document.getElementById('marquee-order').value;
+                
+                if (!text.trim()) {
+                    showToast('Please enter notice text', 'info'); // Replaced alert
+                    return;
+                }
+                
+                try {
+                    const newRef = push(ref(database, 'marquee_notices'));
+                    await set(newRef, { 
+                        text: text.trim(), 
+                        order: parseInt(order) || 1,
+                        createdAt: new Date().toISOString()
+                    });
+                    document.getElementById('form-marquee').reset();
+                    document.getElementById('marquee-order').value = '1';
+                    showToast('Notice added successfully!'); // Replaced alert
+                } catch (error) {
+                    console.error('Error adding notice:', error);
+                    showToast('Error adding notice: ' + error.message, 'error'); // Replaced alert
+                }
+            });
+
+            // News Form (Regular Links)
+            document.getElementById('form-news').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('news-title').value;
+                const url = document.getElementById('news-url').value || '#';
+                const date = document.getElementById('news-date').value;
+                const category = document.getElementById('news-category').value || 'general';
+                
+                if (!title.trim() || !date) {
+                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                    return;
+                }
+                
+                try {
+                    const newRef = push(ref(database, 'news'));
+                    await set(newRef, { 
+                        title: title.trim(), 
+                        url, 
+                        date, 
+                        category: category.trim().toLowerCase(),
+                        createdAt: new Date().toISOString()
+                    });
+                    document.getElementById('form-news').reset();
+                    showToast('News added successfully!'); // Replaced alert
+                } catch (error) {
+                    console.error('Error adding news:', error);
+                    showToast('Error adding news: ' + error.message, 'error'); // Replaced alert
+                }
+            });
+
+            // GALLERY IMAGE FORM: Writes to 'news' with category: 'image'
+            document.getElementById('form-gallery').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('gallery-title').value;
+                const url = document.getElementById('gallery-url').value;
+                const date = document.getElementById('gallery-date').value;
+                
+                if (!title.trim() || !url.trim() || !date) {
+                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                    return;
+                }
+                
+                try {
+                    // Pushing to 'news' collection
+                    const newRef = push(ref(database, 'news'));
+                    await set(newRef, { 
+                        title: title.trim(), 
+                        url: url.trim(), 
+                        date, 
+                        category: 'image', // Key to distinguish it as an image
+                        createdAt: new Date().toISOString()
+                    });
+                    document.getElementById('form-gallery').reset();
+                    showToast('Gallery Image added successfully to the News collection!'); // Replaced alert
+                } catch (error) {
+                    console.error('Error adding gallery image:', error);
+                    showToast('Error adding gallery image: ' + error.message, 'error'); // Replaced alert
+                }
+            });
+            // END GALLERY IMAGE FORM
+
+            // Circulars Form
+            document.getElementById('form-circulars').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('circular-title').value;
+                const url = document.getElementById('circular-url').value;
+                const date = document.getElementById('circular-date').value;
+                const isNew = document.getElementById('circular-new').checked;
+                
+                if (!title.trim() || !url.trim() || !date) {
+                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                    return;
+                }
+                
+                try {
+                    const newRef = push(ref(database, 'circulars'));
+                    await set(newRef, { 
+                        title: title.trim(), 
+                        url: url.trim(), 
+                        date, 
+                        isNew,
+                        createdAt: new Date().toISOString()
+                    });
+                    document.getElementById('form-circulars').reset();
+                    showToast('Circular added successfully!'); // Replaced alert
+                } catch (error) {
+                    console.error('Error adding circular:', error);
+                    showToast('Error adding circular: ' + error.message, 'error'); // Replaced alert
+                }
+            });
+
+            // Academic Links Form
+            document.getElementById('form-academic-links').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('academic-link-title').value;
+                const url = document.getElementById('academic-link-url').value;
+                
+                if (!title.trim() || !url.trim()) {
+                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                    return;
+                }
+                
+                try {
+                    const newRef = push(ref(database, 'academic_links'));
+                    await set(newRef, { 
+                        title: title.trim(), 
+                        url: url.trim(),
+                        createdAt: new Date().toISOString()
+                    });
+                    document.getElementById('form-academic-links').reset();
+                    showToast('Academic link added successfully!'); // Replaced alert
+                } catch (error) {
+                    console.error('Error adding link:', error);
+                    showToast('Error adding link: ' + error.message, 'error'); // Replaced alert
+                }
+            });
+
+            // Downloads Form
+            document.getElementById('form-downloads').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('download-title').value;
+                const url = document.getElementById('download-url').value;
+                
+                if (!title.trim() || !url.trim()) {
+                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                    return;
+                }
+                
+                try {
+                    const newRef = push(ref(database, 'downloads'));
+                    await set(newRef, { 
+                        title: title.trim(), 
+                        url: url.trim(),
+                        createdAt: new Date().toISOString()
+                    });
+                    document.getElementById('form-downloads').reset();
+                    showToast('Download added successfully!'); // Replaced alert
+                } catch (error) {
+                    console.error('Error adding download:', error);
+                    showToast('Error adding download: ' + error.message, 'error'); // Replaced alert
+                }
+            });
+        }
+
+        function loadMarqueeNotices() {
+            const listElement = document.getElementById('list-marquee');
+            onValue(ref(database, 'marquee_notices'), (snapshot) => {
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (!data) {
+                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No notices yet. Add your first notice above!</p>';
+                    return;
+                }
+                
+                // Convert to array and sort by order
+                const items = Object.entries(data)
+                    .map(([key, value]) => ({ key, ...value }))
+                    .sort((a, b) => (a.order || 999) - (b.order || 999));
+                
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    // The deleteItem function now handles its own confirmation
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">${escapeHtml(item.text)}</p>
+                            <p class="text-xs text-gray-500 mt-1">Display Order: ${item.order || 1}</p>
+                        </div>
+                        <button onclick="deleteItem('marquee_notices', '${item.key}')" class="btn-delete">🗑️ Delete</button>
+                    `;
+                    listElement.appendChild(div);
+                });
+            }, (error) => {
+                console.error('Error loading notices:', error);
+                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
+            });
+        }
+        
+        function loadNews() {
+            const listElement = document.getElementById('list-news');
+            onValue(ref(database, 'news'), (snapshot) => {
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                
+                // Convert to array, filter out images, and sort by date (newest first)
+                const items = Object.entries(data || {})
+                    .map(([key, value]) => ({ key, ...value }))
+                    .filter(item => (item.category || 'general') !== 'image') // <-- Only display non-image items
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                if (items.length === 0) {
+                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No news links yet. Add a news item above!</p>';
+                    return;
+                }
+                
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                📅 ${item.date} | 🏷️ ${item.category ? item.category.toUpperCase() : 'GENERAL'}
+                            </p>
+                            ${item.url && item.url !== '#' ? `<a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">🔗 View Link</a>` : ''}
+                        </div>
+                        <button onclick="deleteItem('news', '${item.key}')" class="btn-delete">🗑️ Delete</button>
+                    `;
+                    listElement.appendChild(div);
+                });
+            }, (error) => {
+                console.error('Error loading news:', error);
+                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
+            });
+        }
+
+        function loadGalleryImages() {
+            const listElement = document.getElementById('list-gallery');
+            onValue(ref(database, 'news'), (snapshot) => { // Still read from 'news'
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                
+                // Convert to array, filter for only images, and sort by date (newest first)
+                const items = Object.entries(data || {})
+                    .map(([key, value]) => ({ key, ...value }))
+                    .filter(item => item.category === 'image') // <-- Only display image items
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                if (items.length === 0) {
+                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No gallery images yet. Add one using the form above!</p>';
+                    return;
+                }
+                
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.innerHTML = `
+                        <div class="flex-1 flex items-center gap-4">
+                            <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.title)}" class="w-12 h-12 object-cover rounded-md border border-gray-200">
+                            <div>
+                                <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    📅 ${item.date} | 🏷️ GALLERY IMAGE
+                                </p>
+                                <a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">📸 View Full Image</a>
+                            </div>
+                        </div>
+                        <button onclick="deleteItem('news', '${item.key}')" class="btn-delete">🗑️ Delete</button>
+                    `;
+                    listElement.appendChild(div);
+                });
+            }, (error) => {
+                console.error('Error loading gallery images:', error);
+                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
+            });
+        }
+
+        function loadCirculars() {
+            const listElement = document.getElementById('list-circulars');
+            onValue(ref(database, 'circulars'), (snapshot) => {
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (!data) {
+                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No circulars yet. Add your first circular above!</p>';
+                    return;
+                }
+                
+                // Convert to array and sort by date (newest first)
+                const items = Object.entries(data)
+                    .map(([key, value]) => ({ key, ...value }))
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">
+                                ${escapeHtml(item.title)} 
+                                ${item.isNew ? '<span class="text-xs bg-green-500 text-white px-2 py-1 rounded ml-2">🆕 NEW</span>' : ''}
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">📅 ${item.date}</p>
+                            <a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">📄 View PDF</a>
+                        </div>
+                        <button onclick="deleteItem('circulars', '${item.key}')" class="btn-delete">🗑️ Delete</button>
+                    `;
+                    listElement.appendChild(div);
+                });
+            }, (error) => {
+                console.error('Error loading circulars:', error);
+                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
+            });
+        }
+
+        function loadAcademicLinks() {
+            const listElement = document.getElementById('list-academic');
+            onValue(ref(database, 'academic_links'), (snapshot) => {
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (!data) {
+                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No academic links yet. Add links using the form above!</p>';
+                    return;
+                }
+                
+                Object.entries(data).forEach(([key, item]) => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
+                            <a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">🔗 ${escapeHtml(item.url)}</a>
+                        </div>
+                        <button onclick="deleteItem('academic_links', '${key}')" class="btn-delete">🗑️ Delete</button>
+                    `;
+                    listElement.appendChild(div);
+                });
+            }, (error) => {
+                console.error('Error loading academic links:', error);
+                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
+            });
+        }
+
+        function loadDownloads() {
+            const listElement = document.getElementById('list-downloads');
+            onValue(ref(database, 'downloads'), (snapshot) => {
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (!data) {
+                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No downloads yet. Add documents using the form above!</p>';
+                    return;
+                }
+                
+                Object.entries(data).forEach(([key, item]) => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
+                            <a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">📥 Download Link</a>
+                        </div>
+                        <button onclick="deleteItem('downloads', '${key}')" class="btn-delete">🗑️ Delete</button>
+                    `;
+                    listElement.appendChild(div);
+                });
+            }, (error) => {
+                console.error('Error loading downloads:', error);
+                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
+            });
+        }
+
+        // Utility function to escape HTML and prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Redefined deleteItem to use custom confirmation modal
+        window.deleteItem = function(collection, key) {
+            showConfirm('Confirm Deletion', '⚠️ Are you sure you want to delete this item? This action cannot be undone.', 'Delete', async () => {
+                try {
+                    await remove(ref(database, `${collection}/${key}`));
+                    showToast('Item deleted successfully!');
+                } catch (error) {
+                    console.error('Error deleting item:', error);
+                    showToast('Error deleting item: ' + error.message, 'error');
+                }
+            });
+        };
+    </script>
+
+</body>
+</html>

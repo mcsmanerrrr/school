@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maner Central School Photo Gallery</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        /* Custom loading spinner styles */
+        .loader {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #10b981; /* Emerald 500 */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <header class="bg-white shadow-lg p-4 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl font-extrabold text-emerald-600 tracking-tight">
+                Maner Central School
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">Welcome to the Photo Gallery.</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+        <!-- Image Container -->
+        <div id="image-gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Images will be injected here -->
+        </div>
+
+        <!-- Initial Loader & Error Message -->
+        <div id="status-container" class="flex justify-center items-center py-12">
+            <div id="loader" class="loader"></div>
+            <p id="error-message" class="text-red-500 font-medium hidden">
+                Failed to load images. Please ensure your Firebase Realtime Database rules allow public **read** access.
+            </p>
+            <p id="no-data-message" class="text-gray-500 font-medium hidden">
+                No images found in the database.
+            </p>
+        </div>
+    </main>
+
+    <footer class="text-center p-4 text-xs text-gray-400">
+        &copy; 2025 Maner Central School Photo Gallery
+    </footer>
+
+    <script type="module">
+        // Import Firebase modules - UPDATED TO v12.4.0
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+        // NOTE: This application is explicitly read-only and contains no functions for writing data (set, push, update, remove).
+
+        // Provided Firebase configuration - UPDATED
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOlLdFHePu9BeAg-hgpefTez1leuNcGg4",
+            authDomain: "mcs-school1.firebaseapp.com",
+            databaseURL: "https://mcs-school1-default-rtdb.firebaseio.com/", // Realtime DB URL added
+            projectId: "mcs-school1",
+            storageBucket: "mcs-school1.firebasestorage.app",
+            messagingSenderId: "867300205787",
+            appId: "1:867300205787:web:2127d06bfede974be458fe"
+        };
+
+        // UI elements
+        const gallery = document.getElementById('image-gallery');
+        const loader = document.getElementById('loader');
+        const errorMessage = document.getElementById('error-message');
+        const noDataMessage = document.getElementById('no-data-message');
+
+        function initializeAppAndFetchData() {
+            try {
+                // Initialize Firebase services
+                const app = initializeApp(firebaseConfig);
+                const db = getDatabase(app);
+                
+                // Reference set to the publicly readable '/news' path based on your security rules.
+                const imagesRef = ref(db, 'news');
+
+                // Listen for data changes in real-time
+                onValue(imagesRef, (snapshot) => {
+                    loader.classList.add('hidden');
+                    gallery.innerHTML = ''; // Clear existing images
+                    
+                    const data = snapshot.val();
+                    let imageCount = 0;
+
+                    if (data) {
+                        // We iterate through the top-level keys
+                        snapshot.forEach((childSnapshot) => {
+                            const childData = childSnapshot.val();
+                            let imageUrl = null;
+                            
+                            // Heuristics to find the image URL:
+                            // 1. If the childData is a string, assume it's the URL itself.
+                            if (typeof childData === 'string') {
+                                imageUrl = childData;
+                            }
+                            // 2. If it's an object and contains a 'url' property.
+                            else if (typeof childData === 'object' && childData !== null && childData.url) {
+                                imageUrl = childData.url;
+                            }
+                            // 3. If it's an object and contains an 'image' property.
+                            else if (typeof childData === 'object' && childData !== null && childData.image) {
+                                imageUrl = childData.image;
+                            }
+
+                            if (imageUrl && typeof imageUrl === 'string') {
+                                imageCount++;
+                                const imageCard = document.createElement('div');
+                                imageCard.className = 'bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300 ease-in-out';
+                                
+                                const img = document.createElement('img');
+                                img.src = imageUrl;
+                                img.alt = `Gallery image ${imageCount}`;
+                                img.className = 'w-full h-64 object-cover transition duration-500 ease-in-out hover:opacity-90 cursor-pointer';
+                                
+                                // Fallback for broken image links
+                                img.onerror = function() {
+                                    this.onerror=null; // Prevent infinite loop
+                                    this.src = `https://placehold.co/600x400/10b981/ffffff?text=Image+Failed+to+Load`;
+                                    this.alt = 'Image unavailable';
+                                    this.title = 'Image link was broken or invalid.';
+                                    this.classList.add('p-4'); // Add padding for placeholder text
+                                };
+                                
+                                imageCard.appendChild(img);
+                                gallery.appendChild(imageCard);
+                            }
+                        });
+
+                        // Show messages based on the final count
+                        if (imageCount === 0) {
+                            noDataMessage.classList.remove('hidden');
+                        } else {
+                            noDataMessage.classList.add('hidden');
+                        }
+                        errorMessage.classList.add('hidden'); // Hide any previous error messages
+
+                    } else {
+                        noDataMessage.classList.remove('hidden');
+                    }
+
+                }, (error) => {
+                    // Database Read Error Handler (includes permission_denied)
+                    loader.classList.add('hidden');
+                    errorMessage.textContent = "Data Read Error: Check your Firebase Realtime Database rules for public read access.";
+                    errorMessage.classList.remove('hidden');
+                    noDataMessage.classList.add('hidden');
+                    console.error("Firebase Read Error:", error);
+                });
+
+            } catch (e) {
+                // Initialization Error Handler
+                loader.classList.add('hidden');
+                errorMessage.textContent = "Initialization Error: Check Firebase configuration details.";
+                errorMessage.classList.remove('hidden');
+                console.error("Initialization failed:", e);
+            }
+        }
+        
+        initializeAppAndFetchData();
+    </script>
+</body>
+</html>
