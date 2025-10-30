@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maner Central School - Ongoing Admission Inquiry</title>
+    <!-- Load Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Simple white background for a clean, minimalist look */
+            background-color: #ffffff; 
+        }
+
+        /* Simplified button styling for the ultimate simple look */
+        .cta-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem; /* Reduced padding */
+            border-radius: 0.25rem; /* Less rounding */
+            font-weight: 600;
+            text-transform: capitalize; 
+            transition: background-color 0.2s;
+            /* Removed all shadows and transforms for maximum simplicity */
+        }
+
+        .cta-button:hover {
+            /* Keep hover background change change for feedback */
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<!-- Body background is now white -->
+<body class="bg-white min-h-screen pt-8 pb-8">
+
+    <!-- Main Admission Section Container 
+         - Increased max-w to 4xl and added very subtle top/bottom border and padding for visual separation.
+    -->
+    <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-b border-gray-200">
+        
+        <!-- Header Section -->
+        <div class="text-center mb-10">
+            <!-- School Title - Simple, bold, and readable -->
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1 leading-tight">
+                MANER CENTRAL SCHOOL
+            </h1>
+            <!-- Subtitle - Uses a standard accent blue -->
+            <p class="text-lg font-medium text-blue-600 mt-3">
+                Apply Now: Ongoing Admissions Open for the New Session
+            </p>
+        </div>
+
+        <!-- Information Section (Stacked Layout for Simplicity) -->
+        <div class="space-y-8 mb-12">
+            
+            <!-- Information Block 1: Program Availability -->
+            <div class="space-y-1">
+                <div class="flex items-center space-x-3">
+                    <!-- Icon: Book Open -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500 flex-shrink-0">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-800">Wide Program Availability</h3>
+                </div>
+                <p class="text-gray-600 text-base">
+                    Admissions are currently open for classes from LKG to Class XII. Review the eligibility criteria and academic calendar on our main website.
+                </p>
+            </div>
+            
+            <!-- Information Block 2: Timely Submission -->
+            <div class="space-y-1">
+                <div class="flex items-center space-x-3">
+                    <!-- Icon: Alert Circle -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500 flex-shrink-0">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-800">Limited Seats Available</h3>
+                </div>
+                <p class="text-gray-600 text-base">
+                    Due to high demand, we strongly encourage you to submit your application materials quickly and securely to avoid disappointment.
+                </p>
+            </div>
+        </div>
+
+        <!-- Call-to-Action Buttons (Responsive stacking) -->
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <!-- 1. Primary CTA: Direct Call Button (Solid Blue) -->
+            <a href="tel:+919308069419" class="cta-button bg-blue-600 text-white sm:w-64 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                <!-- Phone Icon (White color) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-4.9-4.9A19.79 19.79 0 0 1 2 4.18 2 2 0 0 1 4.18 2h3a2 2 0 0 1 2 1.72 17.63 17.63 0 0 0 .93 3 2 2 0 0 1-.31 2c-.31.3-.87.73-2 1.83a17.65 17.65 0 0 0 6.64 6.64c1.1-.9 1.54-1.56 1.83-2.58a2 2 0 0 1 2.3-2.3 17.63 17.63 0 0 0 3 .93 2 2 0 0 1 1.72 2Z"></path>
+                </svg>
+                Call Admissions Team
+            </a>
+
+            <!-- 2. Secondary CTA: Visit Branches (Outline button) -->
+            <a href="#" id="visitBranchButton" class="cta-button bg-white text-blue-600 border border-blue-600 sm:w-64 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                <!-- Map Pin Icon (Blue color) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Visit Offline Branches
+            </a>
+        </div>
+
+        <!-- Footer Note for Information -->
+        <p class="mt-8 text-center text-sm text-gray-500 italic">
+            For further clarification on eligibility or application forms, please contact us or visit one of our branches.
+        </p>
+    </div>
+
+    <script>
+        // Maner Central School Address
+        const branchAddress = "Maner Central School Campus, Ramadhar Nagar, Maner, Patna - 801108, Bihar";
+
+        document.getElementById('visitBranchButton').addEventListener('click', (event) => {
+            event.preventDefault();
+            
+            let messageBox = document.getElementById('branchMessageBox');
+            if (!messageBox) {
+                messageBox = document.createElement('div');
+                messageBox.id = 'branchMessageBox';
+                // Notification box styled to match the simple UI
+                messageBox.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-5 py-3 rounded-sm shadow-lg transition-opacity duration-300 opacity-0 z-50 font-medium text-sm max-w-sm text-center';
+                document.body.appendChild(messageBox);
+            }
+            
+            messageBox.innerHTML = `<div class="font-bold mb-1">Our Campus Location:</div>${branchAddress}`;
+            messageBox.style.opacity = '1';
+
+            // Hide the message box after 5 seconds to allow reading the address
+            setTimeout(() => {
+                messageBox.style.opacity = '0';
+            }, 5000);
+        });
+
+    </script>
+</body>
+</html>
