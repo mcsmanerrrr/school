@@ -374,7 +374,7 @@
         </div>
         <div class="mt-8 text-center text-gray-500 text-sm border-t border-gray-700 pt-4">
             &copy; 2025 Maner Central School. All rights reserved. 
-            Designed by Harshit Singh
+            <a href="https://manercentralschool.in/harshitsingh" class="text-gray-500 hover:text-cyan-400 transition duration-150">Designed by Harshit Singh</a>
         </div>
     </footer>
 
@@ -452,7 +452,17 @@
                 let items = [];
                 const data = snapshot.val();
                 
-                if (data) items = Object.values(data);
+                if (data) {
+                    Object.values(data).forEach(item => {
+                        // Filter out items where category is 'image'
+                        if (item.category && item.category.toLowerCase() !== 'image') {
+                            items.push(item);
+                        } else if (!item.category) {
+                            // Also include items with no category defined
+                            items.push(item);
+                        }
+                    });
+                }
                 
                 if (items.length === 0) {
                     listElement.innerHTML = '<div class="text-sm text-gray-500">No recent news available.</div>';
@@ -550,13 +560,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
