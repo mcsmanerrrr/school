@@ -4,139 +4,289 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maner Central School Photo Gallery</title>
-    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Inter font -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f7f7;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fa;
+            color: #2c3e50;
         }
-        /* Custom loading spinner styles */
+        
+        /* Custom loading spinner styles - Accent Blue */
         .loader {
             border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #10b981; /* Emerald 500 */
+            border-top-color: #3498db; 
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px; 
+            height: 50px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* True Masonry Layout via CSS Columns */
+        .masonry-grid {
+            column-count: 1; 
+            column-gap: 1.5rem;
+        }
+        @media (min-width: 640px) { /* sm */
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+        @media (min-width: 1024px) { /* lg */
+            .masonry-grid {
+                column-count: 3;
+            }
+        }
+        @media (min-width: 1280px) { /* xl */
+            .masonry-grid {
+                column-count: 4;
+            }
+        }
+
+        /* Gallery Item Styling */
+        .gallery-card {
+            display: inline-block; 
+            width: 100%;
+            margin-bottom: 1.5rem; 
+            background-color: #ffffff; 
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04); 
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            border-radius: 0.5rem; 
+            overflow: hidden;
+        }
+        .gallery-card:hover {
+            transform: translateY(-4px); 
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-image {
+             width: 100%;
+             height: auto; 
+             display: block;
+        }
+        
+        /* Modal specific styles (kept for functionality) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 50; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        .modal-image {
+            display: block;
+            width: auto;
+            max-width: 100vw;
+            height: auto;
+            max-height: 90vh;
+            object-fit: contain; 
+        }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <header class="bg-white shadow-lg p-4 sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto">
-            <h1 class="text-3xl font-extrabold text-emerald-600 tracking-tight">
+    <header class="bg-white p-6 shadow-sm sticky top-0 z-10 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-gray-800 tracking-tight flex items-center">
+                <img src="images/logo.png" alt="Maner Central School Logo" class="w-8 h-8 mr-3">
                 Maner Central School
             </h1>
-            <p class="text-sm text-gray-500 mt-1">Welcome to the Photo Gallery.</p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto p-4 md:p-8">
-        <!-- Image Container -->
-        <div id="image-gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <!-- Images will be injected here -->
+    <main class="max-w-7xl mx-auto p-4 md:p-10">
+        
+        <div class="mb-8 flex flex-col sm:flex-row items-center justify-between">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 sm:mb-0">
+                Our Moments
+            </h2>
+            <div class="relative w-full sm:w-80">
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="search" id="image-search-input" placeholder="Search by Title..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition shadow-sm text-sm" />
+            </div>
         </div>
 
-        <!-- Initial Loader & Error Message -->
-        <div id="status-container" class="flex justify-center items-center py-12">
-            <div id="loader" class="loader"></div>
-            <p id="error-message" class="text-red-500 font-medium hidden">
-                Failed to load images. Please ensure your Firebase Realtime Database rules allow public **read** access.
+        <div id="image-gallery" class="masonry-grid">
+            </div>
+
+        <div id="status-container" class="flex flex-col justify-center items-center py-20 mt-8 bg-white rounded-lg shadow-inner">
+            <div id="loader" class="loader mb-6"></div>
+            
+            <p id="error-message" class="text-red-600 bg-red-50 border-l-4 border-red-400 p-3 rounded font-medium text-base hidden max-w-lg text-center">
+                🚨 Error loading images. Please verify Firebase read access.
             </p>
-            <p id="no-data-message" class="text-gray-500 font-medium hidden">
-                No images found in the database.
+            <p id="no-data-message" class="text-gray-600 bg-blue-50 border-l-4 border-blue-400 p-3 rounded font-medium text-base hidden max-w-lg text-center">
+                🚫 No images found to display.
             </p>
         </div>
     </main>
+    
+    <div id="image-modal" class="modal-overlay">
+        <div class="modal-content">
+            <img id="modal-image-view" class="modal-image rounded-lg shadow-2xl" src="" alt="Full size gallery image">
+            
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-white text-4xl font-light p-1 bg-black/50 hover:bg-black/80 rounded-full transition duration-200 focus:outline-none" aria-label="Close image view">
+                &times;
+            </button>
+        </div>
+    </div>
 
-    <footer class="text-center p-4 text-xs text-gray-400">
-        &copy; 2025 Maner Central School Photo Gallery
+    <footer class="text-center p-6 text-xs text-gray-500 bg-gray-50 border-t border-gray-100 mt-12">
+        &copy; 2025 Maner Central School | Made by <a href="https://www.manercentralschool.in/harshitsingh" target="_blank" class="text-blue-600 hover:text-blue-800 transition duration-150">Harshit Singh</a>
     </footer>
 
     <script type="module">
-        // Import Firebase modules - UPDATED TO v12.4.0
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
-        // NOTE: This application is explicitly read-only and contains no functions for writing data (set, push, update, remove).
 
-        // Provided Firebase configuration - UPDATED
+        // Firebase config (preserved)
         const firebaseConfig = {
             apiKey: "AIzaSyBOlLdFHePu9BeAg-hgpefTez1leuNcGg4",
             authDomain: "mcs-school1.firebaseapp.com",
-            databaseURL: "https://mcs-school1-default-rtdb.firebaseio.com/", // Realtime DB URL added
+            databaseURL: "https://mcs-school1-default-rtdb.firebaseio.com/", 
             projectId: "mcs-school1",
             storageBucket: "mcs-school1.firebasestorage.app",
             messagingSenderId: "867300205787",
             appId: "1:867300205787:web:2127d06bfede974be458fe"
         };
 
-        // UI elements
         const gallery = document.getElementById('image-gallery');
         const loader = document.getElementById('loader');
         const errorMessage = document.getElementById('error-message');
         const noDataMessage = document.getElementById('no-data-message');
+        
+        const searchInput = document.getElementById('image-search-input');
+
+        const imageModal = document.getElementById('image-modal');
+        const modalImageView = document.getElementById('modal-image-view');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
+        function openModal(imageUrl) {
+            modalImageView.src = imageUrl;
+            imageModal.classList.add('open');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeModal() {
+            imageModal.classList.remove('open');
+            document.body.style.overflow = ''; 
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                closeModal();
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && imageModal.classList.contains('open')) {
+                closeModal();
+            }
+        });
+        
+        // UPDATED: Image Search Functionality to search by Title
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const cards = gallery.querySelectorAll('.gallery-card');
+
+            cards.forEach(card => {
+                // Get the searchable title from the data attribute
+                const cardTitle = card.getAttribute('data-title').toLowerCase();
+                
+                const shouldShow = cardTitle.includes(searchTerm);
+
+                if (shouldShow) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        // Attach event listener to the search input
+        searchInput.addEventListener('input', handleSearch);
+
 
         function initializeAppAndFetchData() {
             try {
-                // Initialize Firebase services
                 const app = initializeApp(firebaseConfig);
                 const db = getDatabase(app);
-                
-                // Reference set to the publicly readable '/news' path based on your security rules.
                 const imagesRef = ref(db, 'news');
 
-                // Listen for data changes in real-time
                 onValue(imagesRef, (snapshot) => {
                     loader.classList.add('hidden');
-                    gallery.innerHTML = ''; // Clear existing images
+                    gallery.innerHTML = ''; 
                     
                     const data = snapshot.val();
                     let imageCount = 0;
 
                     if (data) {
-                        // We iterate through the top-level keys
                         snapshot.forEach((childSnapshot) => {
                             const childData = childSnapshot.val();
                             let imageUrl = null;
                             
-                            // Heuristics to find the image URL:
-                            // 1. If the childData is a string, assume it's the URL itself.
                             if (typeof childData === 'string') {
                                 imageUrl = childData;
                             }
-                            // 2. If it's an object and contains a 'url' property.
                             else if (typeof childData === 'object' && childData !== null && childData.url) {
                                 imageUrl = childData.url;
                             }
-                            // 3. If it's an object and contains an 'image' property.
                             else if (typeof childData === 'object' && childData !== null && childData.image) {
                                 imageUrl = childData.image;
                             }
 
                             if (imageUrl && typeof imageUrl === 'string') {
                                 imageCount++;
+                                
+                                // Create a searchable title
+                                let imageTitle = childData.title || childSnapshot.key || `Moment ${imageCount}`;
+                                
                                 const imageCard = document.createElement('div');
-                                imageCard.className = 'bg-white rounded-xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition duration-300 ease-in-out';
+                                imageCard.className = 'gallery-card'; 
+                                // Store title in data attribute for search
+                                imageCard.setAttribute('data-title', imageTitle);
                                 
                                 const img = document.createElement('img');
                                 img.src = imageUrl;
-                                img.alt = `Gallery image ${imageCount}`;
-                                img.className = 'w-full h-64 object-cover transition duration-500 ease-in-out hover:opacity-90 cursor-pointer';
+                                img.alt = imageTitle; 
+                                img.className = 'gallery-image'; 
                                 
-                                // Fallback for broken image links
+                                img.addEventListener('click', () => {
+                                    openModal(imageUrl);
+                                });
+
                                 img.onerror = function() {
-                                    this.onerror=null; // Prevent infinite loop
-                                    this.src = `https://placehold.co/600x400/10b981/ffffff?text=Image+Failed+to+Load`;
+                                    this.onerror=null; 
+                                    this.src = `https://placehold.co/400x300/f7f9fa/3498db?text=ERROR+404`; 
                                     this.alt = 'Image unavailable';
                                     this.title = 'Image link was broken or invalid.';
-                                    this.classList.add('p-4'); // Add padding for placeholder text
+                                    this.classList.remove('gallery-image');
+                                    this.classList.add('p-4', 'w-full', 'h-auto', 'object-contain'); 
                                 };
                                 
                                 imageCard.appendChild(img);
@@ -144,31 +294,30 @@
                             }
                         });
 
-                        // Show messages based on the final count
+
                         if (imageCount === 0) {
                             noDataMessage.classList.remove('hidden');
                         } else {
                             noDataMessage.classList.add('hidden');
                         }
-                        errorMessage.classList.add('hidden'); // Hide any previous error messages
+                        errorMessage.classList.add('hidden'); 
+                        
+                        // Re-run search after loading data
+                        handleSearch();
 
                     } else {
                         noDataMessage.classList.remove('hidden');
                     }
 
                 }, (error) => {
-                    // Database Read Error Handler (includes permission_denied)
                     loader.classList.add('hidden');
-                    errorMessage.textContent = "Data Read Error: Check your Firebase Realtime Database rules for public read access.";
                     errorMessage.classList.remove('hidden');
                     noDataMessage.classList.add('hidden');
                     console.error("Firebase Read Error:", error);
                 });
 
             } catch (e) {
-                // Initialization Error Handler
                 loader.classList.add('hidden');
-                errorMessage.textContent = "Initialization Error: Check Firebase configuration details.";
                 errorMessage.classList.remove('hidden');
                 console.error("Initialization failed:", e);
             }
