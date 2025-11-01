@@ -111,7 +111,7 @@
     <header class="bg-white p-6 shadow-sm sticky top-0 z-10 border-b border-gray-100">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <h1 class="text-3xl font-bold text-gray-800 tracking-tight flex items-center">
-                <img src="logo.png" alt="Maner Central School Logo" class="w-8 h-8 mr-3">
+                <img src="images/logo.png" alt="Maner Central School Logo" class="w-8 h-8 mr-3">
                 Maner Central School
             </h1>
         </div>
@@ -209,15 +209,12 @@
             }
         });
         
-        // UPDATED: Image Search Functionality to search by Title
         function handleSearch() {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const cards = gallery.querySelectorAll('.gallery-card');
 
             cards.forEach(card => {
-                // Get the searchable title from the data attribute
                 const cardTitle = card.getAttribute('data-title').toLowerCase();
-                
                 const shouldShow = cardTitle.includes(searchTerm);
 
                 if (shouldShow) {
@@ -228,7 +225,6 @@
             });
         }
 
-        // Attach event listener to the search input
         searchInput.addEventListener('input', handleSearch);
 
 
@@ -250,6 +246,7 @@
                             const childData = childSnapshot.val();
                             let imageUrl = null;
                             
+                            // Check for image URL using existing heuristics
                             if (typeof childData === 'string') {
                                 imageUrl = childData;
                             }
@@ -260,6 +257,14 @@
                                 imageUrl = childData.image;
                             }
 
+                            // 1. **NEW FILTER**: Skip if a category is present and it's not explicitly 'image'
+                            if (typeof childData === 'object' && childData !== null && childData.category) {
+                                if (childData.category.toLowerCase() !== 'image') {
+                                    return; // Skip this data entry
+                                }
+                            }
+
+                            // 2. Proceed only if a valid image URL was found
                             if (imageUrl && typeof imageUrl === 'string') {
                                 imageCount++;
                                 
@@ -268,7 +273,6 @@
                                 
                                 const imageCard = document.createElement('div');
                                 imageCard.className = 'gallery-card'; 
-                                // Store title in data attribute for search
                                 imageCard.setAttribute('data-title', imageTitle);
                                 
                                 const img = document.createElement('img');
@@ -302,7 +306,6 @@
                         }
                         errorMessage.classList.add('hidden'); 
                         
-                        // Re-run search after loading data
                         handleSearch();
 
                     } else {
@@ -327,4 +330,3 @@
     </script>
 </body>
 </html>
-
