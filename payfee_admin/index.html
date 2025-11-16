@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | School Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .modal {
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <div id="login-view" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Admin Panel</h1>
+                <p class="text-gray-500 mt-2">School Management System</p>
+            </div>
+            
+            <div id="login-message" class="hidden p-3 mb-4 text-sm rounded-lg"></div>
+            
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="login-email" required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="login-password" required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <button type="submit" id="login-btn"
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition duration-300">
+                    <span id="login-btn-text">Sign In</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-view" class="hidden">
+        <header class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+                    <p class="text-sm text-gray-500">Manage students and records</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="admin-email" class="text-sm text-gray-600"></span>
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-300 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-indigo-100 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-500">Total Students</p>
+                            <p id="total-students" class="text-2xl font-bold text-gray-800">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-green-100 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-500">Total Collected</p>
+                            <p id="total-collected" class="text-2xl font-bold text-gray-800">₹0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 bg-red-100 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-500">Total Pending</p>
+                            <p id="total-pending" class="text-2xl font-bold text-gray-800">₹0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-4 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="relative flex-1 w-full sm:w-auto">
+                    <input type="text" id="search-input" placeholder="Search by name or roll number..."
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <button onclick="openAddStudentModal()" 
+                        class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2 rounded-lg transition duration-300 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add New Student
+                </button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll No</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Fee</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pending</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table-body" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="student-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 modal flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+                <h2 id="modal-title" class="text-2xl font-bold text-gray-800">Add New Student</h2>
+                <button onclick="closeStudentModal()" class="text-gray-400 hover:text-gray-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="student-form" class="p-6 space-y-6">
+                <input type="hidden" id="student-key">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                        <input type="text" id="student-name" required
+                               class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Father's Name</label>
+                        <input type="text" id="student-father-name"
+                               class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Roll Number *</label>
+                        <input type="text" id="student-rollno" required
+                               class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Class *</label>
+                        <input type="text" id="student-class" required placeholder="e.g., Class 10-A"
+                               class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone No.</label>
+                        <input type="tel" id="student-phone"
+                               class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email ID</label>
+                        <input type="email" id="student-email"
+                               class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                        <textarea id="student-address" rows="3"
+                                  class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Photo URL</label>
+                        <input type="url" id="student-photo" placeholder="https://example.com/photo.jpg"
+                               class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fee Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Total Fee (₹) *</label>
+                            <input type="number" id="fee-total" required min="0"
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Paid Amount (₹) *</label>
+                            <input type="number" id="fee-paid" required min="0"
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Due Date *</label>
+                            <input type="date" id="fee-duedate" required
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Attendance</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Present Days *</label>
+                            <input type="number" id="att-present" required min="0"
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Absent Days *</label>
+                            <input type="number" id="att-absent" required min="0"
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Total Days *</label>
+                            <input type="number" id="att-total" required min="0"
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold text-gray-700">Academic Performance</h3>
+                        <button type="button" onclick="addSubjectRow()" 
+                                class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Subject
+                        </button>
+                    </div>
+                    <div id="subjects-container" class="space-y-2">
+                        </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeStudentModal()"
+                            class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-300">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submit-btn"
+                            class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition duration-300">
+                        Save Student
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 modal flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Delete Student</h3>
+                <p class="text-sm text-gray-500 mb-6">Are you sure you want to delete this student? This action cannot be undone.</p>
+                <div class="flex space-x-3">
+                    <button onclick="closeDeleteModal()"
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-300">
+                        Cancel
+                    </button>
+                    <button onclick="confirmDelete()" id="confirm-delete-btn"
+                            class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition duration-300">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getDatabase, ref, get, set, remove, onValue } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJfzkrdZqHWi0y9OTPQ-IpaJbA8JJkRSg",
+            authDomain: "paymcs-371be.firebaseapp.com",
+            databaseURL: "https://paymcs-371be-default-rtdb.firebaseio.com/",
+            projectId: "paymcs-371be",
+            storageBucket: "paymcs-371be.firebasestorage.app",
+            messagingSenderId: "676822362839",
+            appId: "1:676822362839:web:cc55be2492db86b5469e92"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        let allStudents = {};
+        let studentToDelete = null;
+        let currentUser = null;
+
+        // DOM Elements
+        const loginView = document.getElementById('login-view');
+        const adminView = document.getElementById('admin-view');
+        const loginForm = document.getElementById('login-form');
+        const loginMessage = document.getElementById('login-message');
+        const studentModal = document.getElementById('student-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const studentForm = document.getElementById('student-form');
+        const searchInput = document.getElementById('search-input');
+        const loginBtn = document.getElementById('login-btn');
+        const loginBtnText = document.getElementById('login-btn-text');
+
+        // Check authentication state on page load
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                console.log('Logged in as:', user.email);
+                
+                document.getElementById('admin-email').textContent = user.email;
+                loginView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                
+                loadStudents();
+            } else {
+                currentUser = null;
+                adminView.classList.add('hidden');
+                loginView.classList.remove('hidden');
+            }
+        });
+
+        // Login Handler with Firebase Auth
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            loginBtn.disabled = true;
+            loginBtnText.textContent = 'Signing in...';
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                currentUser = userCredential.user;
+                // Auth state change will handle the UI update
+            } catch (error) {
+                console.error("Login error:", error);
+                let errorMessage = 'Invalid email or password';
+                
+                if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid email or password';
+                } else if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Incorrect password';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Too many failed attempts. Please try again later';
+                }
+                
+                showLoginMessage('error', errorMessage);
+                loginBtn.disabled = false;
+                loginBtnText.textContent = 'Sign In';
+            }
+        });
+
+        function showLoginMessage(type, message) {
+            loginMessage.textContent = message;
+            loginMessage.className = 'p-3 mb-4 text-sm rounded-lg';
+            if (type === 'error') {
+                loginMessage.classList.add('bg-red-100', 'text-red-700');
+            } else {
+                loginMessage.classList.add('bg-green-100', 'text-green-700');
+            }
+            loginMessage.classList.remove('hidden');
+        }
+
+        window.logout = async () => {
+            try {
+                await signOut(auth);
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
+                loginMessage.classList.add('hidden');
+            } catch (error) {
+                console.error("Logout error:", error);
+                showNotification('Error logging out', 'error');
+            }
+        };
+
+        // Load Students from Firebase
+        async function loadStudents() {
+            if (!currentUser) return;
+            
+            try {
+                const studentsRef = ref(db, 'students');
+                onValue(studentsRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        allStudents = snapshot.val();
+                        renderStudents(allStudents);
+                        updateStats();
+                    } else {
+                        allStudents = {};
+                        renderStudents({});
+                        updateStats();
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading students:", error);
+                showNotification('Error loading students', 'error');
+            }
+        }
+
+        // Render Students Table
+        function renderStudents(students) {
+            const tbody = document.getElementById('students-table-body');
+            tbody.innerHTML = '';
+
+            if (Object.keys(students).length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            No students found. Click "Add New Student" to get started.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            for (const [key, student] of Object.entries(students)) {
+                const row = tbody.insertRow();
+                row.className = 'hover:bg-gray-50';
+                
+                const pending = student.fees.total - student.fees.paid;
+                const statusColor = pending > 0 ? 'text-red-600' : 'text-green-600';
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <img class="h-10 w-10 rounded-full object-cover" src="${student.photo || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + student.name}" alt="">
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${student.name}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${student.rollNo}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${student.class}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">₹${student.fees.total.toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">₹${student.fees.paid.toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm ${statusColor} font-medium">₹${pending.toLocaleString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <button onclick="window.editStudent('${key}')" class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                        <button onclick="window.deleteStudent('${key}')" class="text-red-600 hover:text-red-900">Delete</button>
+                    </td>
+                `;
+            }
+        }
+
+        // Update Dashboard Stats
+        function updateStats() {
+            const students = Object.values(allStudents);
+            const totalStudents = students.length;
+            const totalCollected = students.reduce((sum, s) => sum + s.fees.paid, 0);
+            const totalPending = students.reduce((sum, s) => sum + (s.fees.total - s.fees.paid), 0);
+
+            document.getElementById('total-students').textContent = totalStudents;
+            document.getElementById('total-collected').textContent = '₹' + totalCollected.toLocaleString();
+            document.getElementById('total-pending').textContent = '₹' + totalPending.toLocaleString();
+        }
+
+        // Search Functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = {};
+            
+            for (const [key, student] of Object.entries(allStudents)) {
+                if (student.name.toLowerCase().includes(searchTerm) || 
+                    student.rollNo.toLowerCase().includes(searchTerm)) {
+                    filtered[key] = student;
+                }
+            }
+            
+            renderStudents(filtered);
+        });
+
+        // Modal Functions
+        window.openAddStudentModal = () => {
+            document.getElementById('modal-title').textContent = 'Add New Student';
+            document.getElementById('student-key').value = '';
+            studentForm.reset();
+            document.getElementById('subjects-container').innerHTML = '';
+            addSubjectRow();
+            addSubjectRow();
+            studentModal.classList.remove('hidden');
+        };
+
+        window.closeStudentModal = () => {
+            studentModal.classList.add('hidden');
+        };
+
+        window.editStudent = (key) => {
+            const student = allStudents[key];
+            document.getElementById('modal-title').textContent = 'Edit Student';
+            document.getElementById('student-key').value = key;
+            
+            // Basic Info - Updated to include new fields
+            document.getElementById('student-name').value = student.name;
+            document.getElementById('student-father-name').value = student.fatherName || ''; // New field
+            document.getElementById('student-rollno').value = student.rollNo;
+            document.getElementById('student-class').value = student.class;
+            document.getElementById('student-phone').value = student.phone || ''; // New field
+            document.getElementById('student-email').value = student.email || ''; // New field
+            document.getElementById('student-address').value = student.address || ''; // New field
+            document.getElementById('student-photo').value = student.photo || '';
+            
+            document.getElementById('fee-total').value = student.fees.total;
+            document.getElementById('fee-paid').value = student.fees.paid;
+            document.getElementById('fee-duedate').value = student.fees.dueDate;
+            
+            document.getElementById('att-present').value = student.attendance.present;
+            document.getElementById('att-absent').value = student.attendance.absent;
+            document.getElementById('att-total').value = student.attendance.total;
+            
+            document.getElementById('subjects-container').innerHTML = '';
+            student.subjects.forEach(subject => {
+                addSubjectRow(subject);
+            });
+            
+            studentModal.classList.remove('hidden');
+        };
+
+        window.deleteStudent = (key) => {
+            studentToDelete = key;
+            deleteModal.classList.remove('hidden');
+        };
+
+        window.closeDeleteModal = () => {
+            deleteModal.classList.add('hidden');
+            studentToDelete = null;
+        };
+
+        window.confirmDelete = async () => {
+            if (!studentToDelete || !currentUser) return;
+            
+            try {
+                const studentRef = ref(db, `students/${studentToDelete}`);
+                await remove(studentRef);
+                
+                closeDeleteModal();
+                showNotification('Student deleted successfully', 'success');
+            } catch (error) {
+                console.error("Error deleting student:", error);
+                if (error.code === 'PERMISSION_DENIED') {
+                    showNotification('Permission denied. Please check your authentication.', 'error');
+                } else {
+                    showNotification('Error deleting student', 'error');
+                }
+            }
+        };
+
+        // Add Subject Row
+        window.addSubjectRow = (subject = null) => {
+            const container = document.getElementById('subjects-container');
+            const row = document.createElement('div');
+            row.className = 'flex gap-2 items-center';
+            row.innerHTML = `
+                <input type="text" placeholder="Subject Name" value="${subject ? subject.name : ''}" required
+                       class="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 subject-name">
+                <input type="number" placeholder="Marks" value="${subject ? subject.marks : ''}" min="0" max="100" required
+                       class="w-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 subject-marks">
+                <input type="text" placeholder="Grade" value="${subject ? subject.grade : ''}" required
+                       class="w-20 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 subject-grade">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-600 hover:text-red-800 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            `;
+            container.appendChild(row);
+        };
+
+        // Submit Student Form
+        studentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showNotification('You must be logged in to perform this action', 'error');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            
+            try {
+                const studentKey = document.getElementById('student-key').value || 'student_' + Date.now();
+                
+                // Collect subject data
+                const subjects = [];
+                const subjectRows = document.querySelectorAll('#subjects-container > div');
+                subjectRows.forEach(row => {
+                    const name = row.querySelector('.subject-name').value;
+                    const marks = parseInt(row.querySelector('.subject-marks').value);
+                    const grade = row.querySelector('.subject-grade').value;
+                    if (name && marks >= 0 && grade) {
+                        subjects.push({ name, marks, grade });
+                    }
+                });
+                
+                const totalFee = parseFloat(document.getElementById('fee-total').value);
+                const paidFee = parseFloat(document.getElementById('fee-paid').value);
+                const present = parseInt(document.getElementById('att-present').value);
+                const absent = parseInt(document.getElementById('att-absent').value);
+                const total = parseInt(document.getElementById('att-total').value);
+                
+                const studentData = {
+                    name: document.getElementById('student-name').value,
+                    fatherName: document.getElementById('student-father-name').value, // NEW FIELD
+                    rollNo: document.getElementById('student-rollno').value,
+                    class: document.getElementById('student-class').value,
+                    phone: document.getElementById('student-phone').value, // NEW FIELD
+                    email: document.getElementById('student-email').value, // NEW FIELD
+                    address: document.getElementById('student-address').value, // NEW FIELD
+                    photo: document.getElementById('student-photo').value || `https://api.dicebear.com/7.x/avataaars/svg?seed=${document.getElementById('student-name').value}`,
+                    fees: {
+                        total: totalFee,
+                        paid: paidFee,
+                        pending: totalFee - paidFee,
+                        dueDate: document.getElementById('fee-duedate').value
+                    },
+                    attendance: {
+                        present: present,
+                        absent: absent,
+                        total: total,
+                        percentage: Math.round((present / total) * 100)
+                    },
+                    subjects: subjects
+                };
+                
+                const studentRef = ref(db, `students/${studentKey}`);
+                await set(studentRef, studentData);
+                
+                closeStudentModal();
+                showNotification('Student saved successfully', 'success');
+                
+            } catch (error) {
+                console.error("Error saving student:", error);
+                if (error.code === 'PERMISSION_DENIED') {
+                    showNotification('Permission denied. Please check your authentication and database rules.', 'error');
+                } else {
+                    showNotification('Error saving student', 'error');
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Student';
+            }
+        });
+
+        // Notification System
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>
