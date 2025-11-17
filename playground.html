@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maner Central School - Learning Games V4 (Animated)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Three.js for 3D graphics (Game 10) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        /* Custom font import (Inter is modern and clean) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
+        :root {
+            --primary-color: #059669; /* Emerald-600 */
+            --secondary-color: #FBBF24; /* Amber-400 */
+            --bg-light: #F9FAFB; /* Off-White */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+        }
+
+        /* Basic Card Styling */
+        .game-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease-out;
+            border-bottom: 6px solid var(--primary-color);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.2), 0 10px 15px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Custom Button Styling */
+        .primary-btn {
+            padding: 0.75rem 1.5rem;
+            font-weight: 700;
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1); /* Subtle 3D effect */
+        }
+        .primary-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        /* Canvas container styles for responsiveness */
+        #canvas-container {
+            width: 100%;
+            aspect-ratio: 16 / 9; /* Maintain a consistent aspect ratio */
+            max-width: 900px;
+            margin: 0 auto;
+            border: 4px solid #374151; /* Gray-700 */
+            border-radius: 1rem;
+            overflow: hidden;
+            background-color: #000;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Utility for backface-visibility for Memory Game */
+        .backface-hidden {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+    </style>
+    <script>
+        // --- Core Application State and Rendering Logic ---
+
+        // Global State
+        let currentView = 'dashboard';
+        let mainContentEl;
+        let animationFrameId = null; // Used to track and cancel animation loops
+
+        /**
+         * Cancels any running animation loop.
+         */
+        function stopAnimation() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+        }
+
+        // --- Utility Functions ---
+
+        /**
+         * Simple custom message box (instead of alert/confirm)
+         */
+        function showMessage(message, title = "Game Message") {
+            const modalHtml = `
+                <div id="game-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
+                    <div class="bg-white p-8 rounded-2xl max-w-sm w-11/12 shadow-2xl transform transition-transform duration-300 scale-95" 
+                         style="border-bottom: 8px solid var(--primary-color);">
+                        <h3 class="text-2xl font-extrabold text-gray-800 mb-4 flex items-center">
+                            <span class="mr-2 text-primary-color">💡</span> ${title}
+                        </h3>
+                        <p class="text-gray-600 mb-6">${message}</p>
+                        <button onclick="closeModal()" class="w-full primary-btn bg-emerald-600 text-white hover:bg-emerald-700">
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            setTimeout(() => {
+                const modal = document.getElementById('game-modal');
+                if (modal) {
+                    modal.querySelector('div').classList.add('scale-100');
+                    modal.querySelector('div').classList.remove('scale-95');
+                }
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('game-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        /**
+         * Renders the specified view content into the main content area.
+         */
+        function renderView(viewName) {
+            stopAnimation(); // Stop any previous animation loop
+            currentView = viewName;
+            if (!mainContentEl) return;
+
+            // Clear previous content and show spinner
+            mainContentEl.innerHTML = `
+                <div class="flex justify-center items-center h-48">
+                    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600"></div>
+                </div>
+            `;
+
+            let contentHTML = '';
+            let pageTitle = 'Maner Central School Learning Hub';
+
+            switch (viewName) {
+                case 'math': contentHTML = renderMathQuiz(); pageTitle = 'Quick Math Quiz (Ages 5-8)'; break;
+                case 'memory': contentHTML = renderMemoryMatch(); pageTitle = 'Memory Match (Ages 6-10)'; break;
+                case 'color': contentHTML = renderColorMixer(); pageTitle = 'Primary Color Mixer (Ages 4-7)'; break;
+                case 'word': contentHTML = renderWordScramble(); pageTitle = 'Word Scramble (Ages 7+)'; break;
+                case 'solar': contentHTML = renderSolarQuiz(); pageTitle = 'Solar System Explorer (Ages 10+)'; break;
+                case 'fraction': contentHTML = renderFractionBuilder(); pageTitle = 'Fraction Builder (Ages 8-12)'; break;
+                case 'typing': contentHTML = renderTypingTutor(); pageTitle = 'Typing Tutor (All Ages)'; break;
+                case 'code': contentHTML = renderCodeBreaker(); pageTitle = 'Logic Code Breaker (Ages 12+)'; break;
+                case 'gravity': contentHTML = renderGravityOrbit(); pageTitle = 'Gravity Orbit Simulator (Physics)'; break;
+                case 'solar3d': contentHTML = renderSolar3D(); pageTitle = '3D Solar System Explorer (Advanced)'; break;
+                case 'dashboard':
+                default:
+                    contentHTML = renderDashboard();
+                    pageTitle = 'Fun & Learning Dashboard';
+                    break;
+            }
+
+            mainContentEl.innerHTML = contentHTML;
+            document.getElementById('page-title').textContent = pageTitle;
+
+            // Initialize game logic if needed
+            setTimeout(() => {
+                if (viewName === 'math') initializeMathQuiz();
+                else if (viewName === 'memory') initializeMemoryMatch();
+                else if (viewName === 'color') initializeColorMixer();
+                else if (viewName === 'word') initializeWordScramble();
+                else if (viewName === 'solar') initializeSolarQuiz();
+                else if (viewName === 'fraction') initializeFractionBuilder();
+                else if (viewName === 'typing') initializeTypingTutor();
+                else if (viewName === 'code') initializeCodeBreaker();
+                else if (viewName === 'gravity') initializeGravityOrbit();
+                else if (viewName === 'solar3d') initializeSolar3D();
+            }, 50);
+        }
+
+        // --- View Render Functions ---
+
+        function renderDashboard() {
+            return `
+                <div class="p-4">
+                    <h2 class="text-3xl font-bold text-center text-gray-700 mb-8 md:mb-12">Choose Your Learning Challenge</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        
+                        <!-- Game 1: Quick Math Quiz (Easy/Medium) -->
+                        <div class="game-card bg-emerald-50" style="border-bottom-color: #059669;">
+                            <div class="text-6xl mb-4 text-emerald-600">➕</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">Quick Math Quiz</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">Ages 5-8 | Difficulty: Easy</p>
+                            <p class="text-sm text-gray-600 mb-4">Practice basic addition & subtraction for speed.</p>
+                            <button onclick="renderView('math')" class="primary-btn w-full bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-300/50">Start</button>
+                        </div>
+                        
+                        <!-- Game 2: Memory Match (Medium) -->
+                        <div class="game-card bg-yellow-50" style="border-bottom-color: #F59E0B;">
+                            <div class="text-6xl mb-4 text-yellow-600">🧠</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">Memory Match</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">Ages 6-10 | Difficulty: Medium</p>
+                            <p class="text-sm text-gray-600 mb-4">Boost concentration by finding matching pairs.</p>
+                            <button onclick="renderView('memory')" class="primary-btn w-full bg-yellow-500 text-gray-900 hover:bg-yellow-600 shadow-lg shadow-yellow-300/50">Start</button>
+                        </div>
+
+                        <!-- Game 3: Primary Color Mixer (Easy) -->
+                        <div class="game-card bg-red-50" style="border-bottom-color: #EF4444;">
+                            <div class="text-6xl mb-4 text-red-600">🎨</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">Color Mixer</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">Ages 4-7 | Difficulty: Easy</p>
+                            <p class="text-sm text-gray-600 mb-4">Learn how primary colors combine to make new ones.</p>
+                            <button onclick="renderView('color')" class="primary-btn w-full bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-300/50">Start</button>
+                        </div>
+
+                        <!-- Game 4: Word Scramble (Medium) -->
+                        <div class="game-card bg-purple-50" style="border-bottom-color: #8B5CF6;">
+                            <div class="text-6xl mb-4 text-purple-600">🔠</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">Word Scramble</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">Ages 7+ | Difficulty: Medium</p>
+                            <p class="text-sm text-gray-600 mb-4">Unscramble letters to practice vocabulary & spelling.</p>
+                            <button onclick="renderView('word')" class="primary-btn w-full bg-purple-500 text-white hover:bg-purple-600 shadow-lg shadow-purple-300/50">Start</button>
+                        </div>
+                        
+                        <!-- Game 5: Solar System Explorer Quiz (Medium/Hard) -->
+                        <div class="game-card bg-indigo-50" style="border-bottom-color: #6366F1;">
+                            <div class="text-6xl mb-4 text-indigo-600">🪐</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">Solar Quiz</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">Ages 10+ | Difficulty: Medium/Hard</p>
+                            <p class="text-sm text-gray-600 mb-4">Test your knowledge of planets and space facts.</p>
+                            <button onclick="renderView('solar')" class="primary-btn w-full bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-300/50">Start</button>
+                        </div>
+
+                        <!-- Game 6: Fraction Builder (Medium/Hard) -->
+                        <div class="game-card bg-blue-50" style="border-bottom-color: #3B82F6;">
+                            <div class="text-6xl mb-4 text-blue-600">➗</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">Fraction Builder</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">Ages 8-12 | Difficulty: Medium/Hard</p>
+                            <p class="text-sm text-gray-600 mb-4">Match and simplify fractions and see the visual change.</p>
+                            <button onclick="renderView('fraction')" class="primary-btn w-full bg-blue-500 text-white hover:bg-blue-600 shadow-lg shadow-blue-300/50">Start</button>
+                        </div>
+
+                        <!-- Game 7: Typing Tutor (Adjustable) -->
+                        <div class="game-card bg-pink-50" style="border-bottom-color: #EC4899;">
+                            <div class="text-6xl mb-4 text-pink-600">⌨️</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">Typing Tutor</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">All Ages | Difficulty: Adjustable</p>
+                            <p class="text-sm text-gray-600 mb-4">Improve speed and accuracy with a quick typing test.</p>
+                            <button onclick="renderView('typing')" class="primary-btn w-full bg-pink-500 text-white hover:bg-pink-600 shadow-lg shadow-pink-300/50">Start</button>
+                        </div>
+
+                        <!-- Game 8: Logic Code Breaker (Hard) -->
+                        <div class="game-card bg-gray-50" style="border-bottom-color: #6B7280;">
+                            <div class="text-6xl mb-4 text-gray-600">🔒</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">Logic Code Breaker</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">Ages 12+ | Difficulty: Hard</p>
+                            <p class="text-sm text-gray-600 mb-4">Use deduction to crack a secret 4-digit numeric code.</p>
+                            <button onclick="renderView('code')" class="primary-btn w-full bg-gray-500 text-white hover:bg-gray-600 shadow-lg shadow-gray-300/50">Start</button>
+                        </div>
+                        
+                        <!-- Game 9: Gravity Orbit Simulator (NEW - Hard/Physics) -->
+                        <div class="game-card bg-teal-50" style="border-bottom-color: #14B8A6;">
+                            <div class="text-6xl mb-4 text-teal-600">🛰️</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">Gravity Orbit Sim</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">Ages 12+ | Difficulty: Hard</p>
+                            <p class="text-sm text-gray-600 mb-4">Launch satellites and watch how vectors and gravity affect orbits in a 2D simulation.</p>
+                            <button onclick="renderView('gravity')" class="primary-btn w-full bg-teal-500 text-white hover:bg-teal-600 shadow-lg shadow-teal-300/50">Start</button>
+                        </div>
+                        
+                        <!-- Game 10: 3D Solar System Explorer (NEW - Advanced/Graphics) -->
+                        <div class="game-card bg-amber-50" style="border-bottom-color: #F59E0B;">
+                            <div class="text-6xl mb-4 text-amber-600">🚀</div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">3D Solar Explorer</h2>
+                            <p class="text-xs text-gray-500 mb-3 font-semibold">Ages 10+ | Difficulty: Advanced</p>
+                            <p class="text-sm text-gray-600 mb-4">Explore a basic 3D model of the solar system using the Three.js library.</p>
+                            <button onclick="renderView('solar3d')" class="primary-btn w-full bg-amber-500 text-gray-900 hover:bg-amber-600 shadow-lg shadow-amber-300/50">Start</button>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
+        
+        // --- Game 9: Gravity Orbit Simulator Logic (NEW) ---
+        let gravityState = {
+            canvas: null, ctx: null, 
+            width: 0, height: 0, 
+            gravityWell: { x: 0, y: 0, mass: 100000, radius: 20 },
+            objects: [],
+            isDragging: false, dragStart: { x: 0, y: 0 }
+        };
+
+        class Planet {
+            constructor(x, y, vx, vy, color, radius, mass) {
+                this.x = x; this.y = y; this.vx = vx; this.vy = vy;
+                this.color = color; this.radius = radius; this.mass = mass;
+            }
+
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+
+            update(gravityWell, dt = 1) {
+                const dx = gravityWell.x - this.x;
+                const dy = gravityWell.y - this.y;
+                const r2 = dx * dx + dy * dy;
+                const r = Math.sqrt(r2);
+                
+                // Simple inverse square law approximation
+                const F = (gravityWell.mass * this.mass) / r2; 
+                const Fx = F * (dx / r);
+                const Fy = F * (dy / r);
+
+                // Acceleration (A = F/m)
+                const ax = Fx / this.mass;
+                const ay = Fy / this.mass;
+
+                // Update velocity (V = V + A * dt)
+                this.vx += ax * dt;
+                this.vy += ay * dt;
+
+                // Update position (X = X + V * dt)
+                this.x += this.vx * dt;
+                this.y += this.vy * dt;
+            }
+        }
+
+        function resizeGravityCanvas() {
+            const container = document.getElementById('canvas-container-gravity');
+            if (!container || !gravityState.canvas) return;
+
+            gravityState.width = container.clientWidth;
+            gravityState.height = container.clientHeight;
+            
+            // Set canvas dimensions
+            gravityState.canvas.width = gravityState.width;
+            gravityState.canvas.height = gravityState.height;
+
+            // Update gravity well position to center
+            gravityState.gravityWell.x = gravityState.width / 2;
+            gravityState.gravityWell.y = gravityState.height / 2;
+        }
+
+        function launchObject(startX, startY, endX, endY) {
+            const vx = (startX - endX) * 0.05; // Velocity based on drag distance
+            const vy = (startY - endY) * 0.05;
+
+            const newPlanet = new Planet(startX, startY, vx, vy, 
+                `hsl(${Math.random() * 360}, 70%, 50%)`, 5, 10);
+            
+            gravityState.objects.push(newPlanet);
+            document.getElementById('object-count').textContent = `Objects: ${gravityState.objects.length}`;
+        }
+
+        function handleMouseDown(e) {
+            gravityState.isDragging = true;
+            const rect = gravityState.canvas.getBoundingClientRect();
+            gravityState.dragStart.x = e.clientX - rect.left;
+            gravityState.dragStart.y = e.clientY - rect.top;
+        }
+
+        function handleMouseUp(e) {
+            if (!gravityState.isDragging) return;
+            gravityState.isDragging = false;
+            
+            const rect = gravityState.canvas.getBoundingClientRect();
+            const dragEnd = { 
+                x: e.clientX - rect.left, 
+                y: e.clientY - rect.top 
+            };
+            
+            launchObject(gravityState.dragStart.x, gravityState.dragStart.y, dragEnd.x, dragEnd.y);
+            renderGravityOrbit();
+        }
+
+        function drawScene() {
+            const { ctx, width, height, gravityWell, objects, isDragging, dragStart } = gravityState;
+            if (!ctx) return;
+            
+            // Clear canvas
+            ctx.fillStyle = '#0F172A'; // Slate-900 (Deep Space)
+            ctx.fillRect(0, 0, width, height);
+
+            // Draw Gravity Well (Sun/Star)
+            ctx.beginPath();
+            ctx.arc(gravityWell.x, gravityWell.y, gravityWell.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#FBBF24'; // Amber-400
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#FBBF24';
+            ctx.fill();
+            ctx.shadowBlur = 0; // Reset shadow
+
+            // Update and draw planets
+            gravityState.objects = objects.filter(obj => 
+                obj.x > -50 && obj.x < width + 50 && obj.y > -50 && obj.y < height + 50
+            );
+
+            objects.forEach(obj => {
+                obj.update(gravityWell);
+                obj.draw(ctx);
+            });
+            
+            // Draw launch vector while dragging
+            if (isDragging) {
+                const rect = gravityState.canvas.getBoundingClientRect();
+                const currentMouse = { 
+                    x: event.clientX - rect.left, 
+                    y: event.clientY - rect.top 
+                };
+
+                ctx.strokeStyle = '#EF4444'; // Red for velocity vector
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(dragStart.x, dragStart.y);
+                ctx.lineTo(dragStart.x - (currentMouse.x - dragStart.x), dragStart.y - (currentMouse.y - dragStart.y));
+                ctx.stroke();
+
+                // Draw starting position
+                ctx.fillStyle = '#10B981';
+                ctx.beginPath();
+                ctx.arc(dragStart.x, dragStart.y, 8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function gravityLoop() {
+            drawScene();
+            animationFrameId = requestAnimationFrame(gravityLoop);
+        }
+
+        function initializeGravityOrbit() {
+            const canvas = document.getElementById('gravity-canvas');
+            if (!canvas) return;
+
+            gravityState.canvas = canvas;
+            gravityState.ctx = canvas.getContext('2d');
+            
+            resizeGravityCanvas();
+
+            // Set up event listeners
+            window.addEventListener('resize', resizeGravityCanvas);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('mousemove', (e) => { if(gravityState.isDragging) drawScene(); }); // Redraw drag vector
+            
+            // Start with a default orbiting object (simple circular orbit)
+            launchObject(gravityState.width / 2 - 150, gravityState.height / 2, gravityState.width / 2 - 150, gravityState.height / 2 - 3);
+
+            gravityLoop(); // Start the animation
+        }
+
+        function clearObjects() {
+            gravityState.objects = [];
+            document.getElementById('object-count').textContent = `Objects: 0`;
+        }
+
+        function renderGravityOrbit() {
+            return `
+                <div id="gravity-game-container" class="max-w-4xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #14B8A6;">
+                    <h1 class="text-3xl font-extrabold text-center text-teal-700 mb-4">Gravity Orbit Simulator (2D)</h1>
+                    <p class="text-center text-gray-600 mb-6">
+                        **Click and Drag** to launch a new satellite. The direction of the drag sets the initial velocity vector (red arrow).
+                        Watch the objects orbit, crash, or escape the central **Gravity Well** (yellow star).
+                    </p>
+                    
+                    <div id="canvas-container-gravity" class="bg-gray-900 relative">
+                        <canvas id="gravity-canvas"></canvas>
+                        <div id="object-count" class="absolute top-2 left-2 text-white bg-gray-800/70 p-2 rounded-lg text-sm font-mono">Objects: 0</div>
+                    </div>
+
+                    <div class="flex justify-center space-x-4 mt-6">
+                        <button onclick="clearObjects()" class="primary-btn bg-red-500 text-white hover:bg-red-600 shadow-md">
+                            Clear Objects
+                        </button>
+                        <button onclick="renderView('dashboard')" class="primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">
+                            ← Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Game 10: 3D Solar System Explorer (NEW) ---
+        let solar3DState = {
+            scene: null, renderer: null, camera: null, sun: null, planets: [], planetMeshes: [],
+            isDragging: false, mouseX: 0, mouseY: 0, rotationSpeed: 0.005,
+            orbitControls: { isDown: false, prevX: 0, prevY: 0, targetRotationX: 0, targetRotationY: 0 }
+        };
+
+        const PLANET_DATA = [
+            { name: "Mercury", size: 0.8, distance: 40, color: 0xAAAAAA, orbitSpeed: 0.04 },
+            { name: "Venus", size: 1.5, distance: 60, color: 0xFF9900, orbitSpeed: 0.02 },
+            { name: "Earth", size: 1.6, distance: 90, color: 0x0066FF, orbitSpeed: 0.01 },
+            { name: "Mars", size: 1.0, distance: 120, color: 0xFF0000, orbitSpeed: 0.008 },
+            { name: "Jupiter", size: 5.0, distance: 200, color: 0xCC9966, orbitSpeed: 0.003 },
+            { name: "Saturn", size: 4.5, distance: 280, color: 0xFFFFCC, orbitSpeed: 0.001 },
+        ];
+
+        function createPlanet(data) {
+            const geometry = new THREE.SphereGeometry(data.size, 32, 32);
+            // Use a simple colored material
+            const material = new THREE.MeshLambertMaterial({ color: data.color }); 
+            const planetMesh = new THREE.Mesh(geometry, material);
+            
+            // Container for orbital path simulation
+            const orbitGroup = new THREE.Group();
+            orbitGroup.add(planetMesh);
+
+            // Set initial position
+            planetMesh.position.set(data.distance, 0, 0);
+
+            solar3DState.planets.push({
+                mesh: planetMesh,
+                group: orbitGroup,
+                distance: data.distance,
+                orbitSpeed: data.orbitSpeed,
+                rotationSpeed: data.orbitSpeed * 5
+            });
+
+            solar3DState.scene.add(orbitGroup);
+        }
+
+        function resizeSolar3DCanvas() {
+            const container = document.getElementById('canvas-container-solar3d');
+            if (!container || !solar3DState.camera || !solar3DState.renderer) return;
+
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            solar3DState.camera.aspect = width / height;
+            solar3DState.camera.updateProjectionMatrix();
+            solar3DState.renderer.setSize(width, height);
+        }
+
+        function handleSolar3DMouseDown(event) {
+            solar3DState.orbitControls.isDown = true;
+            solar3DState.orbitControls.prevX = event.clientX;
+            solar3DState.orbitControls.prevY = event.clientY;
+        }
+
+        function handleSolar3DMouseMove(event) {
+            if (!solar3DState.orbitControls.isDown) return;
+            
+            const deltaX = event.clientX - solar3DState.orbitControls.prevX;
+            const deltaY = event.clientY - solar3DState.orbitControls.prevY;
+            
+            // Accumulate rotation
+            solar3DState.orbitControls.targetRotationY += deltaX * 0.005;
+            solar3DState.orbitControls.targetRotationX += deltaY * 0.005;
+            
+            // Clamp X rotation to prevent flipping
+            const limit = Math.PI / 2;
+            solar3DState.orbitControls.targetRotationX = Math.max(-limit, Math.min(limit, solar3DState.orbitControls.targetRotationX));
+            
+            solar3DState.orbitControls.prevX = event.clientX;
+            solar3DState.orbitControls.prevY = event.clientY;
+        }
+
+        function handleSolar3DMouseUp() {
+            solar3DState.orbitControls.isDown = false;
+        }
+
+        function handleSolar3DMouseWheel(event) {
+            event.preventDefault();
+            // Zoom in/out by adjusting camera Z position
+            solar3DState.camera.position.z -= event.deltaY * 0.5;
+            // Prevent camera from going too close or too far
+            solar3DState.camera.position.z = Math.max(100, Math.min(600, solar3DState.camera.position.z));
+        }
+
+        function solar3DAnimate() {
+            animationFrameId = requestAnimationFrame(solar3DAnimate);
+            
+            // Apply smoothing rotation (basic orbit control)
+            if (solar3DState.scene) {
+                 solar3DState.scene.rotation.y += (solar3DState.orbitControls.targetRotationY - solar3DState.scene.rotation.y) * 0.1;
+                 solar3DState.scene.rotation.x += (solar3DState.orbitControls.targetRotationX - solar3DState.scene.rotation.x) * 0.1;
+            }
+
+            // Animate Sun rotation
+            if (solar3DState.sun) {
+                solar3DState.sun.rotation.y += 0.005;
+            }
+
+            // Animate Planet orbits and self-rotation
+            solar3DState.planets.forEach(p => {
+                p.group.rotation.y += p.orbitSpeed; // Orbit
+                p.mesh.rotation.y += p.rotationSpeed; // Self-rotation
+            });
+
+            solar3DState.renderer.render(solar3DState.scene, solar3DState.camera);
+        }
+
+        function initializeSolar3D() {
+            const container = document.getElementById('canvas-container-solar3d');
+            if (!container) return;
+
+            // Clear previous state
+            solar3DState.planets = [];
+            
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            // 1. Scene Setup
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000); // Black space background
+            solar3DState.scene = scene;
+
+            // 2. Camera Setup
+            const camera = new THREE.PerspectiveCamera(75, width / height, 1, 1000);
+            camera.position.z = 400;
+            solar3DState.camera = camera;
+
+            // 3. Renderer Setup
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(width, height);
+            container.appendChild(renderer.domElement);
+            solar3DState.renderer = renderer;
+
+            // 4. Lighting (Crucial for MeshLambertMaterial)
+            const ambientLight = new THREE.AmbientLight(0x333333); 
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xFFFFFF, 2, 500); // Sun's light
+            pointLight.position.set(0, 0, 0);
+            scene.add(pointLight);
+
+            // 5. Sun (Center)
+            const sunGeometry = new THREE.SphereGeometry(15, 32, 32);
+            // Use a glowing material for the sun
+            const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xFEE34C }); 
+            const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
+            scene.add(sunMesh);
+            solar3DState.sun = sunMesh;
+
+            // 6. Planets
+            PLANET_DATA.forEach(createPlanet);
+
+            // 7. Event Listeners for Interaction
+            window.addEventListener('resize', resizeSolar3DCanvas);
+            container.addEventListener('mousedown', handleSolar3DMouseDown);
+            container.addEventListener('mousemove', handleSolar3DMouseMove);
+            container.addEventListener('mouseup', handleSolar3DMouseUp);
+            container.addEventListener('wheel', handleSolar3DMouseWheel);
+
+            // Start Animation
+            solar3DAnimate();
+        }
+
+        function renderSolar3D() {
+            return `
+                <div id="solar3d-game-container" class="max-w-4xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #F59E0B;">
+                    <h1 class="text-3xl font-extrabold text-center text-amber-700 mb-4">3D Solar System Explorer (Three.js)</h1>
+                    <p class="text-center text-gray-600 mb-6">
+                        **Click and Drag** to orbit the view. **Scroll** to zoom in and out. Observe the Sun and the inner planets in 3D space.
+                    </p>
+                    
+                    <div id="canvas-container-solar3d" class="bg-gray-900">
+                        <!-- Three.js canvas will be inserted here -->
+                    </div>
+
+                    <div class="flex justify-center space-x-4 mt-6">
+                         <button onclick="initializeSolar3D()" class="primary-btn bg-amber-500 text-gray-900 hover:bg-amber-600 shadow-md">
+                            Reset View
+                        </button>
+                        <button onclick="renderView('dashboard')" class="primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">
+                            ← Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Other Game Logic (Unchanged but included for completeness) ---
+
+        // (Previous Game Logic functions like initializeMathQuiz, renderMemoryMatch, etc. would be included here)
+        // ... (Math Quiz Logic) ...
+        let mathState = { num1: 0, num2: 0, operation: '+', score: 0, questionCount: 0, answer: 0 };
+        function generateNewQuestion() {
+            const operation = Math.random() < 0.5 ? '+' : '-';
+            let num1, num2, answer;
+            if (operation === '+') {
+                num1 = Math.floor(Math.random() * 50) + 1;
+                num2 = Math.floor(Math.random() * 50) + 1;
+                answer = num1 + num2;
+            } else { 
+                let a = Math.floor(Math.random() * 50) + 1;
+                let b = Math.floor(Math.random() * 30) + 1;
+                num1 = Math.max(a, b);
+                num2 = Math.min(a, b);
+                answer = num1 - num2;
+            }
+            mathState = { num1, num2, operation, score: mathState.score, questionCount: mathState.questionCount, answer };
+            updateMathUI();
+        }
+        function updateMathUI() {
+            const questionEl = document.getElementById('math-question');
+            const scoreEl = document.getElementById('math-score');
+            if (questionEl) questionEl.textContent = `${mathState.num1} ${mathState.operation} ${mathState.num2} = ?`;
+            if (scoreEl) scoreEl.textContent = `Score: ${mathState.score} / ${mathState.questionCount}`;
+            const inputEl = document.getElementById('math-input');
+            if (inputEl) inputEl.value = '';
+        }
+        function checkMathAnswer() {
+            const inputEl = document.getElementById('math-input');
+            const userAnswer = parseInt(inputEl.value, 10);
+            const messageEl = document.getElementById('math-message');
+            if (isNaN(userAnswer)) { showMessage("Please enter a number before submitting!"); return; }
+            mathState.questionCount++;
+            if (userAnswer === mathState.answer) {
+                mathState.score++;
+                messageEl.textContent = "🥳 Correct! Keep up the great work!";
+                messageEl.className = 'text-center text-green-600 font-bold mt-4 text-lg animate-pulse';
+            } else {
+                messageEl.textContent = `❌ Incorrect. The correct answer was ${mathState.answer}.`;
+                messageEl.className = 'text-center text-red-600 font-bold mt-4 text-lg';
+            }
+            setTimeout(() => { generateNewQuestion(); messageEl.textContent = ""; }, 1500);
+        }
+        function initializeMathQuiz() {
+            mathState.score = 0;
+            mathState.questionCount = 0;
+            generateNewQuestion();
+            const inputEl = document.getElementById('math-input');
+            if (inputEl) inputEl.addEventListener('keypress', (event) => { if (event.key === 'Enter') checkMathAnswer(); });
+        }
+        function renderMathQuiz() {
+            return `
+                <div id="math-game-container" class="max-w-xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #059669;">
+                    <h1 class="text-3xl font-extrabold text-center text-emerald-700 mb-6">Quick Math Quiz</h1>
+                    <div id="math-score" class="text-xl font-bold text-center text-gray-700 mb-6">Score: 0 / 0</div>
+                    <div class="bg-emerald-100 p-6 rounded-xl shadow-inner mb-6 border-2 border-emerald-300">
+                        <p id="math-question" class="text-4xl md:text-5xl font-extrabold text-center text-emerald-800">Loading...</p>
+                    </div>
+                    <div class="flex flex-col space-y-4">
+                        <input type="number" id="math-input" placeholder="Your Answer" class="w-full p-4 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-emerald-500 focus:ring-emerald-500 transition duration-150">
+                        <button onclick="checkMathAnswer()" class="primary-btn bg-emerald-500 text-white text-lg hover:bg-emerald-600 shadow-md">Check Answer & Next</button>
+                    </div>
+                    <p id="math-message" class="text-center mt-4 h-6"></p>
+                    <button onclick="renderView('dashboard')" class="mt-8 w-full primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">← Back to Dashboard</button>
+                </div>
+            `;
+        }
+        
+        // (Other 7 game logics removed for brevity, as they were not requested to be modified, but the full file contains them)
+        let memoryState = { cards: [], flippedCards: [], matchesFound: 0, lockBoard: false, tries: 0, symbols: ['🍎', '🍌', '🍇', '🥝', '🍋', '🍉', '🍍', '🍓'] };
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) { randomIndex = Math.floor(Math.random() * currentIndex); currentIndex--; [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]; }
+            return array;
+        }
+        function initializeMemoryMatch() {
+            memoryState = { ...memoryState, flippedCards: [], matchesFound: 0, lockBoard: false, tries: 0 };
+            const cardValues = [...memoryState.symbols, ...memoryState.symbols];
+            const shuffledValues = shuffle(cardValues);
+            memoryState.cards = shuffledValues.map((symbol, index) => ({ id: index, symbol: symbol, isFlipped: false, isMatched: false }));
+            renderMemoryBoard();
+            document.getElementById('memory-tries').textContent = `Tries: 0`;
+        }
+        function renderMemoryBoard() {
+            const boardEl = document.getElementById('memory-board');
+            if (!boardEl) return;
+            boardEl.innerHTML = memoryState.cards.map(card => `
+                <div class="memory-card relative w-full aspect-square rounded-lg cursor-pointer transition-transform duration-500 perspective-1000 ${card.isMatched ? 'opacity-50 pointer-events-none' : ''}" 
+                     data-id="${card.id}" onclick="handleCardClick(${card.id})">
+                    <div class="card-inner absolute w-full h-full text-4xl flex items-center justify-center rounded-xl shadow-xl"
+                         style="transform-style: preserve-3d; ${card.isFlipped || card.isMatched ? 'transform: rotateY(180deg);' : ''}">
+                        <div class="card-face card-back absolute w-full h-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl flex items-center justify-center backface-hidden border-4 border-yellow-700"
+                             style="backface-visibility: hidden; transform: rotateY(0deg);">
+                            <span class="text-3xl">❓</span>
+                        </div>
+                        <div class="card-face card-front absolute w-full h-full bg-white text-gray-900 border-4 border-yellow-500 rounded-xl flex items-center justify-center"
+                             style="backface-visibility: hidden; transform: rotateY(180deg);">
+                            ${card.symbol}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            boardEl.className = 'grid gap-3 transition-all duration-300 grid-cols-4';
+        }
+        function handleCardClick(id) {
+            if (memoryState.lockBoard) return;
+            const cardIndex = memoryState.cards.findIndex(c => c.id === id);
+            const card = memoryState.cards[cardIndex];
+            if (card.isFlipped || card.isMatched || memoryState.flippedCards.includes(card)) return;
+            card.isFlipped = true;
+            memoryState.flippedCards.push(card);
+            renderMemoryBoard();
+            if (memoryState.flippedCards.length === 2) {
+                memoryState.tries++;
+                document.getElementById('memory-tries').textContent = `Tries: ${memoryState.tries}`;
+                memoryState.lockBoard = true;
+                checkForMatch();
+            }
+        }
+        function checkForMatch() {
+            const [card1, card2] = memoryState.flippedCards;
+            const card1Index = memoryState.cards.findIndex(c => c.id === card1.id);
+            const card2Index = memoryState.cards.findIndex(c => c.id === card2.id);
+            if (card1.symbol === card2.symbol) {
+                memoryState.cards[card1Index].isMatched = true;
+                memoryState.cards[card2Index].isMatched = true;
+                memoryState.matchesFound++;
+                memoryState.flippedCards = [];
+                memoryState.lockBoard = false;
+                renderMemoryBoard();
+                if (memoryState.matchesFound === memoryState.symbols.length) {
+                    setTimeout(() => { showMessage(`You found all the matches in ${memoryState.tries} tries! Great memory!`, "Game Complete!"); }, 500);
+                }
+            } else {
+                setTimeout(() => {
+                    memoryState.cards[card1Index].isFlipped = false;
+                    memoryState.cards[card2Index].isFlipped = false;
+                    memoryState.flippedCards = [];
+                    memoryState.lockBoard = false;
+                    renderMemoryBoard();
+                }, 1000);
+            }
+        }
+        function renderMemoryMatch() {
+            return `
+                <div id="memory-game-container" class="max-w-4xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #F59E0B;">
+                    <h1 class="text-3xl font-extrabold text-center text-yellow-700 mb-4">Memory Match Challenge</h1>
+                    <div id="memory-tries" class="text-xl font-bold text-center text-gray-700 mb-6">Tries: 0</div>
+                    <div id="memory-board" class="grid grid-cols-4 gap-4"></div>
+                    <div class="flex justify-center space-x-4 mt-8">
+                        <button onclick="initializeMemoryMatch()" class="primary-btn bg-yellow-500 text-gray-900 hover:bg-yellow-600 shadow-md">Reset Game</button>
+                        <button onclick="renderView('dashboard')" class="primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">← Back to Dashboard</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        let colorState = { red: 0, yellow: 0, blue: 0, currentHex: '#000000' };
+        function updateColorState(color, value) { colorState[color] = parseInt(value, 10); updateColorMixerUI(); }
+        function rgbToHex() {
+            let r_val = colorState.red * 2.55;
+            let g_val = colorState.yellow * 2.55; 
+            let b_val = colorState.blue * 2.55;
+            r_val = Math.min(255, Math.max(0, r_val));
+            g_val = Math.min(255, Math.max(0, g_val));
+            b_val = Math.min(255, Math.max(0, b_val));
+            const toHex = (c) => Math.round(c).toString(16).padStart(2, '0');
+            return `#${toHex(r_val)}${toHex(g_val)}${toHex(b_val)}`;
+        }
+        function updateColorMixerUI() {
+            const r = colorState.red, y = colorState.yellow, b = colorState.blue;
+            colorState.currentHex = rgbToHex();
+            const displayEl = document.getElementById('color-display');
+            const hexEl = document.getElementById('color-hex');
+            if (displayEl) displayEl.style.backgroundColor = colorState.currentHex;
+            if (hexEl) hexEl.textContent = colorState.currentHex;
+            document.getElementById('red-range').value = r;
+            document.getElementById('red-label').textContent = r;
+            document.getElementById('yellow-range').value = y;
+            document.getElementById('yellow-label').textContent = y;
+            document.getElementById('blue-range').value = b;
+            document.getElementById('blue-label').textContent = b;
+            const feedbackEl = document.getElementById('color-feedback');
+            let feedback = "Move the sliders to mix the colors!";
+            if (r > 70 && y > 70 && b < 10) feedback = "Red + Yellow = 🟠 Orange! Primary colors make secondary colors.";
+            else if (b > 70 && r > 70 && y < 10) feedback = "Red + Blue = 🟣 Purple! Try adding a little bit of yellow now.";
+            else if (b > 70 && y > 70 && r < 10) feedback = "Yellow + Blue = 🟢 Green! Excellent mixing!";
+            else if (r > 90 && y > 90 && b > 90) feedback = "All colors together make a dark 🟤 Brown or ⚫ Black!";
+            else if (r > 90 || y > 90 || b > 90) feedback = "Keep experimenting! Which two colors make a new one?";
+            if (feedbackEl) feedbackEl.textContent = feedback;
+        }
+        function initializeColorMixer() { colorState = { red: 50, yellow: 50, blue: 50, currentHex: '#808080' }; updateColorMixerUI(); }
+        function renderColorMixer() {
+            return `
+                <div id="color-game-container" class="max-w-2xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #EF4444;">
+                    <h1 class="text-3xl font-extrabold text-center text-red-700 mb-6">Primary Color Mixer (RYB)</h1>
+                    <div id="color-display" class="w-full h-48 rounded-xl mb-6 border-4 border-gray-300 shadow-xl transition-colors duration-500"></div>
+                    <div class="text-center mb-6">
+                        <p id="color-hex" class="text-xl font-mono font-bold text-gray-700">#808080</p>
+                        <p id="color-feedback" class="text-lg font-semibold text-gray-600 mt-2 h-6"></p>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="p-4 bg-red-100 rounded-lg shadow-inner">
+                            <label for="red-range" class="text-xl font-bold text-red-600 block mb-2">Red: <span id="red-label">50</span></label>
+                            <input type="range" min="0" max="100" value="50" class="w-full h-3 bg-red-300 rounded-lg appearance-none cursor-pointer transition duration-300" 
+                                id="red-range" oninput="updateColorState('red', this.value)">
+                        </div>
+                        <div class="p-4 bg-yellow-100 rounded-lg shadow-inner">
+                            <label for="yellow-range" class="text-xl font-bold text-yellow-600 block mb-2">Yellow: <span id="yellow-label">50</span></label>
+                            <input type="range" min="0" max="100" value="50" class="w-full h-3 bg-yellow-300 rounded-lg appearance-none cursor-pointer transition duration-300" 
+                                id="yellow-range" oninput="updateColorState('yellow', this.value)">
+                        </div>
+                        <div class="p-4 bg-blue-100 rounded-lg shadow-inner">
+                            <label for="blue-range" class="text-xl font-bold text-blue-600 block mb-2">Blue: <span id="blue-label">50</span></label>
+                            <input type="range" min="0" max="100" value="50" class="w-full h-3 bg-blue-300 rounded-lg appearance-none cursor-pointer transition duration-300" 
+                                id="blue-range" oninput="updateColorState('blue', this.value)">
+                        </div>
+                    </div>
+                    <button onclick="renderView('dashboard')" class="mt-8 w-full primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">← Back to Dashboard</button>
+                </div>
+            `;
+        }
+
+        let wordScrambleState = { words: ["SCHOOL", "TEACHER", "KNOWLEDGE", "LEARNING", "FRIENDS", "STUDENT", "LIBRARY", "EXCELLENT"], currentWord: '', scrambledWord: '', score: 0, questionCount: 0 };
+        function shuffleString(str) { let arr = str.split(''); for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr.join(''); }
+        function generateNewScramble() {
+            if (wordScrambleState.questionCount >= wordScrambleState.words.length) { showMessage(`You finished all ${wordScrambleState.words.length} words! Final Score: ${wordScrambleState.score}. Great job!`, "Scramble Complete!"); wordScrambleState.questionCount = 0; wordScrambleState.score = 0; }
+            const wordIndex = wordScrambleState.questionCount % wordScrambleState.words.length;
+            const word = wordScrambleState.words[wordIndex];
+            let scrambled;
+            do { scrambled = shuffleString(word); } while (scrambled === word);
+            wordScrambleState.currentWord = word;
+            wordScrambleState.scrambledWord = scrambled;
+            updateScrambleUI();
+        }
+        function updateScrambleUI() {
+            const scrambledEl = document.getElementById('scrambled-word');
+            const scoreEl = document.getElementById('scramble-score');
+            const inputEl = document.getElementById('scramble-input');
+            const messageEl = document.getElementById('scramble-message');
+            if (scrambledEl) scrambledEl.textContent = wordScrambleState.scrambledWord;
+            if (scoreEl) scoreEl.textContent = `Score: ${wordScrambleState.score} / ${wordScrambleState.questionCount}`;
+            if (inputEl) inputEl.value = '';
+            if (messageEl) messageEl.textContent = '';
+        }
+        function checkScrambleAnswer() {
+            const inputEl = document.getElementById('scramble-input');
+            const userAnswer = inputEl.value.toUpperCase().trim();
+            const messageEl = document.getElementById('scramble-message');
+            if (!userAnswer) { showMessage("Please enter your guess!"); return; }
+            const isCorrect = userAnswer === wordScrambleState.currentWord;
+            if (isCorrect) {
+                wordScrambleState.score++;
+                messageEl.textContent = "✅ Correct! Next word in 2 seconds...";
+                messageEl.className = 'text-center text-green-600 font-bold mt-4 text-lg animate-pulse';
+            } else {
+                messageEl.textContent = `❌ Incorrect. Try again! (Hint: it has ${wordScrambleState.currentWord.length} letters)`;
+                messageEl.className = 'text-center text-red-600 font-bold mt-4 text-lg';
+                inputEl.value = ''; 
+                return; 
+            }
+            wordScrambleState.questionCount++;
+            setTimeout(() => { generateNewScramble(); }, 2000);
+        }
+        function initializeWordScramble() {
+            wordScrambleState.score = 0;
+            wordScrambleState.questionCount = 0;
+            generateNewScramble();
+            const inputEl = document.getElementById('scramble-input');
+            if (inputEl) inputEl.addEventListener('keypress', (event) => { if (event.key === 'Enter') checkScrambleAnswer(); });
+        }
+        function renderWordScramble() {
+            return `
+                <div id="word-scramble-container" class="max-w-xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #8B5CF6;">
+                    <h1 class="text-3xl font-extrabold text-center text-purple-700 mb-6">Word Scramble</h1>
+                    <div id="scramble-score" class="text-xl font-bold text-center text-gray-700 mb-6">Score: 0 / 0</div>
+                    <p class="text-center text-gray-600 mb-4 text-lg">Unscramble the letters below to form a meaningful word:</p>
+                    <div class="bg-purple-100 p-8 rounded-xl shadow-inner mb-6 border-2 border-purple-300">
+                        <p id="scrambled-word" class="text-5xl md:text-6xl font-extrabold tracking-widest text-center text-purple-800 break-all">
+                            LOADING
+                        </p>
+                    </div>
+                    <div class="flex flex-col space-y-4">
+                        <input type="text" id="scramble-input" placeholder="Your Answer (e.g., SCHOOL)" class="w-full p-4 text-center text-2xl border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:ring-purple-500 transition duration-150 uppercase">
+                        <button onclick="checkScrambleAnswer()" class="primary-btn bg-purple-500 text-white text-lg hover:bg-purple-600 shadow-md">
+                            Submit Guess
+                        </button>
+                    </div>
+                    <p id="scramble-message" class="text-center mt-4 h-6"></p>
+                    <button onclick="renderView('dashboard')" class="mt-8 w-full primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">
+                        ← Back to Dashboard
+                    </button>
+                </div>
+            `;
+        }
+
+        let solarQuizState = {
+            questions: [
+                { q: "I am the largest planet in our solar system, famous for my Great Red Spot.", a: "Jupiter", options: ["Mars", "Jupiter", "Saturn", "Venus"] },
+                { q: "I am known as the 'Red Planet' and I am currently explored by rovers.", a: "Mars", options: ["Earth", "Uranus", "Mars", "Neptune"] },
+                { q: "I have thousands of beautiful rings made of ice and rock particles.", a: "Saturn", options: ["Jupiter", "Saturn", "Uranus", "Pluto"] },
+                { q: "I am the only planet known to support life.", a: "Earth", options: ["Venus", "Mercury", "Earth", "Titan"] },
+                { q: "I am the hottest planet in the solar system, even though I'm not the closest to the Sun.", a: "Venus", options: ["Mercury", "Mars", "Venus", "Jupiter"] },
+            ],
+            currentQuestionIndex: 0,
+            score: 0,
+        };
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        function initializeSolarQuiz() {
+            solarQuizState.currentQuestionIndex = 0;
+            solarQuizState.score = 0;
+            solarQuizState.questions = shuffleArray(solarQuizState.questions); 
+            renderSolarQuestion();
+        }
+        function renderSolarQuestion() {
+            if (solarQuizState.currentQuestionIndex >= solarQuizState.questions.length) {
+                showMessage(`Quiz Finished! You scored ${solarQuizState.score} out of ${solarQuizState.questions.length}. Excellent knowledge of the cosmos!`, "Solar Explorer Complete!");
+                return;
+            }
+            const current = solarQuizState.questions[solarQuizState.currentQuestionIndex];
+            const containerEl = document.getElementById('solar-question-container');
+            const scoreEl = document.getElementById('solar-score');
+            if (!containerEl || !scoreEl) return;
+            scoreEl.textContent = `Score: ${solarQuizState.score} / ${solarQuizState.questions.length}`;
+            const optionsHtml = current.options.map((option, index) => `
+                <button 
+                    onclick="checkSolarAnswer('${option}')" 
+                    class="primary-btn bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-300/50 text-base md:text-lg w-full py-3">
+                    ${option}
+                </button>
+            `).join('');
+            containerEl.innerHTML = `
+                <p class="text-xl md:text-2xl font-semibold text-gray-700 mb-6">
+                    Question ${solarQuizState.currentQuestionIndex + 1} of ${solarQuizState.questions.length}:
+                </p>
+                <div class="bg-indigo-100 p-6 md:p-8 rounded-xl shadow-inner mb-8 border-2 border-indigo-300">
+                    <p class="text-2xl font-extrabold text-indigo-800 text-center">
+                        ${current.q}
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    ${optionsHtml}
+                </div>
+            `;
+        }
+        function checkSolarAnswer(selectedAnswer) {
+            const current = solarQuizState.questions[solarQuizState.currentQuestionIndex];
+            const isCorrect = selectedAnswer === current.a;
+            if (isCorrect) {
+                solarQuizState.score++;
+                showMessage(`Correct! The answer is ${current.a}.`, "Awesome!");
+            } else {
+                showMessage(`Incorrect. The correct answer was ${current.a}.`, "Oh No!");
+            }
+            solarQuizState.currentQuestionIndex++;
+            setTimeout(renderSolarQuestion, 1500); 
+        }
+        function renderSolarQuiz() {
+            return `
+                <div id="solar-game-container" class="max-w-3xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #6366F1;">
+                    <h1 class="text-3xl font-extrabold text-center text-indigo-700 mb-6">Solar System Explorer Quiz</h1>
+                    <div id="solar-score" class="text-xl font-bold text-center text-gray-700 mb-6">Score: 0 / 5</div>
+                    <div id="solar-question-container"><div class="text-center text-gray-500">Loading quiz...</div></div>
+                    <div class="flex justify-center space-x-4 mt-8">
+                        <button onclick="initializeSolarQuiz()" class="primary-btn bg-gray-500 text-white hover:bg-gray-600 shadow-md">
+                            Restart Quiz
+                        </button>
+                        <button onclick="renderView('dashboard')" class="primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">
+                            ← Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        let fractionState = { numerator: 0, denominator: 0, targetFraction: { num: 0, den: 0 }, score: 0 };
+        function simplify(num, den) {
+            function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+            const common = gcd(num, den);
+            return { num: num / common, den: den / common };
+        }
+        function generateNewFractionProblem() {
+            const targetDen = Math.floor(Math.random() * 8) + 2;
+            const targetNum = Math.floor(Math.random() * (targetDen - 1)) + 1;
+            const multiplier = Math.floor(Math.random() * 3) + 2;
+            const startDen = targetDen * multiplier;
+            const startNum = targetNum * multiplier;
+            fractionState.targetFraction = { num: targetNum, den: targetDen };
+            fractionState.numerator = startNum;
+            fractionState.denominator = startDen;
+            updateFractionUI();
+        }
+        function updateFractionUI() {
+            const displayEl = document.getElementById('fraction-display');
+            const targetEl = document.getElementById('fraction-target');
+            const numInput = document.getElementById('fraction-numerator');
+            const denInput = document.getElementById('fraction-denominator');
+            const scoreEl = document.getElementById('fraction-score');
+            if (scoreEl) scoreEl.textContent = `Score: ${fractionState.score}`;
+            if (targetEl) targetEl.textContent = `${fractionState.targetFraction.num} / ${fractionState.targetFraction.den}`;
+            if (numInput) numInput.value = fractionState.numerator;
+            if (denInput) denInput.value = fractionState.denominator;
+            if (displayEl) {
+                displayEl.innerHTML = '';
+                const parts = fractionState.denominator;
+                const shaded = fractionState.numerator;
+                let fractionBar = '<div class="flex h-12 w-full border border-gray-400 rounded-lg overflow-hidden my-4 shadow-inner">';
+                for (let i = 0; i < parts; i++) {
+                    const color = i < shaded ? 'bg-blue-400' : 'bg-blue-100';
+                    fractionBar += `<div class="flex-1 ${color} border-l border-gray-200"></div>`;
+                }
+                fractionBar += '</div>';
+                displayEl.innerHTML = fractionBar + `<p class="text-center text-3xl font-bold text-blue-700">${fractionState.numerator} / ${fractionState.denominator}</p>`;
+            }
+        }
+        function checkFractionAnswer() {
+            const numInput = document.getElementById('fraction-numerator');
+            const denInput = document.getElementById('fraction-denominator');
+            const messageEl = document.getElementById('fraction-message');
+            const newNum = parseInt(numInput.value, 10);
+            const newDen = parseInt(denInput.value, 10);
+            if (isNaN(newNum) || isNaN(newDen) || newDen === 0) { showMessage("Please enter valid numbers for both numerator and denominator."); return; }
+            const simplifiedEntered = simplify(newNum, newDen);
+            const target = fractionState.targetFraction;
+            if (simplifiedEntered.num === target.num && simplifiedEntered.den === target.den) {
+                fractionState.score++;
+                messageEl.textContent = "🎉 Equivalent Fraction Found! Excellent work!";
+                messageEl.className = 'text-center text-green-600 font-bold mt-4 text-lg animate-pulse';
+            } else {
+                messageEl.textContent = `❌ Incorrect. The simplest equivalent fraction is ${target.num}/${target.den}. Try again!`;
+                messageEl.className = 'text-center text-red-600 font-bold mt-4 text-lg';
+            }
+            setTimeout(() => { generateNewFractionProblem(); messageEl.textContent = ""; }, 2500);
+        }
+        function handleFractionSliderChange() {
+            const numInput = document.getElementById('fraction-numerator');
+            const denInput = document.getElementById('fraction-denominator');
+            fractionState.numerator = parseInt(numInput.value, 10) || 0;
+            fractionState.denominator = parseInt(denInput.value, 10) || 1;
+            updateFractionUI();
+        }
+        function initializeFractionBuilder() { fractionState.score = 0; generateNewFractionProblem(); }
+        function renderFractionBuilder() {
+            return `
+                <div id="fraction-game-container" class="max-w-xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #3B82F6;">
+                    <h1 class="text-3xl font-extrabold text-center text-blue-700 mb-4">Fraction Builder</h1>
+                    <div id="fraction-score" class="text-xl font-bold text-center text-gray-700 mb-6">Score: 0</div>
+                    <div class="bg-blue-100 p-6 rounded-xl shadow-inner mb-6 border-2 border-blue-300">
+                        <p class="text-center text-lg text-gray-700 mb-3">Goal: Find the simplest equivalent fraction for the visual below.</p>
+                        <p class="text-center text-4xl font-extrabold text-blue-800">
+                            Target: <span id="fraction-target">1/2</span>
+                        </p>
+                    </div>
+                    <div id="fraction-display" class="mb-6"></div>
+                    <div class="flex space-x-4 mb-4 items-center justify-center">
+                        <div class="flex flex-col items-center">
+                            <label for="fraction-numerator" class="text-xl font-bold text-gray-700">Numerator</label>
+                            <input type="number" id="fraction-numerator" value="1" min="0" max="100" class="w-24 p-2 text-center text-3xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500" oninput="handleFractionSliderChange()">
+                        </div>
+                        <div class="text-6xl font-extrabold text-gray-400">/</div>
+                        <div class="flex flex-col items-center">
+                            <label for="fraction-denominator" class="text-xl font-bold text-gray-700">Denominator</label>
+                            <input type="number" id="fraction-denominator" value="2" min="1" max="100" class="w-24 p-2 text-center text-3xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500" oninput="handleFractionSliderChange()">
+                        </div>
+                    </div>
+                    <button onclick="checkFractionAnswer()" class="primary-btn w-full bg-blue-500 text-white text-lg hover:bg-blue-600 shadow-md mt-4">Check Equivalent</button>
+                    <p id="fraction-message" class="text-center mt-4 h-6"></p>
+                    <button onclick="renderView('dashboard')" class="mt-8 w-full primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">← Back to Dashboard</button>
+                </div>
+            `;
+        }
+        let typingState = { text: "", words: [], startTime: 0, typedText: "", currentIndex: 0, timer: null };
+        const typingTexts = [
+            "The quick brown fox jumps over the lazy dog.",
+            "Learning is an exciting journey that takes us to new places every day.",
+            "Always try your best to complete the assignment before the deadline.",
+            "The ancient Roman empire was known for its incredible architectural feats and engineering skills."
+        ];
+        function startTypingTest() {
+            typingState.text = typingTexts[Math.floor(Math.random() * typingTexts.length)];
+            typingState.words = typingState.text.split(' ');
+            typingState.typedText = "";
+            typingState.currentIndex = 0;
+            typingState.startTime = Date.now();
+            clearInterval(typingState.timer);
+            typingState.timer = setInterval(updateTypingStats, 1000);
+            updateTypingUI();
+            document.getElementById('typing-input').focus();
+        }
+        function updateTypingUI() {
+            const textAreaEl = document.getElementById('typing-text-area');
+            const inputEl = document.getElementById('typing-input');
+            const resultEl = document.getElementById('typing-results');
+            if (!textAreaEl || !inputEl) return;
+            const typed = inputEl.value;
+            let highlightedText = '';
+            typingState.text.split('').forEach((char, index) => {
+                let spanClass = '';
+                if (index < typed.length) {
+                    spanClass = char === typed[index] ? 'correct' : 'incorrect';
+                } else if (index === typed.length && char !== ' ') {
+                    spanClass = 'current';
+                }
+                highlightedText += `<span class="${spanClass}">${char}</span>`;
+            });
+            textAreaEl.innerHTML = highlightedText;
+            if (resultEl) {
+                const results = calculateTypingResults(typed.length);
+                resultEl.innerHTML = `<p class="text-lg font-bold">WPM: <span class="text-pink-600">${results.wpm}</span> | Accuracy: <span class="text-pink-600">${results.accuracy}%</span> | Time: <span class="text-pink-600">${results.time}s</span></p>`;
+            }
+        }
+        function calculateTypingResults(charsTyped, finished = false) {
+            const currentTime = finished ? typingState.endTime : Date.now();
+            const timeElapsed = (currentTime - typingState.startTime) / 1000;
+            const minutes = timeElapsed / 60;
+            const textChars = typingState.text.length;
+            let correctChars = 0;
+            for (let i = 0; i < charsTyped; i++) {
+                if (typingState.text[i] === document.getElementById('typing-input').value[i]) { correctChars++; }
+            }
+            const wpm = minutes > 0 ? Math.round((correctChars / 5) / minutes) : 0;
+            const accuracy = textChars > 0 ? Math.round((correctChars / textChars) * 100) : 0;
+            return { wpm, accuracy, time: Math.round(timeElapsed) };
+        }
+        function handleTypingInput(event) {
+            const inputEl = document.getElementById('typing-input');
+            const typed = inputEl.value;
+            updateTypingUI();
+            if (typed === typingState.text) { finishTypingTest(); }
+        }
+        function updateTypingStats() {
+            const inputEl = document.getElementById('typing-input');
+            if (inputEl) { updateTypingUI(); }
+        }
+        function finishTypingTest() {
+            clearInterval(typingState.timer);
+            typingState.endTime = Date.now();
+            const typed = document.getElementById('typing-input').value;
+            const results = calculateTypingResults(typed.length, true);
+            showMessage(`Test Complete! Your results:\n\nWords Per Minute (WPM): ${results.wpm}\nAccuracy: ${results.accuracy}%\nTime Taken: ${results.time} seconds`, "Typing Results");
+            document.getElementById('typing-input').disabled = true;
+        }
+        function initializeTypingTutor() {
+            startTypingTest();
+            document.getElementById('typing-input').addEventListener('input', handleTypingInput);
+        }
+        function renderTypingTutor() {
+            return `
+                <div id="typing-game-container" class="max-w-3xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #EC4899;">
+                    <h1 class="text-3xl font-extrabold text-center text-pink-700 mb-6">Typing Tutor</h1>
+                    <div id="typing-results" class="text-center mb-6 p-4 bg-gray-100 rounded-lg"></div>
+                    <div id="typing-text-area" class="bg-gray-50 border-2 border-pink-300 shadow-inner mb-6 transition-colors duration-300">Loading text...</div>
+                    <textarea id="typing-input" rows="3" placeholder="Start typing here when the text appears..." 
+                        class="w-full p-4 text-lg border-2 border-gray-300 rounded-lg resize-none focus:border-pink-500 focus:ring-pink-500 transition duration-150"></textarea>
+                    <div class="flex justify-center space-x-4 mt-6">
+                        <button onclick="initializeTypingTutor()" class="primary-btn bg-pink-500 text-white hover:bg-pink-600 shadow-md">Start New Test</button>
+                        <button onclick="renderView('dashboard')" class="primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">← Back to Dashboard</button>
+                    </div>
+                </div>
+            `;
+        }
+        let codeBreakerState = { secretCode: [], maxGuesses: 10, currentGuess: 1, history: [], digits: 4 };
+        function generateSecretCode() {
+            const code = [];
+            for (let i = 0; i < codeBreakerState.digits; i++) { code.push(Math.floor(Math.random() * 10)); }
+            codeBreakerState.secretCode = code;
+        }
+        function initializeCodeBreaker() {
+            codeBreakerState.currentGuess = 1;
+            codeBreakerState.history = [];
+            generateSecretCode();
+            renderCodeBreakerUI();
+        }
+        function renderCodeBreakerUI() {
+            const historyEl = document.getElementById('code-history');
+            const statusEl = document.getElementById('code-status');
+            const inputEl = document.getElementById('code-input-container');
+            if (!historyEl || !statusEl || !inputEl) return;
+            statusEl.textContent = `Guess ${codeBreakerState.currentGuess} of ${codeBreakerState.maxGuesses}`;
+            historyEl.innerHTML = codeBreakerState.history.map(entry => {
+                const guessDigits = entry.guess.split('').map(d => `<span class="bg-gray-200 p-2 rounded-lg text-lg font-mono">${d}</span>`).join('');
+                return `<div class="flex justify-between items-center p-3 border-b last:border-b-0">
+                        <div class="flex space-x-2">${guessDigits}</div>
+                        <div class="text-sm font-semibold">
+                            <span class="text-green-600 mr-4">✅ Correct Position: ${entry.exact}</span>
+                            <span class="text-yellow-600">🟡 Correct Digit: ${entry.partial}</span>
+                        </div>
+                    </div>`;
+            }).join('');
+            if (codeBreakerState.currentGuess <= codeBreakerState.maxGuesses) {
+                 inputEl.innerHTML = `<div class="flex space-x-3 items-center">
+                        <input type="text" id="code-guess-input" maxlength="${codeBreakerState.digits}" pattern="[0-9]{${codeBreakerState.digits}}" placeholder="Enter ${codeBreakerState.digits} Digits (0-9)" 
+                            class="w-full p-3 text-center text-2xl font-mono border-2 border-gray-300 rounded-lg focus:border-gray-500 transition duration-150">
+                        <button onclick="submitCodeGuess()" class="primary-btn bg-gray-500 text-white hover:bg-gray-600 shadow-md whitespace-nowrap">Submit Guess</button>
+                    </div>`;
+                document.getElementById('code-guess-input').addEventListener('keypress', (event) => { if (event.key === 'Enter') submitCodeGuess(); });
+            } else { inputEl.innerHTML = `<p class="text-center text-xl text-red-600 font-bold mt-4">Game Over! Code was ${codeBreakerState.secretCode.join('')}</p>`; }
+        }
+        function submitCodeGuess() {
+            const inputEl = document.getElementById('code-guess-input');
+            const guess = inputEl.value.trim();
+            if (guess.length !== codeBreakerState.digits || !/^\d+$/.test(guess)) { showMessage(`Please enter a valid ${codeBreakerState.digits}-digit number.`); return; }
+            const guessDigits = guess.split('').map(Number);
+            const secret = codeBreakerState.secretCode;
+            let exactMatches = 0;
+            let partialMatches = 0;
+            const secretCloned = [...secret];
+            const guessCloned = [...guessDigits];
+            for (let i = 0; i < codeBreakerState.digits; i++) {
+                if (guessDigits[i] === secret[i]) {
+                    exactMatches++;
+                    secretCloned[i] = -1;
+                    guessCloned[i] = -1;
+                }
+            }
+            for (let i = 0; i < codeBreakerState.digits; i++) {
+                if (guessCloned[i] !== -1) {
+                    const secretIndex = secretCloned.indexOf(guessCloned[i]);
+                    if (secretIndex !== -1) {
+                        partialMatches++;
+                        secretCloned[secretIndex] = -1;
+                    }
+                }
+            }
+            codeBreakerState.history.unshift({ guess, exact: exactMatches, partial: partialMatches });
+            if (exactMatches === codeBreakerState.digits) {
+                showMessage(`Code Broken in ${codeBreakerState.currentGuess} guesses! The code was ${secret.join('')}`, "VICTORY!");
+                codeBreakerState.currentGuess = codeBreakerState.maxGuesses + 1;
+            } else {
+                codeBreakerState.currentGuess++;
+                if (codeBreakerState.currentGuess > codeBreakerState.maxGuesses) {
+                    showMessage(`You ran out of guesses! The secret code was ${secret.join('')}. Better luck next time!`, "Game Over!");
+                }
+            }
+            renderCodeBreakerUI();
+        }
+        function renderCodeBreaker() {
+            return `
+                <div id="code-breaker-container" class="max-w-2xl mx-auto p-4 md:p-8 game-card" style="border-bottom-color: #6B7280;">
+                    <h1 class="text-3xl font-extrabold text-center text-gray-700 mb-4">Logic Code Breaker (Mastermind)</h1>
+                    <p class="text-center text-sm text-gray-600 mb-6">
+                        Guess the secret 4-digit code (digits 0-9). After each guess, you will be told how many digits are correct and in the right position (✅), 
+                        and how many are correct but in the wrong position (🟡).
+                    </p>
+                    <div id="code-status" class="text-2xl font-bold text-center text-gray-800 mb-6">Guess 1 of 10</div>
+                    <div class="bg-gray-100 p-4 rounded-xl shadow-inner mb-6 min-h-[150px]">
+                        <h3 class="text-lg font-bold text-gray-700 border-b pb-2 mb-2">Guess History (Newest First)</h3>
+                        <div id="code-history" class="space-y-2">
+                            <p class="text-center text-gray-500">No guesses yet. Start cracking!</p>
+                        </div>
+                    </div>
+                    <div id="code-input-container"></div>
+                    <div class="flex justify-center space-x-4 mt-8">
+                        <button onclick="initializeCodeBreaker()" class="primary-btn bg-gray-500 text-white hover:bg-gray-600 shadow-md">
+                            Restart Game
+                        </button>
+                        <button onclick="renderView('dashboard')" class="primary-btn bg-gray-200 text-gray-700 hover:bg-gray-300 shadow-none">
+                            ← Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Initialization ---
+
+        window.onload = function() {
+            // Find the main content element
+            mainContentEl = document.getElementById('main-content');
+            
+            // Load the initial dashboard view
+            renderView('dashboard');
+        };
+    </script>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Header - Updated UI with Gradient -->
+    <header class="bg-gradient-to-r from-emerald-600 to-green-700 shadow-xl p-4 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3 mb-2 md:mb-0">
+                <span class="text-4xl text-yellow-300">🎓</span>
+                <h1 class="text-3xl font-extrabold text-white">Maner Central School</h1>
+            </div>
+            <div class="text-center md:text-right">
+                <h2 id="page-title" class="text-xl font-semibold text-emerald-100">Fun & Learning Dashboard</h2>
+                <button onclick="renderView('dashboard')" class="text-sm font-medium text-white/90 hover:text-white transition duration-150 mt-1">
+                    Go Home
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full">
+        <!-- Content loaded by JS will appear here -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-4 mt-auto">
+        <div class="max-w-7xl mx-auto text-center text-sm">
+            © 2025 Maner Central School Learning App. Knowledge is Fun!
+        </div>
+    </footer>
+
+</body>
+</html>
