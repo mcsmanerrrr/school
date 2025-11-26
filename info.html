@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maner Central School - Vision, Infrastructure, and Careers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.7;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        header h1 {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Sections */
+        section {
+            background: white;
+            padding: clamp(25px, 5vw, 40px);
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        h2 {
+            color: #0f172a;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #3b82f6;
+            display: inline-block;
+        }
+
+        h3 {
+            color: #1e293b;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: #475569;
+            font-size: clamp(0.95rem, 2vw, 1.05rem);
+        }
+
+        /* Lists */
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 20px 0;
+        }
+
+        ul li {
+            padding: 12px 0 12px 30px;
+            position: relative;
+            color: #475569;
+            font-size: clamp(0.95rem, 2vw, 1.05rem);
+            line-height: 1.6;
+        }
+
+        ul li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        ul li strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        /* Contact Info Box */
+        .contact-info {
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            padding: clamp(20px, 4vw, 30px);
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            margin-top: 25px;
+        }
+
+        .contact-info h4 {
+            color: #0f172a;
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .contact-info p {
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .contact-info strong {
+            color: #0f172a;
+        }
+
+        .contact-info a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .contact-info a:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        /* Responsive Typography */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 15px;
+            }
+
+            section {
+                margin-bottom: 20px;
+            }
+
+            header {
+                padding: 40px 15px;
+            }
+
+            h3 {
+                margin-top: 25px;
+            }
+
+            ul li {
+                padding-left: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 30px 15px;
+            }
+
+            .container {
+                padding: 20px 10px;
+            }
+
+            section {
+                padding: 20px 15px;
+            }
+
+            ul li {
+                padding-left: 25px;
+                margin-bottom: 8px;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Maner Central School (MCS)</h1>
+        <p>A Kamala Educational Social Welfare and Trust Conducting Institute</p>
+    </header>
+
+    <div class="container">
+
+        <section id="vision-mission">
+            <h2>Vision & Mission</h2>
+            <p>Maner Central School is dedicated to providing a transformative educational experience focused on holistic development and academic excellence.</p>
+
+            <h3>Our Vision</h3>
+            <p>To be a premier institution that nurtures the potential and shapes the futures of every student. We are committed to creating a vibrant learning environment that fosters curiosity, resilience, and a deep sense of community. Our goal is to provide a foundation that is both academically rigorous and rich in ethical values, preparing students for global readiness and success in all their future endeavors.</p>
+
+            <h3>Our Mission</h3>
+            <p>Our mission is to achieve the intellectual, physical, and moral development of our students by:</p>
+            <ul>
+                <li><strong>Providing a comprehensive CBSE curriculum</strong> (from Pre-Nursery to Class XII) that adheres to national standards.</li>
+                <li><strong>Fostering an environment of innovation</strong> and ensuring our curriculum remains cutting-edge.</li>
+                <li><strong>Committing to the strategic growth</strong> of each student, instilling essential values and skills for a fulfilling life.</li>
+            </ul>
+        </section>
+
+        <section id="infrastructure">
+            <h2>Infrastructure</h2>
+            <p>Maner Central School is a co-educational institution that offers <strong>A+ Infrastructure</strong> to support a comprehensive learning and development environment. We believe that a well-equipped campus is essential for effective education.</p>
+
+            <h3>Key Infrastructure Highlights</h3>
+            <ul>
+                <li><strong>Modern Labs:</strong> State-of-the-art facilities, including well-equipped Science Labs (such as the Physics Lab) for practical learning and hands-on experience.</li>
+                <li><strong>Well-Stocked Library:</strong> A dedicated space for reading, research, and mentorship, promoting a culture of continuous learning.</li>
+                <li><strong>Sports Facilities:</strong> Grounds and areas for various sports and co-curricular activities, supporting physical development and teamwork.</li>
+                <li><strong>Technology Integration:</strong> Infrastructure supporting academic rigor and modern learning methodologies.</li>
+            </ul>
+        </section>
+
+        <section id="careers">
+            <h2>Careers at MCS (Comming Soon)</h2>
+            <p>Maner Central School is committed to recruiting talented and passionate individuals who can contribute to our vision of nurturing potential and shaping futures.</p>
+
+            <h3>Opportunities</h3>
+            <p>MCS looks for dedicated staff and faculty, including teaching and non-teaching positions, who are passionate about education and committed to the comprehensive development of students (intellectual, physical, and moral).</p>
+
+            <h3>How to Apply</h3>
+            <p>While the website confirms the existence of a Careers at MCS section, specific job listings or detailed application procedures are not provided on the main page.</p>
+            
+            <p><strong>To learn about current vacancies and the application process, please check the official Maner Central School website regularly or contact the school administration directly.</strong></p>
+
+            <div class="contact-info">
+                <h4>Important Contacts for Enquiries:</h4>
+                <p><strong>General Enquiry / WhatsApp:</strong> 930-806-9419</p>
+                <p><strong>Contact Cell:</strong> <a href="mailto:formsatmcsschool@gmail.com">formsatmcsschool@gmail.com</a></p>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
