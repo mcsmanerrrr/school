@@ -176,9 +176,9 @@
                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Roll Number *</label>
-                        <input type="text" id="student-rollno" required
-                               class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Roll Number (Auto-Generated) *</label>
+                        <input type="text" id="student-rollno" required readonly
+                               class="w-full p-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Class *</label>
@@ -337,6 +337,58 @@
         const searchInput = document.getElementById('search-input');
         const loginBtn = document.getElementById('login-btn');
         const loginBtnText = document.getElementById('login-btn-text');
+
+        // NEW: Elements for Roll No Generation
+        const studentNameInput = document.getElementById('student-name');
+        const studentPhoneInput = document.getElementById('student-phone');
+
+        // NEW: Function to Generate Unique Roll Number
+        function generateAutoRollNumber() {
+            // Only generate if we are in "Add" mode (no student key set)
+            if (document.getElementById('student-key').value !== '') return;
+
+            const name = studentNameInput.value.trim();
+            const phone = studentPhoneInput.value.trim();
+
+            // Need at least 2 chars of name and 3 chars of phone
+            if (name.length < 2 || phone.length < 3) return;
+
+            const namePart = name.substring(0, 2).toUpperCase();
+            const phonePart = phone.substring(0, 3);
+
+            let isUnique = false;
+            let generatedRollNo = '';
+            
+            // Loop to ensure uniqueness
+            while (!isUnique) {
+                const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const numbers = "0123456789";
+                
+                // Random Letter
+                const randLetter = letters.charAt(Math.floor(Math.random() * letters.length));
+                // Random Number
+                const randNumber = numbers.charAt(Math.floor(Math.random() * numbers.length));
+
+                // Random unique mixture (Random Order of Letter and Number)
+                const suffix = Math.random() > 0.5 ? (randLetter + randNumber) : (randNumber + randLetter);
+
+                generatedRollNo = `${namePart}${phonePart}${suffix}`;
+
+                // Check if this roll number exists in the database
+                const exists = Object.values(allStudents).some(student => student.rollNo === generatedRollNo);
+                
+                if (!exists) {
+                    isUnique = true;
+                }
+            }
+
+            document.getElementById('student-rollno').value = generatedRollNo;
+        }
+
+        // Add Listeners for Auto Generation
+        studentNameInput.addEventListener('input', generateAutoRollNumber);
+        studentPhoneInput.addEventListener('input', generateAutoRollNumber);
+
 
         // Check authentication state on page load
         onAuthStateChanged(auth, async (user) => {
@@ -515,6 +567,10 @@
             document.getElementById('subjects-container').innerHTML = '';
             addSubjectRow();
             addSubjectRow();
+            
+            // Clear the auto-generated roll no field to start fresh
+            document.getElementById('student-rollno').value = ''; 
+            
             studentModal.classList.remove('hidden');
         };
 
@@ -529,12 +585,12 @@
             
             // Basic Info - Updated to include new fields
             document.getElementById('student-name').value = student.name;
-            document.getElementById('student-father-name').value = student.fatherName || ''; // New field
+            document.getElementById('student-father-name').value = student.fatherName || ''; 
             document.getElementById('student-rollno').value = student.rollNo;
             document.getElementById('student-class').value = student.class;
-            document.getElementById('student-phone').value = student.phone || ''; // New field
-            document.getElementById('student-email').value = student.email || ''; // New field
-            document.getElementById('student-address').value = student.address || ''; // New field
+            document.getElementById('student-phone').value = student.phone || ''; 
+            document.getElementById('student-email').value = student.email || ''; 
+            document.getElementById('student-address').value = student.address || ''; 
             document.getElementById('student-photo').value = student.photo || '';
             
             document.getElementById('fee-total').value = student.fees.total;
@@ -639,12 +695,12 @@
                 
                 const studentData = {
                     name: document.getElementById('student-name').value,
-                    fatherName: document.getElementById('student-father-name').value, // NEW FIELD
+                    fatherName: document.getElementById('student-father-name').value, 
                     rollNo: document.getElementById('student-rollno').value,
                     class: document.getElementById('student-class').value,
-                    phone: document.getElementById('student-phone').value, // NEW FIELD
-                    email: document.getElementById('student-email').value, // NEW FIELD
-                    address: document.getElementById('student-address').value, // NEW FIELD
+                    phone: document.getElementById('student-phone').value, 
+                    email: document.getElementById('student-email').value, 
+                    address: document.getElementById('student-address').value, 
                     photo: document.getElementById('student-photo').value || `https://api.dicebear.com/7.x/avataaars/svg?seed=${document.getElementById('student-name').value}`,
                     fees: {
                         total: totalFee,
