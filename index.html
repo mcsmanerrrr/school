@@ -266,55 +266,8 @@
                 SCHOOL GALLERY & MOMENTS
             </h2>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
-                    <div class="gallery-item">
-                        <img class="w-full h-auto object-cover aspect-[4/3]" 
-                             src="https://placehold.co/400x300/343a40/00b8e6?text=ANNUAL+DAY" 
-                             alt="Students performing on Annual Day">
-                        <div class="gallery-caption">Annual Day Celebration 2025</div>
-                    </div>
-                </a>
-                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
-                    <div class="gallery-item">
-                        <img class="w-full h-auto object-cover aspect-[4/3]" 
-                             src="https://i.ibb.co/Gv03qy2r/image.png" 
-                             alt="Students working in the Science Lab">
-                        <div class="gallery-caption">Practical Session in Physics Lab</div>
-                    </div>
-                </a>
-                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
-                    <div class="gallery-item">
-                        <img class="w-full h-auto object-cover aspect-[4/3]" 
-                             src="https://i.ibb.co/h1YKcsF4/1.jpg" 
-                             alt="Athletes competing during Sports Meet">
-                        <div class="gallery-caption">Assembly</div>
-                    </div>
-                </a>
-                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
-                    <div class="gallery-item">
-                        <img class="w-full h-auto object-cover aspect-[4/3]" 
-                             src="https://i.ibb.co/d0PpS53n/5.jpg" 
-                             alt="Students in class">
-                        <div class="gallery-caption">Bright Future</div>
-                    </div>
-                </a>
-                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
-                    <div class="gallery-item">
-                        <img class="w-full h-auto object-cover aspect-[4/3]" 
-                             src="https://i.ibb.co/PZhdtKss/4.jpg" 
-                             alt="Students reading in library">
-                        <div class="gallery-caption">Mentorship</div>
-                    </div>
-                </a>
-                <a href="https://www.manercentralschool.in/gallery" class="block w-full h-full">
-                    <div class="gallery-item">
-                        <img class="w-full h-auto object-cover aspect-[4/3]" 
-                             src="https://i.ibb.co/KcwzYfWh/3.jpg" 
-                             alt="Students on field trip">
-                        <div class="gallery-caption">Appreciation</div>
-                    </div>
-                </a>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="gallery-grid">
+                <div class="col-span-full text-center text-gray-500 py-10">Loading Gallery...</div>
             </div>
             
             <div class="mt-8 text-center">
@@ -530,6 +483,45 @@
             });
         }
 
+        // --- NEW FUNCTION: Fetch and Render Gallery ---
+        function fetchAndRenderGallery() {
+            const galleryContainer = document.getElementById('gallery-grid');
+            if (!galleryContainer || !isDbReady) return;
+
+            const galleryRef = ref(database, 'gallery');
+            onValue(galleryRef, (snapshot) => {
+                galleryContainer.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (!data) {
+                    galleryContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10">No gallery items available.</div>';
+                    return;
+                }
+
+                // Convert object to array and render
+                Object.values(data).forEach(item => {
+                    // Create the anchor wrapper
+                    const link = document.createElement('a');
+                    link.href = item.url || '#';
+                    link.className = "block w-full h-full";
+                    
+                    // Create the inner item structure
+                    link.innerHTML = `
+                        <div class="gallery-item">
+                            <img class="w-full h-auto object-cover aspect-[4/3]" 
+                                 src="${item.image || 'https://placehold.co/400x300?text=No+Image'}" 
+                                 alt="${item.title || 'Gallery Image'}">
+                            <div class="gallery-caption">${item.title || 'Untitled'}</div>
+                        </div>
+                    `;
+                    galleryContainer.appendChild(link);
+                });
+            }, (error) => {
+                console.error('Database Error:', error);
+                galleryContainer.innerHTML = '<div class="col-span-full text-center text-red-500 py-10">Error loading gallery.</div>';
+            });
+        }
+
         async function initApp() {
             try {
                 const app = initializeApp(firebaseConfig);
@@ -543,6 +535,7 @@
                 fetchAndRenderSimpleList('downloads', 'downloads-list', 'sidebar-link');
                 fetchAndRenderNews();
                 fetchAndRenderCirculars();
+                fetchAndRenderGallery(); // Call the new gallery function
                 
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
@@ -552,6 +545,9 @@
                 document.getElementById('official-circulars-list').innerHTML = `<li class="text-sm text-red-500 p-2">${errorMessage}</li>`;
                 document.getElementById('academic-links-list').innerHTML = `<li class="text-sm text-red-500 p-2">${errorMessage}</li>`;
                 document.getElementById('downloads-list').innerHTML = `<li class="text-sm text-red-500 p-2">${errorMessage}</li>`;
+                // Error handling for gallery
+                const galleryErr = document.getElementById('gallery-grid');
+                if(galleryErr) galleryErr.innerHTML = `<div class="col-span-full text-center text-red-500 py-10">${errorMessage}</div>`;
             }
             
             document.getElementById('mobile-menu-btn').addEventListener('click', function() {
@@ -565,11 +561,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
