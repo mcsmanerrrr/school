@@ -32,9 +32,40 @@
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
+
+        /* --- STYLES FOR SECTIONED ADMIN PANEL --- */
+        .sidebar {
+            width: 280px;
+            background-color: #343a40;
+            color: #ffffff;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 2rem;
+            z-index: 10;
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            width: calc(100% - 280px);
+        }
+        .nav-link {
+            padding: 0.75rem 1.5rem;
+            display: block;
+            color: #ccc;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #495057;
+            color: #ffffff;
+            border-left-color: #00b8e6;
+        }
+        /* --- END STYLES --- */
         
         .login-card {
             animation: slideUp 0.5s ease-out;
@@ -154,8 +185,8 @@
             background: #3a4149;
             color: white;
             padding: 20px 32px;
-            margin-bottom: 32px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
         }
         
         .logout-btn {
@@ -210,6 +241,19 @@
 </head>
 <body>
 
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-3"></div>
+
+    <div id="custom-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm p-6 text-center">
+            <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-4"></h3>
+            <p id="modal-message" class="text-gray-600 mb-6"></p>
+            <div id="modal-actions" class="flex justify-end space-x-3">
+                <button id="modal-cancel" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg font-semibold hover:bg-gray-300 transition">Cancel</button>
+                <button id="modal-confirm" class="px-4 py-2 text-white bg-indigo-600 rounded-lg font-semibold hover:bg-indigo-700 transition">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <div id="login-screen" class="login-gradient flex items-center justify-center p-4">
         <div class="login-card glass-card w-full max-w-md p-8">
             <div class="text-center mb-8">
@@ -249,76 +293,100 @@
         </div>
     </div>
 
-    <div id="admin-dashboard" class="hidden admin-bg">
-        <div class="header-bar flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold">MCS Admin Pannel</h1>
-                <p class="text-sm text-gray-300 mt-1">Logged in as <span id="admin-email" class="font-semibold"></span></p>
+    <div id="admin-dashboard" class="hidden flex admin-bg">
+        
+        <div class="sidebar">
+            <div class="px-6 mb-8">
+                <h1 class="text-2xl font-extrabold text-white">MCS Admin</h1>
+                <p class="text-sm text-gray-400">Content Management</p>
             </div>
-            <button id="logout-btn" class="logout-btn">Logout</button>
+            <nav>
+                <a href="#" class="nav-link active" data-section="marquee-management-section">Marquee & Notices</a>
+                <a href="#" class="nav-link" data-section="news-management-section">News & Events</a>
+                <a href="#" class="nav-link" data-section="circulars-management-section">Circulars</a>
+                <a href="#" class="nav-link" data-section="academic-management-section">Academic Links</a>
+                <a href="#" class="nav-link" data-section="downloads-management-section">Downloads</a>
+                <a href="#" class="nav-link" data-section="gallery-management-section">Gallery 📸</a>
+                <a href="#" class="nav-link" data-section="home-gallery-management-section">Home Gallery 🖼️</a>
+            </nav>
+            <div class="absolute bottom-0 w-full p-6 border-t border-gray-700">
+                <p id="admin-info" class="text-sm text-gray-400 mb-2">Logged in as: <span id="admin-email-sidebar"></span></p>
+                <button id="logout-btn" class="logout-btn w-full">Log Out</button>
+            </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-6 pb-12">
-            
-            <div class="section-title">
-                Add New Content 🚀
-            </div>
-            
-            <div class="grid-3">
+        <div class="main-content">
+            <header class="flex justify-between items-center bg-white p-4 rounded-lg shadow-md mb-6">
+                <h2 id="section-title" class="text-2xl font-bold text-gray-800">Marquee & Notices Management</h2>
+            </header>
+
+            <section id="marquee-management-section" class="space-y-6">
                 <div class="section-card">
-                    <div class="card-header">Marquee Notice</div>
-                    <form id="form-marquee">
-                        <div class="mb-4">
+                    <div class="card-header">Add New Marquee Notice</div>
+                    <form id="form-marquee" class="space-y-4">
+                        <div>
                             <label class="label-text">Notice Text (incl. **bold**)</label>
                             <textarea id="marquee-text" required class="input-field" rows="4" placeholder="Enter notice text..."></textarea>
                         </div>
-                        <div class="mb-4">
+                        <div>
                             <label class="label-text">Display Order (Lower is first)</label>
                             <input type="number" id="marquee-order" class="input-field" value="1" min="1">
                         </div>
                         <button type="submit" class="btn-primary">Add Marquee Notice</button>
                     </form>
                 </div>
-
                 <div class="section-card">
-                    <div class="card-header">Latest News (Links Only)</div>
-                    <form id="form-news">
-                        <div class="mb-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📢 Current Marquee Notices</h3>
+                    <div id="list-marquee"></div>
+                </div>
+            </section>
+            
+            <section id="news-management-section" class="space-y-6 hidden">
+                <div class="section-card">
+                    <div class="card-header">Add Latest News/Event (Links Only)</div>
+                    <form id="form-news" class="space-y-4">
+                        <div>
                             <label class="label-text">Title</label>
                             <input type="text" id="news-title" required class="input-field" placeholder="News title">
                         </div>
-                        <div class="mb-4">
+                        <div>
                             <label class="label-text">Link URL</label>
                             <input type="url" id="news-url" class="input-field" placeholder="https://...">
                         </div>
-                        <div class="mb-4">
+                        <div>
                             <label class="label-text">Date (YYYY-MM-DD)</label>
                             <input type="date" id="news-date" required class="input-field">
                         </div>
-                        <div class="mb-4">
-                            <label class="label-text">Category (Optional)</label>
-                            <input type="text" id="news-category" class="input-field" placeholder="e.g., academic">
+                        <div>
+                            <label class="label-text">Category (Optional, leave blank for general)</label>
+                            <input type="text" id="news-category" class="input-field" placeholder="e.g., academic, sport">
                         </div>
                         <button type="submit" class="btn-primary">Add News Item</button>
                     </form>
                 </div>
-
                 <div class="section-card">
-                    <div class="card-header">Official Circulars</div>
-                    <form id="form-circulars">
-                        <div class="mb-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📰 Current News & Events</h3>
+                    <div id="list-news"></div>
+                </div>
+            </section>
+
+            <section id="circulars-management-section" class="space-y-6 hidden">
+                <div class="section-card">
+                    <div class="card-header">Add New Official Circular</div>
+                    <form id="form-circulars" class="space-y-4">
+                        <div>
                             <label class="label-text">Circular Title</label>
                             <input type="text" id="circular-title" required class="input-field" placeholder="E.g., Fee Payment Schedule...">
                         </div>
-                        <div class="mb-4">
+                        <div>
                             <label class="label-text">Link URL (PDF)</label>
                             <input type="url" id="circular-url" required class="input-field" placeholder="https://mcs.in/circulars/...">
                         </div>
-                        <div class="mb-4">
+                        <div>
                             <label class="label-text">Date (YYYY-MM-DD)</label>
                             <input type="date" id="circular-date" required class="input-field">
                         </div>
-                        <div class="mb-4">
+                        <div>
                             <label class="checkbox-label">
                                 <input type="checkbox" id="circular-new" class="checkbox-input">
                                 Mark as "New!"
@@ -327,55 +395,16 @@
                         <button type="submit" class="btn-primary">Add Circular</button>
                     </form>
                 </div>
-
                 <div class="section-card">
-                    <div class="card-header">📸 Event/Gallery Image</div>
-                    <form id="form-gallery">
-                        <div class="mb-4">
-                            <label class="label-text">Image Title/Caption</label>
-                            <input type="text" id="gallery-title" required class="input-field" placeholder="E.g., Sports Day 2025 Photo 1">
-                        </div>
-                        <div class="mb-4">
-                            <label class="label-text">Image URL (Full Path)</label> 
-                            <input type="url" id="gallery-url" required class="input-field" placeholder="https://mcs.in/images/photo.jpg">
-                        </div>
-                        <div class="mb-4">
-                            <label class="label-text">Date (YYYY-MM-DD)</label>
-                            <input type="date" id="gallery-date" required class="input-field">
-                        </div>
-                        <button type="submit" class="btn-primary">Add Gallery Image</button>
-                    </form>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📋 Current Official Circulars</h3>
+                    <div id="list-circulars"></div>
                 </div>
-                </div>
+            </section>
 
-            <div class="section-title mt-12">
-                Current Database Content 📋
-            </div>
-
-            <div class="section-card">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">📢 Marquee Notices</h3>
-                <div id="list-marquee"></div>
-            </div>
-
-            <div class="section-card">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">📰 Latest News (Links Only)</h3>
-                <div id="list-news"></div>
-            </div>
-
-            <div class="section-card">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">📸 Gallery Images</h3>
-                <div id="list-gallery"></div>
-            </div>
-            <div class="section-card">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">📋 Official Circulars</h3>
-                <div id="list-circulars"></div>
-            </div>
-
-            <div class="section-card">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">🔗 Academic Links</h3>
-                
-                <form id="form-academic-links" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <section id="academic-management-section" class="space-y-6 hidden">
+                <div class="section-card">
+                    <div class="card-header">Add New Academic Link</div>
+                    <form id="form-academic-links" class="space-y-4">
                         <div>
                             <label class="label-text">Link Title</label>
                             <input type="text" id="academic-link-title" required class="input-field" placeholder="e.g., CBSE Portal">
@@ -384,18 +413,19 @@
                             <label class="label-text">URL</label>
                             <input type="url" id="academic-link-url" required class="input-field" placeholder="https://...">
                         </div>
-                    </div>
-                    <button type="submit" class="btn-primary">Add Academic Link</button>
-                </form>
-                
-                <div id="list-academic"></div>
-            </div>
+                        <button type="submit" class="btn-primary">Add Academic Link</button>
+                    </form>
+                </div>
+                <div class="section-card">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">🔗 Current Academic Links</h3>
+                    <div id="list-academic"></div>
+                </div>
+            </section>
 
-            <div class="section-card">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">📥 Downloads</h3>
-                
-                <form id="form-downloads" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <section id="downloads-management-section" class="space-y-6 hidden">
+                <div class="section-card">
+                    <div class="card-header">Add New Downloadable Document</div>
+                    <form id="form-downloads" class="space-y-4">
                         <div>
                             <label class="label-text">Document Title</label>
                             <input type="text" id="download-title" required class="input-field" placeholder="e.g., Admission Form">
@@ -404,34 +434,71 @@
                             <label class="label-text">URL</label>
                             <input type="url" id="download-url" required class="input-field" placeholder="https://...">
                         </div>
-                    </div>
-                    <button type="submit" class="btn-primary">Add Download</button>
-                </form>
-                
-                <div id="list-downloads"></div>
-            </div>
+                        <button type="submit" class="btn-primary">Add Download</button>
+                    </form>
+                </div>
+                <div class="section-card">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📥 Current Downloads</h3>
+                    <div id="list-downloads"></div>
+                </div>
+            </section>
 
-        </div>
+            <section id="gallery-management-section" class="space-y-6 hidden">
+                <div class="section-card">
+                    <div class="card-header">Add New Gallery Image (General School Photos)</div>
+                    <form id="form-gallery-image" class="space-y-4">
+                        <div>
+                            <label class="label-text">Image Title/Caption</label>
+                            <input type="text" id="gallery-image-title" required class="input-field" placeholder="Image Title (e.g., Annual Day 2026)">
+                        </div>
+                        <div>
+                            <label class="label-text">Image URL (Direct Link)</label>
+                            <input type="url" id="gallery-image-url-input" required class="input-field" placeholder="https://mcs.in/images/photo.jpg">
+                        </div>
+                        <div>
+                            <label class="label-text">Date (YYYY-MM-DD)</label>
+                            <input type="date" id="gallery-image-date" required class="input-field">
+                        </div>
+                        <button type="submit" class="btn-primary">Add Gallery Image</button>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📸 Current Gallery Images</h3>
+                    <div id="list-gallery"></div>
+                </div>
+            </section>
+            
+            <section id="home-gallery-management-section" class="space-y-6 hidden">
+                <div class="section-card">
+                    <div class="card-header">Add New Home Gallery Image (For Homepage Carousel/Grid)</div>
+                    <form id="form-home-gallery" class="space-y-4">
+                        <div>
+                            <label class="label-text">Image Title/Caption</label>
+                            <input type="text" id="home-gallery-title" required class="input-field" placeholder="E.g., School Building">
+                        </div>
+                        <div>
+                            <label class="label-text">Image URL (Direct Link)</label> 
+                            <input type="url" id="home-gallery-image-url" required class="input-field" placeholder="https://mcs.in/images/homepage_hero.jpg">
+                        </div>
+                        <div>
+                            <label class="label-text">Link URL (Optional, link to full page)</label>
+                            <input type="url" id="home-gallery-link-url" class="input-field" placeholder="https://mcs.in/about">
+                        </div>
+                        <button type="submit" class="btn-primary">Add Home Gallery Image</button>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">🖼️ Current Home Gallery Images</h3>
+                    <div id="list-home-gallery"></div>
+                </div>
+            </section>
+            </div>
     </div>
     
-    <!-- Custom Alert/Toast Container -->
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-3"></div>
-
-    <!-- Custom Confirmation Modal -->
-    <div id="custom-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="glass-card w-full max-w-sm p-6 text-center">
-            <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-4"></h3>
-            <p id="modal-message" class="text-gray-600 mb-6"></p>
-            <div id="modal-actions" class="flex justify-end space-x-3">
-                <button id="modal-cancel" class="px-4 py-2 text-gray-600 bg-gray-200 rounded-lg font-semibold hover:bg-gray-300 transition">Cancel</button>
-                <button id="modal-confirm" class="px-4 py-2 text-white bg-indigo-600 rounded-lg font-semibold hover:bg-indigo-700 transition">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-
     <script type="module">
-        // Updated Firebase Configuration and SDK Imports
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBOlLdFHePu9BeAg-hgpefTez1leuNcGg4",
             authDomain: "mcs-school1.firebaseapp.com",
@@ -456,9 +523,9 @@
         const loginError = document.getElementById('login-error');
         const errorText = document.getElementById('error-text');
         const logoutBtn = document.getElementById('logout-btn');
-        const adminEmailSpan = document.getElementById('admin-email');
+        const adminEmailSpan = document.getElementById('admin-email-sidebar');
 
-        // Utility function to show a toast message (replacing alert)
+        // --- Utility Functions (Toast, Modal, Delete, Escape) ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const colors = {
@@ -472,19 +539,16 @@
             toast.textContent = message;
             container.appendChild(toast);
             
-            // Animate in
             setTimeout(() => {
                 toast.classList.remove('translate-x-full', 'opacity-0');
             }, 10);
 
-            // Animate out and remove
             setTimeout(() => {
                 toast.classList.add('translate-x-full', 'opacity-0');
                 toast.addEventListener('transitionend', () => toast.remove());
             }, 4000);
         }
 
-        // Utility function to show a confirmation modal (replacing confirm)
         function showConfirm(title, message, confirmText = 'Confirm', onConfirm) {
             const modal = document.getElementById('custom-modal');
             document.getElementById('modal-title').textContent = title;
@@ -511,11 +575,83 @@
             document.getElementById('modal-cancel').addEventListener('click', handleCancel);
         }
 
+        window.deleteItem = function(collection, key) {
+            showConfirm('Confirm Deletion', '⚠️ Are you sure you want to delete this item? This action cannot be undone.', 'Delete', async () => {
+                try {
+                    await remove(ref(database, `${collection}/${key}`));
+                    showToast('Item deleted successfully!');
+                } catch (error) {
+                    console.error('Error deleting item:', error);
+                    showToast('Error deleting item: ' + error.message, 'error');
+                }
+            });
+        };
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // --- Section Switching Logic ---
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('data-section');
+                const titleText = e.target.textContent.trim();
+                
+                // Update active link class
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Hide all sections
+                document.querySelectorAll('.main-content > section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+
+                // Show target section and update header title
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                    document.getElementById('section-title').textContent = titleText.replace(/📸|🖼️/g, '').trim() + ' Management';
+                }
+
+                // Load data specific to the section
+                switch(targetId) {
+                    case 'marquee-management-section':
+                        loadMarqueeNotices();
+                        break;
+                    case 'news-management-section':
+                        loadNews();
+                        break;
+                    case 'circulars-management-section':
+                        loadCirculars();
+                        break;
+                    case 'academic-management-section':
+                        loadAcademicLinks();
+                        break;
+                    case 'downloads-management-section':
+                        loadDownloads();
+                        break;
+                    case 'gallery-management-section':
+                        loadGalleryImages(); 
+                        break;
+                    case 'home-gallery-management-section':
+                        loadHomeGalleryImages(); 
+                        break;
+                }
+            });
+        });
+
+        // --- Core Application Logic ---
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 adminEmailSpan.textContent = user.email;
                 loginScreen.classList.add('hidden');
                 adminDashboard.classList.remove('hidden');
+                
+                // Initialize default section (Marquee) on login
                 initializeDashboard();
             } else {
                 loginScreen.classList.remove('hidden');
@@ -542,20 +678,17 @@
         });
 
         logoutBtn.addEventListener('click', () => {
-            // Replaced confirm() with showConfirm()
             showConfirm('Confirm Logout', 'Are you sure you want to sign out of the Admin Panel?', 'Logout', () => {
                 signOut(auth);
             });
         });
 
         function initializeDashboard() {
+            // Load data for the currently active section (Marquee by default)
             loadMarqueeNotices();
-            loadNews();
-            loadCirculars();
-            loadAcademicLinks();
-            loadDownloads();
-            loadGalleryImages();
             
+            // --- Form Submission Handlers ---
+
             // Marquee Notice Form
             document.getElementById('form-marquee').addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -563,7 +696,7 @@
                 const order = document.getElementById('marquee-order').value;
                 
                 if (!text.trim()) {
-                    showToast('Please enter notice text', 'info'); // Replaced alert
+                    showToast('Please enter notice text', 'info');
                     return;
                 }
                 
@@ -576,14 +709,14 @@
                     });
                     document.getElementById('form-marquee').reset();
                     document.getElementById('marquee-order').value = '1';
-                    showToast('Notice added successfully!'); // Replaced alert
+                    showToast('Notice added successfully!');
                 } catch (error) {
                     console.error('Error adding notice:', error);
-                    showToast('Error adding notice: ' + error.message, 'error'); // Replaced alert
+                    showToast('Error adding notice: ' + error.message, 'error');
                 }
             });
 
-            // News Form (Regular Links)
+            // News Form (Regular Links - Category is customizable)
             document.getElementById('form-news').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('news-title').value;
@@ -592,7 +725,7 @@
                 const category = document.getElementById('news-category').value || 'general';
                 
                 if (!title.trim() || !date) {
-                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                    showToast('Please fill all required fields', 'info');
                     return;
                 }
                 
@@ -606,43 +739,70 @@
                         createdAt: new Date().toISOString()
                     });
                     document.getElementById('form-news').reset();
-                    showToast('News added successfully!'); // Replaced alert
+                    showToast('News added successfully!');
                 } catch (error) {
                     console.error('Error adding news:', error);
-                    showToast('Error adding news: ' + error.message, 'error'); // Replaced alert
+                    showToast('Error adding news: ' + error.message, 'error');
                 }
             });
 
-            // GALLERY IMAGE FORM: Writes to 'news' with category: 'image'
-            document.getElementById('form-gallery').addEventListener('submit', async (e) => {
+            // GALLERY IMAGE FORM (Writes to 'news' with hardcoded category: 'image')
+            document.getElementById('form-gallery-image').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const title = document.getElementById('gallery-title').value;
-                const url = document.getElementById('gallery-url').value;
-                const date = document.getElementById('gallery-date').value;
+                const title = document.getElementById('gallery-image-title').value;
+                const imageUrl = document.getElementById('gallery-image-url-input').value;
+                const date = document.getElementById('gallery-image-date').value;
                 
-                if (!title.trim() || !url.trim() || !date) {
-                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                if (!title.trim() || !imageUrl.trim() || !date) {
+                    showToast('Please fill all required fields (Title, URL, and Date)', 'info');
                     return;
                 }
                 
                 try {
-                    // Pushing to 'news' collection
+                    // Writing to the 'news' collection, but setting category to 'image'
                     const newRef = push(ref(database, 'news'));
                     await set(newRef, { 
                         title: title.trim(), 
-                        url: url.trim(), 
-                        date, 
-                        category: 'image', // Key to distinguish it as an image
+                        url: imageUrl.trim(), // Image URL is stored in the 'url' field
+                        date,
+                        category: 'image', // Hardcoded category for general gallery
                         createdAt: new Date().toISOString()
                     });
-                    document.getElementById('form-gallery').reset();
-                    showToast('Gallery Image added successfully to the News collection!'); // Replaced alert
+                    document.getElementById('form-gallery-image').reset();
+                    showToast('Gallery Image added successfully!');
                 } catch (error) {
                     console.error('Error adding gallery image:', error);
-                    showToast('Error adding gallery image: ' + error.message, 'error'); // Replaced alert
+                    showToast('Error adding gallery image: ' + error.message, 'error');
                 }
             });
-            // END GALLERY IMAGE FORM
+
+            // HOME GALLERY IMAGE FORM (Writes to 'gallery') <--- UPDATED HANDLER
+            document.getElementById('form-home-gallery').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('home-gallery-title').value;
+                const imageUrl = document.getElementById('home-gallery-image-url').value;
+                const linkUrl = document.getElementById('home-gallery-link-url').value || '#';
+                
+                if (!title.trim() || !imageUrl.trim()) {
+                    showToast('Please fill all required fields (Title and Image URL)', 'info');
+                    return;
+                }
+                
+                try {
+                    const newRef = push(ref(database, 'gallery')); // <-- TARGETS THE CORRECT /gallery COLLECTION
+                    await set(newRef, { 
+                        title: title.trim(), 
+                        image: imageUrl.trim(), 
+                        url: linkUrl.trim(),
+                        createdAt: new Date().toISOString()
+                    });
+                    document.getElementById('form-home-gallery').reset();
+                    showToast('Home Gallery Image added successfully!');
+                } catch (error) {
+                    console.error('Error adding home gallery image:', error);
+                    showToast('Error adding home gallery image: ' + error.message, 'error');
+                }
+            });
 
             // Circulars Form
             document.getElementById('form-circulars').addEventListener('submit', async (e) => {
@@ -653,7 +813,7 @@
                 const isNew = document.getElementById('circular-new').checked;
                 
                 if (!title.trim() || !url.trim() || !date) {
-                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                    showToast('Please fill all required fields', 'info');
                     return;
                 }
                 
@@ -667,10 +827,10 @@
                         createdAt: new Date().toISOString()
                     });
                     document.getElementById('form-circulars').reset();
-                    showToast('Circular added successfully!'); // Replaced alert
+                    showToast('Circular added successfully!');
                 } catch (error) {
                     console.error('Error adding circular:', error);
-                    showToast('Error adding circular: ' + error.message, 'error'); // Replaced alert
+                    showToast('Error adding circular: ' + error.message, 'error');
                 }
             });
 
@@ -681,7 +841,7 @@
                 const url = document.getElementById('academic-link-url').value;
                 
                 if (!title.trim() || !url.trim()) {
-                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                    showToast('Please fill all required fields', 'info');
                     return;
                 }
                 
@@ -693,10 +853,10 @@
                         createdAt: new Date().toISOString()
                     });
                     document.getElementById('form-academic-links').reset();
-                    showToast('Academic link added successfully!'); // Replaced alert
+                    showToast('Academic link added successfully!');
                 } catch (error) {
                     console.error('Error adding link:', error);
-                    showToast('Error adding link: ' + error.message, 'error'); // Replaced alert
+                    showToast('Error adding link: ' + error.message, 'error');
                 }
             });
 
@@ -707,7 +867,7 @@
                 const url = document.getElementById('download-url').value;
                 
                 if (!title.trim() || !url.trim()) {
-                    showToast('Please fill all required fields', 'info'); // Replaced alert
+                    showToast('Please fill all required fields', 'info');
                     return;
                 }
                 
@@ -719,13 +879,15 @@
                         createdAt: new Date().toISOString()
                     });
                     document.getElementById('form-downloads').reset();
-                    showToast('Download added successfully!'); // Replaced alert
+                    showToast('Download added successfully!');
                 } catch (error) {
                     console.error('Error adding download:', error);
-                    showToast('Error adding download: ' + error.message, 'error'); // Replaced alert
+                    showToast('Error adding download: ' + error.message, 'error');
                 }
             });
         }
+
+        // --- Data Loading Functions ---
 
         function loadMarqueeNotices() {
             const listElement = document.getElementById('list-marquee');
@@ -738,7 +900,6 @@
                     return;
                 }
                 
-                // Convert to array and sort by order
                 const items = Object.entries(data)
                     .map(([key, value]) => ({ key, ...value }))
                     .sort((a, b) => (a.order || 999) - (b.order || 999));
@@ -746,7 +907,6 @@
                 items.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
-                    // The deleteItem function now handles its own confirmation
                     div.innerHTML = `
                         <div class="flex-1">
                             <p class="font-semibold text-gray-800">${escapeHtml(item.text)}</p>
@@ -768,10 +928,10 @@
                 listElement.innerHTML = '';
                 const data = snapshot.val();
                 
-                // Convert to array, filter out images, and sort by date (newest first)
+                // Filter to ONLY include non-image items (regular news/events)
                 const items = Object.entries(data || {})
                     .map(([key, value]) => ({ key, ...value }))
-                    .filter(item => (item.category || 'general') !== 'image') // <-- Only display non-image items
+                    .filter(item => item.category !== 'image') 
                     .sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 if (items.length === 0) {
@@ -782,11 +942,12 @@
                 items.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
+                    const categoryText = item.category && item.category !== 'general' ? item.category.toUpperCase() : 'GENERAL';
                     div.innerHTML = `
                         <div class="flex-1">
                             <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
                             <p class="text-xs text-gray-500 mt-1">
-                                📅 ${item.date} | 🏷️ ${item.category ? item.category.toUpperCase() : 'GENERAL'}
+                                📅 ${item.date} | 🏷️ ${categoryText}
                             </p>
                             ${item.url && item.url !== '#' ? `<a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">🔗 View Link</a>` : ''}
                         </div>
@@ -800,16 +961,19 @@
             });
         }
 
+        // GALLERY LOAD FUNCTION (Reads from 'news' where category is 'image')
         function loadGalleryImages() {
             const listElement = document.getElementById('list-gallery');
-            onValue(ref(database, 'news'), (snapshot) => { // Still read from 'news'
+            listElement.innerHTML = '<p class="text-gray-500 text-center py-4">Loading general gallery images...</p>';
+            
+            onValue(ref(database, 'news'), (snapshot) => {
                 listElement.innerHTML = '';
                 const data = snapshot.val();
                 
-                // Convert to array, filter for only images, and sort by date (newest first)
+                // Filter to ONLY include image items
                 const items = Object.entries(data || {})
                     .map(([key, value]) => ({ key, ...value }))
-                    .filter(item => item.category === 'image') // <-- Only display image items
+                    .filter(item => item.category === 'image') 
                     .sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 if (items.length === 0) {
@@ -820,26 +984,75 @@
                 items.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
+                    const imageURL = item.url ? escapeHtml(item.url) : ''; 
+                    const titleText = item.title ? escapeHtml(item.title) : 'Untitled Image';
+                    const dateText = item.date ? item.date : 'N/A';
+
                     div.innerHTML = `
                         <div class="flex-1 flex items-center gap-4">
-                            <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.title)}" class="w-12 h-12 object-cover rounded-md border border-gray-200">
+                            <img src="${imageURL}" alt="${titleText}" class="w-12 h-12 object-cover rounded-md border border-gray-200">
                             <div>
-                                <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
+                                <p class="font-semibold text-gray-800">${titleText}</p>
                                 <p class="text-xs text-gray-500 mt-1">
-                                    📅 ${item.date} | 🏷️ GALLERY IMAGE
+                                    Date: ${dateText}
                                 </p>
-                                <a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">📸 View Full Image</a>
+                                <a href="${imageURL}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">🔗 Full Image Link</a>
                             </div>
                         </div>
                         <button onclick="deleteItem('news', '${item.key}')" class="btn-delete">🗑️ Delete</button>
-                    `;
+                    `; // Deleting from 'news' collection
                     listElement.appendChild(div);
                 });
             }, (error) => {
-                console.error('Error loading gallery images:', error);
+                console.error('Error loading general gallery images:', error);
                 listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
             });
         }
+
+        // HOME GALLERY LOAD FUNCTION (Reads from 'gallery') <--- UPDATED LOADER
+        function loadHomeGalleryImages() {
+            const listElement = document.getElementById('list-home-gallery');
+            listElement.innerHTML = '<p class="text-gray-500 text-center py-4">Loading home gallery images...</p>';
+            
+            onValue(ref(database, 'gallery'), (snapshot) => { // <-- USES /gallery
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                
+                const items = Object.entries(data || {})
+                    .map(([key, value]) => ({ key, ...value }))
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                if (items.length === 0) {
+                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No home gallery images yet. Add one using the form above!</p>';
+                    return;
+                }
+                
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    const imageURL = item.image ? escapeHtml(item.image) : '';
+                    const linkURL = item.url && item.url !== '#' ? escapeHtml(item.url) : 'N/A';
+
+                    div.innerHTML = `
+                        <div class="flex-1 flex items-center gap-4">
+                            <img src="${imageURL}" alt="${escapeHtml(item.title)}" class="w-12 h-12 object-cover rounded-md border border-gray-200">
+                            <div>
+                                <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Link: ${linkURL === 'N/A' ? 'None' : `<a href="${linkURL}" target="_blank" class="text-blue-600 hover:underline">View Link</a>`}
+                                </p>
+                            </div>
+                        </div>
+                        <button onclick="deleteItem('gallery', '${item.key}')" class="btn-delete">🗑️ Delete</button>
+                    `; // <-- DELETES FROM 'gallery'
+                    listElement.appendChild(div);
+                });
+            }, (error) => {
+                console.error('Error loading home gallery images:', error);
+                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
+            });
+        }
+
 
         function loadCirculars() {
             const listElement = document.getElementById('list-circulars');
@@ -852,7 +1065,6 @@
                     return;
                 }
                 
-                // Convert to array and sort by date (newest first)
                 const items = Object.entries(data)
                     .map(([key, value]) => ({ key, ...value }))
                     .sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -936,26 +1148,6 @@
                 listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
             });
         }
-
-        // Utility function to escape HTML and prevent XSS
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Redefined deleteItem to use custom confirmation modal
-        window.deleteItem = function(collection, key) {
-            showConfirm('Confirm Deletion', '⚠️ Are you sure you want to delete this item? This action cannot be undone.', 'Delete', async () => {
-                try {
-                    await remove(ref(database, `${collection}/${key}`));
-                    showToast('Item deleted successfully!');
-                } catch (error) {
-                    console.error('Error deleting item:', error);
-                    showToast('Error deleting item: ' + error.message, 'error');
-                }
-            });
-        };
     </script>
 
 </body>
