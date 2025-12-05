@@ -75,6 +75,22 @@
             text-align: center;
             font-size: 0.875rem;
         }
+        /* START: New Popup Banner Styles */
+        .animate-scale-in {
+            animation: scaleIn 0.5s ease-out forwards;
+        }
+        .animate-scale-out {
+            animation: scaleOut 0.3s ease-in forwards;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes scaleOut {
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(0.8); opacity: 0; }
+        }
+        /* END: New Popup Banner Styles */
     </style>
    <link rel="apple-touch-icon" sizes="180x180" href="https://manercentralschool.in/images/logo.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://manercentralschool.in/images/logo.png">
@@ -336,6 +352,17 @@
         </div>
     </footer>
 
+    <div id="popup-banner-container" class="fixed inset-0 z-[100] hidden bg-black bg-opacity-70 flex items-center justify-center p-4">
+        <div id="popup-banner" class="bg-white rounded-lg shadow-2xl relative max-w-lg w-full transform scale-0 transition-transform duration-500 ease-out">
+            <button id="popup-close-btn" class="absolute top-[-15px] right-[-15px] bg-red-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg hover:bg-red-700 transition z-50">
+                &times;
+            </button>
+            <a id="popup-link" href="#" target="_blank" class="block">
+                <img id="popup-image" src="" alt="Popup Banner" class="w-full h-auto rounded-lg object-contain">
+                <div id="popup-title" class="p-3 text-center school-primary-text font-bold text-lg border-t hidden"></div>
+            </a>
+        </div>
+    </div>
     <script type="module">
         const firebaseConfig = {
             databaseURL: "https://mcs-school1-default-rtdb.firebaseio.com/"
@@ -521,6 +548,82 @@
                 galleryContainer.innerHTML = '<div class="col-span-full text-center text-red-500 py-10">Error loading gallery.</div>';
             });
         }
+        
+        // --- START: NEW POPUP BANNER FUNCTION ---
+        function fetchAndRenderPopupBanner() {
+            const container = document.getElementById('popup-banner-container');
+            const closeBtn = document.getElementById('popup-close-btn');
+            const link = document.getElementById('popup-link');
+            const image = document.getElementById('popup-image');
+            const titleElement = document.getElementById('popup-title');
+            const banner = document.getElementById('popup-banner');
+
+            if (!container || !isDbReady) return;
+
+            const bannerRef = ref(database, 'popup_banner');
+            onValue(bannerRef, (snapshot) => {
+                const data = snapshot.val();
+                
+                // Check if the banner is active and content is available
+                if (data && data.isActive && data.imageURL) {
+                    // Check if the user has already closed the banner for this session
+                    if (sessionStorage.getItem('mcs_popup_closed') === 'true') {
+                        container.classList.add('hidden');
+                        return;
+                    }
+                    
+                    // Populate content
+                    link.href = data.linkURL || '#';
+                    image.src = data.imageURL;
+                    image.alt = data.title || 'Popup Banner';
+
+                    if (data.title) {
+                        titleElement.textContent = data.title;
+                        titleElement.classList.remove('hidden');
+                    } else {
+                        titleElement.classList.add('hidden');
+                    }
+                    
+                    // Show container and animate in
+                    container.classList.remove('hidden');
+                    // Ensure the element is visible before starting the transition
+                    setTimeout(() => {
+                        banner.classList.remove('scale-0');
+                    }, 50); 
+
+                } else {
+                    // Hide the banner if not active
+                    container.classList.add('hidden');
+                    banner.classList.add('scale-0');
+                }
+            }, (error) => {
+                console.error('Database Error:', error);
+            });
+
+            // Close button functionality
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent click on button from triggering the link
+                
+                // Animate out
+                banner.classList.add('scale-0');
+                
+                // Hide container after animation
+                setTimeout(() => {
+                    container.classList.add('hidden');
+                    // Set a session cookie so it doesn't pop up again until the browser is closed
+                    sessionStorage.setItem('mcs_popup_closed', 'true');
+                }, 500);
+            });
+
+            // Allow clicking outside the banner to close it
+            container.addEventListener('click', (e) => {
+                if (e.target === container) {
+                    closeBtn.click(); // Use the existing close logic
+                }
+            });
+        }
+        // --- END: NEW POPUP BANNER FUNCTION ---
 
         async function initApp() {
             try {
@@ -535,7 +638,8 @@
                 fetchAndRenderSimpleList('downloads', 'downloads-list', 'sidebar-link');
                 fetchAndRenderNews();
                 fetchAndRenderCirculars();
-                fetchAndRenderGallery(); // Call the new gallery function
+                fetchAndRenderGallery(); 
+                fetchAndRenderPopupBanner(); // <<< CALL NEW FUNCTION
                 
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
