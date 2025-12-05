@@ -361,13 +361,13 @@
     </footer>
 
     <div id="popup-banner-container" class="fixed inset-0 z-[100] hidden bg-black bg-opacity-70 flex items-center justify-center p-4">
-        <div id="popup-banner" class="bg-white rounded-lg shadow-2xl relative max-w-lg w-full">
+        <div id="popup-banner" class="bg-white rounded-lg shadow-2xl relative w-auto max-w-[90vw] md:max-w-4xl max-h-[90vh] flex flex-col">
             <button id="popup-close-btn" class="absolute top-[-15px] right-[-15px] bg-red-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg hover:bg-red-700 transition z-50">
                 &times;
             </button>
-            <a id="popup-link" href="#" target="_blank" class="block">
-                <img id="popup-image" src="" alt="Popup Banner" class="w-full h-auto rounded-lg object-contain banner-pulse">
-                </a>
+            <a id="popup-link" href="#" target="_blank" class="block w-full h-full overflow-hidden rounded-lg">
+                <img id="popup-image" src="" alt="Popup Banner" class="w-full h-auto max-h-[85vh] object-contain banner-pulse block mx-auto">
+            </a>
         </div>
     </div>
     <script type="module">
