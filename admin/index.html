@@ -308,6 +308,7 @@
                 <a href="#" class="nav-link" data-section="downloads-management-section">Downloads</a>
                 <a href="#" class="nav-link" data-section="gallery-management-section">Gallery 📸</a>
                 <a href="#" class="nav-link" data-section="home-gallery-management-section">Home Gallery 🖼️</a>
+                <a href="#" class="nav-link" data-section="banner-management-section">Home Banner 📢</a>
             </nav>
             <div class="absolute bottom-0 w-full p-6 border-t border-gray-700">
                 <p id="admin-info" class="text-sm text-gray-400 mb-2">Logged in as: <span id="admin-email-sidebar"></span></p>
@@ -494,6 +495,37 @@
                     <div id="list-home-gallery"></div>
                 </div>
             </section>
+
+            <section id="banner-management-section" class="space-y-6 hidden">
+                <div class="section-card">
+                    <div class="card-header">Home Popup Banner Content</div>
+                    <form id="form-banner" onsubmit="event.preventDefault(); saveBannerData();" class="space-y-4">
+                        <div>
+                            <label class="label-text">Banner Image URL (Required)</label>
+                            <input type="url" id="banner-image-url" required class="input-field" placeholder="https://mcs.in/banner.jpg">
+                        </div>
+                        <div>
+                            <label class="label-text">Banner Click URL (Optional)</label>
+                            <input type="url" id="banner-link-url" class="input-field" placeholder="https://mcs.in/admissions">
+                        </div>
+                        <div>
+                            <label class="label-text">Banner Title (Optional for tracking/reference)</label>
+                            <input type="text" id="banner-title" class="input-field" placeholder="E.g., Admissions Open 2026">
+                        </div>
+                        <button type="submit" class="btn-primary">💾 Save Banner Content</button>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Banner Status Control</h3>
+                    <div class="p-4 rounded-lg border flex justify-between items-center space-x-4 bg-gray-50">
+                        <span class="font-medium text-gray-700">Current Status:</span>
+                        <span id="banner-status" class="font-extrabold text-lg text-yellow-600">Loading...</span>
+                        <button onclick="toggleBannerStatus()" id="toggle-banner-btn" class="logout-btn !bg-indigo-600 hover:!bg-indigo-700 !w-40" disabled>Toggle</button>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Use the button to turn the banner ON or OFF on the public website. Status requires an **Image URL** to be set.</p>
+                </div>
+            </section>
             </div>
     </div>
     
@@ -511,7 +543,8 @@
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-        import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+        // UPDATED IMPORT: Added get and update for banner control
+        import { getDatabase, ref, push, set, onValue, remove, get, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -613,7 +646,7 @@
                 const targetSection = document.getElementById(targetId);
                 if (targetSection) {
                     targetSection.classList.remove('hidden');
-                    document.getElementById('section-title').textContent = titleText.replace(/📸|🖼️/g, '').trim() + ' Management';
+                    document.getElementById('section-title').textContent = titleText.replace(/📸|🖼️|📢/g, '').trim() + ' Management';
                 }
 
                 // Load data specific to the section
@@ -638,6 +671,9 @@
                         break;
                     case 'home-gallery-management-section':
                         loadHomeGalleryImages(); 
+                        break;
+                    case 'banner-management-section': // NEW CASE
+                        loadBannerData(); 
                         break;
                 }
             });
@@ -686,7 +722,8 @@
         function initializeDashboard() {
             // Load data for the currently active section (Marquee by default)
             loadMarqueeNotices();
-            
+            loadBannerData(); // Start listening for banner data immediately
+
             // --- Form Submission Handlers ---
 
             // Marquee Notice Form
@@ -776,7 +813,7 @@
                 }
             });
 
-            // HOME GALLERY IMAGE FORM (Writes to 'gallery') <--- UPDATED HANDLER
+            // HOME GALLERY IMAGE FORM (Writes to 'gallery')
             document.getElementById('form-home-gallery').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('home-gallery-title').value;
@@ -802,6 +839,12 @@
                     console.error('Error adding home gallery image:', error);
                     showToast('Error adding home gallery image: ' + error.message, 'error');
                 }
+            });
+
+            // Home Banner Form (NEW)
+            document.getElementById('form-banner').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveBannerData();
             });
 
             // Circulars Form
@@ -885,6 +928,134 @@
                     showToast('Error adding download: ' + error.message, 'error');
                 }
             });
+        }
+        
+        // --- HOME BANNER MANAGEMENT FUNCTIONS (NEW) ---
+
+        /**
+         * Loads the current banner data from Firebase and updates the form/status UI.
+         */
+        function loadBannerData() {
+            const bannerRef = ref(database, 'popup_banner');
+            
+            // Set up a listener for real-time updates
+            onValue(bannerRef, (snapshot) => {
+                const data = snapshot.val();
+                const statusElement = document.getElementById('banner-status');
+                const toggleBtn = document.getElementById('toggle-banner-btn');
+                const imageUrlInput = document.getElementById('banner-image-url');
+                const linkUrlInput = document.getElementById('banner-link-url');
+                const titleInput = document.getElementById('banner-title');
+
+                if (data) {
+                    // Populate form fields
+                    imageUrlInput.value = data.imageURL || '';
+                    linkUrlInput.value = data.linkURL || '';
+                    titleInput.value = data.title || '';
+
+                    // Update status display
+                    statusElement.classList.remove('text-green-600', 'text-red-600', 'text-yellow-600');
+
+                    if (data.isActive) {
+                        statusElement.textContent = 'ON (Visible)';
+                        statusElement.classList.add('text-green-600');
+                        toggleBtn.textContent = 'Turn OFF';
+                    } else {
+                        statusElement.textContent = 'OFF (Hidden)';
+                        statusElement.classList.add('text-red-600');
+                        toggleBtn.textContent = 'Turn ON';
+                    }
+
+                    // Enable button if an image URL exists
+                    toggleBtn.disabled = !data.imageURL;
+                } else {
+                    // Default state if no data exists
+                    imageUrlInput.value = '';
+                    linkUrlInput.value = '';
+                    titleInput.value = '';
+                    statusElement.textContent = 'OFF (No Data)';
+                    statusElement.classList.remove('text-green-600', 'text-red-600');
+                    statusElement.classList.add('text-yellow-600');
+                    toggleBtn.textContent = 'Turn ON';
+                    toggleBtn.disabled = true;
+                }
+            }, (error) => {
+                console.error('Error loading banner data:', error);
+                showToast('Error loading banner data.', 'error');
+            });
+        }
+
+        /**
+         * Handles form submission to update banner content, preserving the active status.
+         */
+        async function saveBannerData() {
+            const imageUrl = document.getElementById('banner-image-url').value;
+            const linkUrl = document.getElementById('banner-link-url').value;
+            const title = document.getElementById('banner-title').value;
+
+            if (!imageUrl) {
+                showToast('Please enter a valid Banner Image URL.', 'info');
+                return;
+            }
+
+            try {
+                const bannerRef = ref(database, 'popup_banner');
+                
+                // Fetch current status to preserve it
+                const snapshot = await get(bannerRef);
+                const currentData = snapshot.val() || {};
+                
+                const newData = {
+                    // Preserve existing status; default to false if no data exists
+                    isActive: currentData.isActive !== undefined ? currentData.isActive : false, 
+                    imageURL: imageUrl,
+                    linkURL: linkUrl || '#',
+                    title: title || '',
+                    lastUpdated: new Date().toISOString()
+                };
+
+                await set(bannerRef, newData);
+                showToast('Banner content saved successfully! Status remains unchanged.', 'success');
+                // UI updates via loadBannerData listener
+            } catch (error) {
+                console.error('Error saving banner data:', error);
+                showToast('Failed to save banner content. Check console for details.', 'error');
+            }
+        }
+
+        /**
+         * Function to toggle the isActive status in Firebase.
+         */
+        window.toggleBannerStatus = async function() {
+            const toggleBtn = document.getElementById('toggle-banner-btn');
+            toggleBtn.disabled = true;
+            
+            try {
+                const bannerRef = ref(database, 'popup_banner');
+                
+                // Fetch current status and content
+                const snapshot = await get(bannerRef);
+                let currentData = snapshot.val() || {};
+                
+                // Check if content exists before enabling
+                if (!currentData.imageURL) {
+                    showToast('Cannot enable banner: Image URL is missing. Please save banner content first.', 'info');
+                    toggleBtn.disabled = false;
+                    return;
+                }
+
+                // Determine new status
+                const newStatus = !currentData.isActive;
+
+                // Update database with new status (preserve content)
+                await update(bannerRef, { isActive: newStatus, lastUpdated: new Date().toISOString() });
+                
+                showToast(`Banner status set to: ${newStatus ? 'ON' : 'OFF'}`, 'info');
+                // UI updates via loadBannerData listener
+            } catch (error) {
+                console.error('Error toggling banner status:', error);
+                showToast('Failed to toggle banner status. Check console for details.', 'error');
+            }
         }
 
         // --- Data Loading Functions ---
@@ -1009,7 +1180,7 @@
             });
         }
 
-        // HOME GALLERY LOAD FUNCTION (Reads from 'gallery') <--- UPDATED LOADER
+        // HOME GALLERY LOAD FUNCTION (Reads from 'gallery')
         function loadHomeGalleryImages() {
             const listElement = document.getElementById('list-home-gallery');
             listElement.innerHTML = '<p class="text-gray-500 text-center py-4">Loading home gallery images...</p>';
