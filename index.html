@@ -90,6 +90,14 @@
             from { transform: scale(1); opacity: 1; }
             to { transform: scale(0.8); opacity: 0; }
         }
+        /* ADDED: For "live image" look */
+        @keyframes pulse-live {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.01); }
+        }
+        .banner-pulse {
+            animation: pulse-live 3s ease-in-out infinite;
+        }
         /* END: New Popup Banner Styles */
     </style>
    <link rel="apple-touch-icon" sizes="180x180" href="https://manercentralschool.in/images/logo.png">
@@ -353,14 +361,13 @@
     </footer>
 
     <div id="popup-banner-container" class="fixed inset-0 z-[100] hidden bg-black bg-opacity-70 flex items-center justify-center p-4">
-        <div id="popup-banner" class="bg-white rounded-lg shadow-2xl relative max-w-lg w-full transform scale-0 transition-transform duration-500 ease-out">
+        <div id="popup-banner" class="bg-white rounded-lg shadow-2xl relative max-w-lg w-full">
             <button id="popup-close-btn" class="absolute top-[-15px] right-[-15px] bg-red-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg hover:bg-red-700 transition z-50">
                 &times;
             </button>
             <a id="popup-link" href="#" target="_blank" class="block">
-                <img id="popup-image" src="" alt="Popup Banner" class="w-full h-auto rounded-lg object-contain">
-                <div id="popup-title" class="p-3 text-center school-primary-text font-bold text-lg border-t hidden"></div>
-            </a>
+                <img id="popup-image" src="" alt="Popup Banner" class="w-full h-auto rounded-lg object-contain banner-pulse">
+                </a>
         </div>
     </div>
     <script type="module">
@@ -510,7 +517,6 @@
             });
         }
 
-        // --- NEW FUNCTION: Fetch and Render Gallery ---
         function fetchAndRenderGallery() {
             const galleryContainer = document.getElementById('gallery-grid');
             if (!galleryContainer || !isDbReady) return;
@@ -549,13 +555,13 @@
             });
         }
         
-        // --- START: NEW POPUP BANNER FUNCTION ---
+        // --- START: NEW POPUP BANNER FUNCTION (UPDATED) ---
         function fetchAndRenderPopupBanner() {
             const container = document.getElementById('popup-banner-container');
             const closeBtn = document.getElementById('popup-close-btn');
             const link = document.getElementById('popup-link');
             const image = document.getElementById('popup-image');
-            const titleElement = document.getElementById('popup-title');
+            // const titleElement = document.getElementById('popup-title'); // Element removed per request
             const banner = document.getElementById('popup-banner');
 
             if (!container || !isDbReady) return;
@@ -577,24 +583,21 @@
                     image.src = data.imageURL;
                     image.alt = data.title || 'Popup Banner';
 
-                    if (data.title) {
-                        titleElement.textContent = data.title;
-                        titleElement.classList.remove('hidden');
-                    } else {
-                        titleElement.classList.add('hidden');
-                    }
+                    // Title logic REMOVED as per user request
                     
                     // Show container and animate in
                     container.classList.remove('hidden');
-                    // Ensure the element is visible before starting the transition
+                    // Use CSS animation classes for smooth entry
+                    banner.classList.remove('animate-scale-out'); 
                     setTimeout(() => {
-                        banner.classList.remove('scale-0');
+                        banner.classList.add('animate-scale-in');
                     }, 50); 
 
                 } else {
                     // Hide the banner if not active
                     container.classList.add('hidden');
-                    banner.classList.add('scale-0');
+                    banner.classList.remove('animate-scale-in');
+                    banner.classList.remove('animate-scale-out');
                 }
             }, (error) => {
                 console.error('Database Error:', error);
@@ -603,17 +606,18 @@
             // Close button functionality
             closeBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                e.stopPropagation(); // Prevent click on button from triggering the link
+                e.stopPropagation(); 
                 
-                // Animate out
-                banner.classList.add('scale-0');
+                // Use CSS animation class for smooth exit
+                banner.classList.remove('animate-scale-in');
+                banner.classList.add('animate-scale-out');
                 
-                // Hide container after animation
+                // Hide container after animation completes (300ms matches animate-scale-out duration)
                 setTimeout(() => {
                     container.classList.add('hidden');
                     // Set a session cookie so it doesn't pop up again until the browser is closed
                     sessionStorage.setItem('mcs_popup_closed', 'true');
-                }, 500);
+                }, 300);
             });
 
             // Allow clicking outside the banner to close it
@@ -623,7 +627,7 @@
                 }
             });
         }
-        // --- END: NEW POPUP BANNER FUNCTION ---
+        // --- END: NEW POPUP BANNER FUNCTION (UPDATED) ---
 
         async function initApp() {
             try {
@@ -639,7 +643,7 @@
                 fetchAndRenderNews();
                 fetchAndRenderCirculars();
                 fetchAndRenderGallery(); 
-                fetchAndRenderPopupBanner(); // <<< CALL NEW FUNCTION
+                fetchAndRenderPopupBanner(); 
                 
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
