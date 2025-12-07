@@ -47,6 +47,7 @@
             left: 0;
             padding-top: 2rem;
             z-index: 10;
+            overflow-y: auto;
         }
         .main-content {
             margin-left: 280px;
@@ -138,6 +139,18 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
         }
+
+        .btn-secondary {
+            background: #6366f1;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover { background: #4f46e5; }
         
         .btn-delete {
             background: #ef4444;
@@ -181,14 +194,6 @@
             font-size: 14px;
         }
         
-        .header-bar {
-            background: #3a4149;
-            color: white;
-            padding: 20px 32px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 24px;
-        }
-        
         .logout-btn {
             background: #ef4444;
             color: white;
@@ -206,23 +211,6 @@
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
         
-        .section-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-        
         .checkbox-label {
             display: flex;
             align-items: center;
@@ -236,6 +224,15 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
+        }
+
+        /* Quiz Specific Styles */
+        .question-preview {
+            border: 1px dashed #cbd5e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #fff;
         }
     </style>
 </head>
@@ -303,14 +300,14 @@
             <nav>
                 <a href="#" class="nav-link active" data-section="marquee-management-section">Marquee & Notices</a>
                 <a href="#" class="nav-link" data-section="news-management-section">News & Events</a>
-                <a href="#" class="nav-link" data-section="circulars-management-section">Circulars</a>
+                <a href="#" class="nav-link" data-section="test-management-section">Manage Tests 📝</a> <a href="#" class="nav-link" data-section="circulars-management-section">Circulars</a>
                 <a href="#" class="nav-link" data-section="academic-management-section">Academic Links</a>
                 <a href="#" class="nav-link" data-section="downloads-management-section">Downloads</a>
                 <a href="#" class="nav-link" data-section="gallery-management-section">Gallery 📸</a>
                 <a href="#" class="nav-link" data-section="home-gallery-management-section">Home Gallery 🖼️</a>
                 <a href="#" class="nav-link" data-section="banner-management-section">Home Banner 📢</a>
             </nav>
-            <div class="absolute bottom-0 w-full p-6 border-t border-gray-700">
+            <div class="p-6 border-t border-gray-700 mt-auto">
                 <p id="admin-info" class="text-sm text-gray-400 mb-2">Logged in as: <span id="admin-email-sidebar"></span></p>
                 <button id="logout-btn" class="logout-btn w-full">Log Out</button>
             </div>
@@ -371,6 +368,67 @@
                 </div>
             </section>
 
+            <section id="test-management-section" class="space-y-6 hidden">
+                <div class="section-card">
+                    <div class="card-header">Create New Test</div>
+                    
+                    <div class="mb-6 border-b pb-6">
+                        <label class="label-text">Test Title</label>
+                        <input type="text" id="new-test-title" class="input-field" placeholder="e.g. Mathematics Final Exam - Term 1">
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+                        <h4 class="font-bold text-gray-700 mb-4">Add Questions</h4>
+                        
+                        <div class="mb-4">
+                            <label class="label-text">Question Text</label>
+                            <textarea id="q-text" class="input-field" rows="2" placeholder="What is the capital of India?"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="label-text">Option 1</label>
+                                <input type="text" id="q-opt1" class="input-field" placeholder="Answer A">
+                            </div>
+                            <div>
+                                <label class="label-text">Option 2</label>
+                                <input type="text" id="q-opt2" class="input-field" placeholder="Answer B">
+                            </div>
+                            <div>
+                                <label class="label-text">Option 3</label>
+                                <input type="text" id="q-opt3" class="input-field" placeholder="Answer C">
+                            </div>
+                            <div>
+                                <label class="label-text">Option 4</label>
+                                <input type="text" id="q-opt4" class="input-field" placeholder="Answer D">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="label-text">Correct Option</label>
+                            <select id="q-correct" class="input-field">
+                                <option value="option1">Option 1</option>
+                                <option value="option2">Option 2</option>
+                                <option value="option3">Option 3</option>
+                                <option value="option4">Option 4</option>
+                            </select>
+                        </div>
+
+                        <button type="button" onclick="addQuestionToDraft()" class="btn-secondary w-full">➕ Add Question to Test</button>
+                    </div>
+
+                    <div id="test-draft-preview" class="mb-6 hidden">
+                        <h4 class="font-bold text-gray-700 mb-2">Questions Added (<span id="q-count">0</span>)</h4>
+                        <div id="questions-list-container" class="space-y-3 mb-4"></div>
+                        <button onclick="publishTest()" class="btn-primary bg-green-600 hover:bg-green-700">✅ Publish Test</button>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📝 Active Tests</h3>
+                    <div id="list-tests"></div>
+                </div>
+            </section>
             <section id="circulars-management-section" class="space-y-6 hidden">
                 <div class="section-card">
                     <div class="card-header">Add New Official Circular</div>
@@ -543,7 +601,6 @@
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-        // UPDATED IMPORT: Added get and update for banner control
         import { getDatabase, ref, push, set, onValue, remove, get, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
         const app = initializeApp(firebaseConfig);
@@ -558,52 +615,30 @@
         const logoutBtn = document.getElementById('logout-btn');
         const adminEmailSpan = document.getElementById('admin-email-sidebar');
 
-        // --- Utility Functions (Toast, Modal, Delete, Escape) ---
-        function showToast(message, type = 'success') {
+        // --- GLOBAL VARIABLES FOR TEST CREATION ---
+        let currentDraftQuestions = [];
+
+        // --- Utility Functions ---
+        window.showToast = function(message, type = 'success') {
             const container = document.getElementById('toast-container');
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                info: 'bg-blue-500'
-            };
-            
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
             const toast = document.createElement('div');
             toast.className = `${colors[type]} text-white p-4 rounded-lg shadow-xl text-sm font-semibold transform transition-all duration-300 ease-out translate-x-full opacity-0`;
             toast.textContent = message;
             container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.remove('translate-x-full', 'opacity-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.add('translate-x-full', 'opacity-0');
-                toast.addEventListener('transitionend', () => toast.remove());
-            }, 4000);
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); toast.addEventListener('transitionend', () => toast.remove()); }, 4000);
         }
 
-        function showConfirm(title, message, confirmText = 'Confirm', onConfirm) {
+        window.showConfirm = function(title, message, confirmText = 'Confirm', onConfirm) {
             const modal = document.getElementById('custom-modal');
             document.getElementById('modal-title').textContent = title;
             document.getElementById('modal-message').textContent = message;
             const confirmBtn = document.getElementById('modal-confirm');
             confirmBtn.textContent = confirmText;
-            
             modal.classList.remove('hidden');
-
-            const handleConfirm = () => {
-                modal.classList.add('hidden');
-                confirmBtn.removeEventListener('click', handleConfirm);
-                document.getElementById('modal-cancel').removeEventListener('click', handleCancel);
-                onConfirm();
-            };
-
-            const handleCancel = () => {
-                modal.classList.add('hidden');
-                confirmBtn.removeEventListener('click', handleConfirm);
-                document.getElementById('modal-cancel').removeEventListener('click', handleCancel);
-            };
-
+            const handleConfirm = () => { modal.classList.add('hidden'); confirmBtn.removeEventListener('click', handleConfirm); document.getElementById('modal-cancel').removeEventListener('click', handleCancel); onConfirm(); };
+            const handleCancel = () => { modal.classList.add('hidden'); confirmBtn.removeEventListener('click', handleConfirm); document.getElementById('modal-cancel').removeEventListener('click', handleCancel); };
             confirmBtn.addEventListener('click', handleConfirm);
             document.getElementById('modal-cancel').addEventListener('click', handleCancel);
         }
@@ -633,61 +668,36 @@
                 const targetId = e.target.getAttribute('data-section');
                 const titleText = e.target.textContent.trim();
                 
-                // Update active link class
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 e.target.classList.add('active');
+                document.querySelectorAll('.main-content > section').forEach(section => section.classList.add('hidden'));
 
-                // Hide all sections
-                document.querySelectorAll('.main-content > section').forEach(section => {
-                    section.classList.add('hidden');
-                });
-
-                // Show target section and update header title
                 const targetSection = document.getElementById(targetId);
                 if (targetSection) {
                     targetSection.classList.remove('hidden');
-                    document.getElementById('section-title').textContent = titleText.replace(/📸|🖼️|📢/g, '').trim() + ' Management';
+                    document.getElementById('section-title').textContent = titleText.replace(/📸|🖼️|📢|📝/g, '').trim() + ' Management';
                 }
 
-                // Load data specific to the section
                 switch(targetId) {
-                    case 'marquee-management-section':
-                        loadMarqueeNotices();
-                        break;
-                    case 'news-management-section':
-                        loadNews();
-                        break;
-                    case 'circulars-management-section':
-                        loadCirculars();
-                        break;
-                    case 'academic-management-section':
-                        loadAcademicLinks();
-                        break;
-                    case 'downloads-management-section':
-                        loadDownloads();
-                        break;
-                    case 'gallery-management-section':
-                        loadGalleryImages(); 
-                        break;
-                    case 'home-gallery-management-section':
-                        loadHomeGalleryImages(); 
-                        break;
-                    case 'banner-management-section': // NEW CASE
-                        loadBannerData(); 
-                        break;
+                    case 'marquee-management-section': loadMarqueeNotices(); break;
+                    case 'news-management-section': loadNews(); break;
+                    case 'circulars-management-section': loadCirculars(); break;
+                    case 'academic-management-section': loadAcademicLinks(); break;
+                    case 'downloads-management-section': loadDownloads(); break;
+                    case 'gallery-management-section': loadGalleryImages(); break;
+                    case 'home-gallery-management-section': loadHomeGalleryImages(); break;
+                    case 'banner-management-section': loadBannerData(); break;
+                    case 'test-management-section': loadTests(); break; // NEW
                 }
             });
         });
 
         // --- Core Application Logic ---
-
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 adminEmailSpan.textContent = user.email;
                 loginScreen.classList.add('hidden');
                 adminDashboard.classList.remove('hidden');
-                
-                // Initialize default section (Marquee) on login
                 initializeDashboard();
             } else {
                 loginScreen.classList.remove('hidden');
@@ -699,14 +709,11 @@
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            
             try {
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
-                let message = 'Invalid credentials. Please try again.';
-                if (error.code === 'auth/invalid-credential') {
-                    message = 'Invalid email or password.';
-                }
+                let message = 'Invalid credentials.';
+                if (error.code === 'auth/invalid-credential') message = 'Invalid email or password.';
                 errorText.textContent = message;
                 loginError.classList.remove('hidden');
                 setTimeout(() => loginError.classList.add('hidden'), 5000);
@@ -714,231 +721,245 @@
         });
 
         logoutBtn.addEventListener('click', () => {
-            showConfirm('Confirm Logout', 'Are you sure you want to sign out of the Admin Panel?', 'Logout', () => {
-                signOut(auth);
-            });
+            showConfirm('Confirm Logout', 'Sign out of Admin Panel?', 'Logout', () => signOut(auth));
         });
 
         function initializeDashboard() {
-            // Load data for the currently active section (Marquee by default)
             loadMarqueeNotices();
-            loadBannerData(); // Start listening for banner data immediately
+            loadBannerData();
 
-            // --- Form Submission Handlers ---
-
-            // Marquee Notice Form
+            // --- Existing Form Handlers ---
             document.getElementById('form-marquee').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const text = document.getElementById('marquee-text').value;
                 const order = document.getElementById('marquee-order').value;
-                
-                if (!text.trim()) {
-                    showToast('Please enter notice text', 'info');
-                    return;
-                }
-                
+                if (!text.trim()) return showToast('Enter notice text', 'info');
                 try {
-                    const newRef = push(ref(database, 'marquee_notices'));
-                    await set(newRef, { 
-                        text: text.trim(), 
-                        order: parseInt(order) || 1,
-                        createdAt: new Date().toISOString()
-                    });
+                    await set(push(ref(database, 'marquee_notices')), { text: text.trim(), order: parseInt(order)||1, createdAt: new Date().toISOString() });
                     document.getElementById('form-marquee').reset();
-                    document.getElementById('marquee-order').value = '1';
-                    showToast('Notice added successfully!');
-                } catch (error) {
-                    console.error('Error adding notice:', error);
-                    showToast('Error adding notice: ' + error.message, 'error');
-                }
+                    showToast('Notice added!');
+                } catch (error) { showToast(error.message, 'error'); }
             });
 
-            // News Form (Regular Links - Category is customizable)
             document.getElementById('form-news').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('news-title').value;
                 const url = document.getElementById('news-url').value || '#';
                 const date = document.getElementById('news-date').value;
                 const category = document.getElementById('news-category').value || 'general';
-                
-                if (!title.trim() || !date) {
-                    showToast('Please fill all required fields', 'info');
-                    return;
-                }
-                
+                if (!title.trim() || !date) return showToast('Fill required fields', 'info');
                 try {
-                    const newRef = push(ref(database, 'news'));
-                    await set(newRef, { 
-                        title: title.trim(), 
-                        url, 
-                        date, 
-                        category: category.trim().toLowerCase(),
-                        createdAt: new Date().toISOString()
-                    });
+                    await set(push(ref(database, 'news')), { title: title.trim(), url, date, category: category.trim().toLowerCase(), createdAt: new Date().toISOString() });
                     document.getElementById('form-news').reset();
-                    showToast('News added successfully!');
-                } catch (error) {
-                    console.error('Error adding news:', error);
-                    showToast('Error adding news: ' + error.message, 'error');
-                }
+                    showToast('News added!');
+                } catch (error) { showToast(error.message, 'error'); }
             });
 
-            // GALLERY IMAGE FORM (Writes to 'news' with hardcoded category: 'image')
             document.getElementById('form-gallery-image').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('gallery-image-title').value;
                 const imageUrl = document.getElementById('gallery-image-url-input').value;
                 const date = document.getElementById('gallery-image-date').value;
-                
-                if (!title.trim() || !imageUrl.trim() || !date) {
-                    showToast('Please fill all required fields (Title, URL, and Date)', 'info');
-                    return;
-                }
-                
+                if (!title.trim() || !imageUrl.trim() || !date) return showToast('Fill all fields', 'info');
                 try {
-                    // Writing to the 'news' collection, but setting category to 'image'
-                    const newRef = push(ref(database, 'news'));
-                    await set(newRef, { 
-                        title: title.trim(), 
-                        url: imageUrl.trim(), // Image URL is stored in the 'url' field
-                        date,
-                        category: 'image', // Hardcoded category for general gallery
-                        createdAt: new Date().toISOString()
-                    });
+                    await set(push(ref(database, 'news')), { title: title.trim(), url: imageUrl.trim(), date, category: 'image', createdAt: new Date().toISOString() });
                     document.getElementById('form-gallery-image').reset();
-                    showToast('Gallery Image added successfully!');
-                } catch (error) {
-                    console.error('Error adding gallery image:', error);
-                    showToast('Error adding gallery image: ' + error.message, 'error');
-                }
+                    showToast('Gallery Image added!');
+                } catch (error) { showToast(error.message, 'error'); }
             });
 
-            // HOME GALLERY IMAGE FORM (Writes to 'gallery')
             document.getElementById('form-home-gallery').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('home-gallery-title').value;
                 const imageUrl = document.getElementById('home-gallery-image-url').value;
-                const linkUrl = document.getElementById('home-gallery-link-url').value || '#';
-                
-                if (!title.trim() || !imageUrl.trim()) {
-                    showToast('Please fill all required fields (Title and Image URL)', 'info');
-                    return;
-                }
-                
+                const url = document.getElementById('home-gallery-link-url').value || '#';
+                if (!title.trim() || !imageUrl.trim()) return showToast('Fill required fields', 'info');
                 try {
-                    const newRef = push(ref(database, 'gallery')); // <-- TARGETS THE CORRECT /gallery COLLECTION
-                    await set(newRef, { 
-                        title: title.trim(), 
-                        image: imageUrl.trim(), 
-                        url: linkUrl.trim(),
-                        createdAt: new Date().toISOString()
-                    });
+                    await set(push(ref(database, 'gallery')), { title: title.trim(), image: imageUrl.trim(), url, createdAt: new Date().toISOString() });
                     document.getElementById('form-home-gallery').reset();
-                    showToast('Home Gallery Image added successfully!');
-                } catch (error) {
-                    console.error('Error adding home gallery image:', error);
-                    showToast('Error adding home gallery image: ' + error.message, 'error');
-                }
+                    showToast('Home Gallery Image added!');
+                } catch (error) { showToast(error.message, 'error'); }
             });
 
-            // Home Banner Form (NEW)
-            document.getElementById('form-banner').addEventListener('submit', (e) => {
-                e.preventDefault();
-                saveBannerData();
-            });
-
-            // Circulars Form
             document.getElementById('form-circulars').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('circular-title').value;
                 const url = document.getElementById('circular-url').value;
                 const date = document.getElementById('circular-date').value;
                 const isNew = document.getElementById('circular-new').checked;
-                
-                if (!title.trim() || !url.trim() || !date) {
-                    showToast('Please fill all required fields', 'info');
-                    return;
-                }
-                
+                if (!title.trim() || !url.trim() || !date) return showToast('Fill all fields', 'info');
                 try {
-                    const newRef = push(ref(database, 'circulars'));
-                    await set(newRef, { 
-                        title: title.trim(), 
-                        url: url.trim(), 
-                        date, 
-                        isNew,
-                        createdAt: new Date().toISOString()
-                    });
+                    await set(push(ref(database, 'circulars')), { title: title.trim(), url: url.trim(), date, isNew, createdAt: new Date().toISOString() });
                     document.getElementById('form-circulars').reset();
-                    showToast('Circular added successfully!');
-                } catch (error) {
-                    console.error('Error adding circular:', error);
-                    showToast('Error adding circular: ' + error.message, 'error');
-                }
+                    showToast('Circular added!');
+                } catch (error) { showToast(error.message, 'error'); }
             });
 
-            // Academic Links Form
             document.getElementById('form-academic-links').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('academic-link-title').value;
                 const url = document.getElementById('academic-link-url').value;
-                
-                if (!title.trim() || !url.trim()) {
-                    showToast('Please fill all required fields', 'info');
-                    return;
-                }
-                
+                if (!title.trim() || !url.trim()) return showToast('Fill all fields', 'info');
                 try {
-                    const newRef = push(ref(database, 'academic_links'));
-                    await set(newRef, { 
-                        title: title.trim(), 
-                        url: url.trim(),
-                        createdAt: new Date().toISOString()
-                    });
+                    await set(push(ref(database, 'academic_links')), { title: title.trim(), url: url.trim(), createdAt: new Date().toISOString() });
                     document.getElementById('form-academic-links').reset();
-                    showToast('Academic link added successfully!');
-                } catch (error) {
-                    console.error('Error adding link:', error);
-                    showToast('Error adding link: ' + error.message, 'error');
-                }
+                    showToast('Link added!');
+                } catch (error) { showToast(error.message, 'error'); }
             });
 
-            // Downloads Form
             document.getElementById('form-downloads').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('download-title').value;
                 const url = document.getElementById('download-url').value;
-                
-                if (!title.trim() || !url.trim()) {
-                    showToast('Please fill all required fields', 'info');
-                    return;
-                }
-                
+                if (!title.trim() || !url.trim()) return showToast('Fill all fields', 'info');
                 try {
-                    const newRef = push(ref(database, 'downloads'));
-                    await set(newRef, { 
-                        title: title.trim(), 
-                        url: url.trim(),
-                        createdAt: new Date().toISOString()
-                    });
+                    await set(push(ref(database, 'downloads')), { title: title.trim(), url: url.trim(), createdAt: new Date().toISOString() });
                     document.getElementById('form-downloads').reset();
-                    showToast('Download added successfully!');
-                } catch (error) {
-                    console.error('Error adding download:', error);
-                    showToast('Error adding download: ' + error.message, 'error');
-                }
+                    showToast('Download added!');
+                } catch (error) { showToast(error.message, 'error'); }
             });
         }
         
-        // --- HOME BANNER MANAGEMENT FUNCTIONS (NEW) ---
+        // --- NEW: TEST MANAGEMENT LOGIC ---
 
-        /**
-         * Loads the current banner data from Firebase and updates the form/status UI.
-         */
+        window.addQuestionToDraft = function() {
+            const qText = document.getElementById('q-text').value;
+            const opt1 = document.getElementById('q-opt1').value;
+            const opt2 = document.getElementById('q-opt2').value;
+            const opt3 = document.getElementById('q-opt3').value;
+            const opt4 = document.getElementById('q-opt4').value;
+            const correct = document.getElementById('q-correct').value;
+
+            if(!qText || !opt1 || !opt2 || !opt3 || !opt4) {
+                showToast("Please fill in the question and all 4 options.", "info");
+                return;
+            }
+
+            const newQuestion = {
+                question: qText,
+                option1: opt1,
+                option2: opt2,
+                option3: opt3,
+                option4: opt4,
+                correctOption: correct
+            };
+
+            currentDraftQuestions.push(newQuestion);
+            renderDraftPreview();
+            
+            // Clear inputs
+            document.getElementById('q-text').value = "";
+            document.getElementById('q-opt1').value = "";
+            document.getElementById('q-opt2').value = "";
+            document.getElementById('q-opt3').value = "";
+            document.getElementById('q-opt4').value = "";
+            showToast("Question added to draft!");
+        };
+
+        function renderDraftPreview() {
+            const container = document.getElementById('questions-list-container');
+            const previewSection = document.getElementById('test-draft-preview');
+            const countSpan = document.getElementById('q-count');
+            
+            container.innerHTML = "";
+            countSpan.innerText = currentDraftQuestions.length;
+
+            if(currentDraftQuestions.length > 0) {
+                previewSection.classList.remove('hidden');
+                
+                currentDraftQuestions.forEach((q, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'question-preview';
+                    div.innerHTML = `
+                        <div class="flex justify-between">
+                            <h5 class="font-bold text-sm">Q${index+1}: ${escapeHtml(q.question)}</h5>
+                            <button onclick="removeQuestionFromDraft(${index})" class="text-red-500 hover:text-red-700 font-bold text-xs">Remove</button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mt-2 text-xs text-gray-600">
+                            <span class="${q.correctOption === 'option1' ? 'text-green-600 font-bold' : ''}">A: ${escapeHtml(q.option1)}</span>
+                            <span class="${q.correctOption === 'option2' ? 'text-green-600 font-bold' : ''}">B: ${escapeHtml(q.option2)}</span>
+                            <span class="${q.correctOption === 'option3' ? 'text-green-600 font-bold' : ''}">C: ${escapeHtml(q.option3)}</span>
+                            <span class="${q.correctOption === 'option4' ? 'text-green-600 font-bold' : ''}">D: ${escapeHtml(q.option4)}</span>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } else {
+                previewSection.classList.add('hidden');
+            }
+        }
+
+        window.removeQuestionFromDraft = function(index) {
+            currentDraftQuestions.splice(index, 1);
+            renderDraftPreview();
+        };
+
+        window.publishTest = async function() {
+            const title = document.getElementById('new-test-title').value;
+            
+            if(!title.trim()) {
+                showToast("Please enter a Test Title.", "info");
+                return;
+            }
+            if(currentDraftQuestions.length === 0) {
+                showToast("Please add at least one question.", "info");
+                return;
+            }
+
+            try {
+                const newTestRef = push(ref(database, 'tests'));
+                await set(newTestRef, {
+                    testName: title.trim(),
+                    questions: currentDraftQuestions,
+                    createdAt: new Date().toISOString()
+                });
+
+                showToast("Test Created Successfully!");
+                
+                // Reset Form
+                document.getElementById('new-test-title').value = "";
+                currentDraftQuestions = [];
+                renderDraftPreview();
+
+            } catch(e) {
+                console.error(e);
+                showToast("Error creating test: " + e.message, "error");
+            }
+        };
+
+        function loadTests() {
+            const listElement = document.getElementById('list-tests');
+            listElement.innerHTML = '<p class="text-gray-500 text-center py-4">Loading active tests...</p>';
+            
+            onValue(ref(database, 'tests'), (snapshot) => {
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                
+                if (!data) {
+                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No tests created yet.</p>';
+                    return;
+                }
+                
+                Object.entries(data).forEach(([key, item]) => {
+                    const qCount = item.questions ? item.questions.length : 0;
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">${escapeHtml(item.testName)}</p>
+                            <p class="text-xs text-gray-500 mt-1">Questions: ${qCount}</p>
+                        </div>
+                        <button onclick="deleteItem('tests', '${key}')" class="btn-delete">🗑️ Delete</button>
+                    `;
+                    listElement.appendChild(div);
+                });
+            });
+        }
+
+        // --- END TEST MANAGEMENT LOGIC ---
+
         function loadBannerData() {
             const bannerRef = ref(database, 'popup_banner');
-            
-            // Set up a listener for real-time updates
             onValue(bannerRef, (snapshot) => {
                 const data = snapshot.val();
                 const statusElement = document.getElementById('banner-status');
@@ -948,14 +969,10 @@
                 const titleInput = document.getElementById('banner-title');
 
                 if (data) {
-                    // Populate form fields
                     imageUrlInput.value = data.imageURL || '';
                     linkUrlInput.value = data.linkURL || '';
                     titleInput.value = data.title || '';
-
-                    // Update status display
                     statusElement.classList.remove('text-green-600', 'text-red-600', 'text-yellow-600');
-
                     if (data.isActive) {
                         statusElement.textContent = 'ON (Visible)';
                         statusElement.classList.add('text-green-600');
@@ -965,131 +982,52 @@
                         statusElement.classList.add('text-red-600');
                         toggleBtn.textContent = 'Turn ON';
                     }
-
-                    // Enable button if an image URL exists
                     toggleBtn.disabled = !data.imageURL;
                 } else {
-                    // Default state if no data exists
-                    imageUrlInput.value = '';
-                    linkUrlInput.value = '';
-                    titleInput.value = '';
                     statusElement.textContent = 'OFF (No Data)';
-                    statusElement.classList.remove('text-green-600', 'text-red-600');
                     statusElement.classList.add('text-yellow-600');
-                    toggleBtn.textContent = 'Turn ON';
                     toggleBtn.disabled = true;
                 }
-            }, (error) => {
-                console.error('Error loading banner data:', error);
-                showToast('Error loading banner data.', 'error');
             });
         }
 
-        /**
-         * Handles form submission to update banner content, preserving the active status.
-         */
-        async function saveBannerData() {
+        window.saveBannerData = async function() {
             const imageUrl = document.getElementById('banner-image-url').value;
             const linkUrl = document.getElementById('banner-link-url').value;
             const title = document.getElementById('banner-title').value;
-
-            if (!imageUrl) {
-                showToast('Please enter a valid Banner Image URL.', 'info');
-                return;
-            }
-
+            if (!imageUrl) return showToast('Enter Banner Image URL.', 'info');
             try {
                 const bannerRef = ref(database, 'popup_banner');
-                
-                // Fetch current status to preserve it
                 const snapshot = await get(bannerRef);
                 const currentData = snapshot.val() || {};
-                
-                const newData = {
-                    // Preserve existing status; default to false if no data exists
-                    isActive: currentData.isActive !== undefined ? currentData.isActive : false, 
-                    imageURL: imageUrl,
-                    linkURL: linkUrl || '#',
-                    title: title || '',
-                    lastUpdated: new Date().toISOString()
-                };
-
-                await set(bannerRef, newData);
-                showToast('Banner content saved successfully! Status remains unchanged.', 'success');
-                // UI updates via loadBannerData listener
-            } catch (error) {
-                console.error('Error saving banner data:', error);
-                showToast('Failed to save banner content. Check console for details.', 'error');
-            }
+                await set(bannerRef, { isActive: currentData.isActive || false, imageURL: imageUrl, linkURL: linkUrl || '#', title: title || '', lastUpdated: new Date().toISOString() });
+                showToast('Banner saved!');
+            } catch (error) { showToast('Error saving banner.', 'error'); }
         }
 
-        /**
-         * Function to toggle the isActive status in Firebase.
-         */
         window.toggleBannerStatus = async function() {
-            const toggleBtn = document.getElementById('toggle-banner-btn');
-            toggleBtn.disabled = true;
-            
             try {
                 const bannerRef = ref(database, 'popup_banner');
-                
-                // Fetch current status and content
                 const snapshot = await get(bannerRef);
                 let currentData = snapshot.val() || {};
-                
-                // Check if content exists before enabling
-                if (!currentData.imageURL) {
-                    showToast('Cannot enable banner: Image URL is missing. Please save banner content first.', 'info');
-                    toggleBtn.disabled = false;
-                    return;
-                }
-
-                // Determine new status
-                const newStatus = !currentData.isActive;
-
-                // Update database with new status (preserve content)
-                await update(bannerRef, { isActive: newStatus, lastUpdated: new Date().toISOString() });
-                
-                showToast(`Banner status set to: ${newStatus ? 'ON' : 'OFF'}`, 'info');
-                // UI updates via loadBannerData listener
-            } catch (error) {
-                console.error('Error toggling banner status:', error);
-                showToast('Failed to toggle banner status. Check console for details.', 'error');
-            }
+                if (!currentData.imageURL) return showToast('Save image URL first.', 'info');
+                await update(bannerRef, { isActive: !currentData.isActive, lastUpdated: new Date().toISOString() });
+                showToast(`Banner turned ${!currentData.isActive ? 'ON' : 'OFF'}`, 'info');
+            } catch (error) { showToast('Error toggling banner.', 'error'); }
         }
-
-        // --- Data Loading Functions ---
 
         function loadMarqueeNotices() {
             const listElement = document.getElementById('list-marquee');
             onValue(ref(database, 'marquee_notices'), (snapshot) => {
                 listElement.innerHTML = '';
                 const data = snapshot.val();
-                
-                if (!data) {
-                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No notices yet. Add your first notice above!</p>';
-                    return;
-                }
-                
-                const items = Object.entries(data)
-                    .map(([key, value]) => ({ key, ...value }))
-                    .sort((a, b) => (a.order || 999) - (b.order || 999));
-                
-                items.forEach(item => {
+                if (!data) return listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No notices yet.</p>';
+                Object.entries(data).map(([key, value]) => ({ key, ...value })).sort((a, b) => (a.order||999) - (b.order||999)).forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
-                    div.innerHTML = `
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-800">${escapeHtml(item.text)}</p>
-                            <p class="text-xs text-gray-500 mt-1">Display Order: ${item.order || 1}</p>
-                        </div>
-                        <button onclick="deleteItem('marquee_notices', '${item.key}')" class="btn-delete">🗑️ Delete</button>
-                    `;
+                    div.innerHTML = `<div class="flex-1"><p class="font-semibold text-gray-800">${escapeHtml(item.text)}</p><p class="text-xs text-gray-500 mt-1">Order: ${item.order || 1}</p></div><button onclick="deleteItem('marquee_notices', '${item.key}')" class="btn-delete">🗑️ Delete</button>`;
                     listElement.appendChild(div);
                 });
-            }, (error) => {
-                console.error('Error loading notices:', error);
-                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
             });
         }
         
@@ -1098,167 +1036,61 @@
             onValue(ref(database, 'news'), (snapshot) => {
                 listElement.innerHTML = '';
                 const data = snapshot.val();
-                
-                // Filter to ONLY include non-image items (regular news/events)
-                const items = Object.entries(data || {})
-                    .map(([key, value]) => ({ key, ...value }))
-                    .filter(item => item.category !== 'image') 
-                    .sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                if (items.length === 0) {
-                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No news links yet. Add a news item above!</p>';
-                    return;
-                }
-                
+                const items = Object.entries(data || {}).map(([key, value]) => ({ key, ...value })).filter(item => item.category !== 'image').sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (items.length === 0) return listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No news yet.</p>';
                 items.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
-                    const categoryText = item.category && item.category !== 'general' ? item.category.toUpperCase() : 'GENERAL';
-                    div.innerHTML = `
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
-                            <p class="text-xs text-gray-500 mt-1">
-                                📅 ${item.date} | 🏷️ ${categoryText}
-                            </p>
-                            ${item.url && item.url !== '#' ? `<a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">🔗 View Link</a>` : ''}
-                        </div>
-                        <button onclick="deleteItem('news', '${item.key}')" class="btn-delete">🗑️ Delete</button>
-                    `;
+                    div.innerHTML = `<div class="flex-1"><p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p><p class="text-xs text-gray-500 mt-1">📅 ${item.date}</p></div><button onclick="deleteItem('news', '${item.key}')" class="btn-delete">🗑️ Delete</button>`;
                     listElement.appendChild(div);
                 });
-            }, (error) => {
-                console.error('Error loading news:', error);
-                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
             });
         }
 
-        // GALLERY LOAD FUNCTION (Reads from 'news' where category is 'image')
         function loadGalleryImages() {
             const listElement = document.getElementById('list-gallery');
-            listElement.innerHTML = '<p class="text-gray-500 text-center py-4">Loading general gallery images...</p>';
-            
             onValue(ref(database, 'news'), (snapshot) => {
                 listElement.innerHTML = '';
                 const data = snapshot.val();
-                
-                // Filter to ONLY include image items
-                const items = Object.entries(data || {})
-                    .map(([key, value]) => ({ key, ...value }))
-                    .filter(item => item.category === 'image') 
-                    .sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                if (items.length === 0) {
-                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No gallery images yet. Add one using the form above!</p>';
-                    return;
-                }
-                
+                const items = Object.entries(data || {}).map(([key, value]) => ({ key, ...value })).filter(item => item.category === 'image').sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (items.length === 0) return listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No images yet.</p>';
                 items.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
-                    const imageURL = item.url ? escapeHtml(item.url) : ''; 
-                    const titleText = item.title ? escapeHtml(item.title) : 'Untitled Image';
-                    const dateText = item.date ? item.date : 'N/A';
-
-                    div.innerHTML = `
-                        <div class="flex-1 flex items-center gap-4">
-                            <img src="${imageURL}" alt="${titleText}" class="w-12 h-12 object-cover rounded-md border border-gray-200">
-                            <div>
-                                <p class="font-semibold text-gray-800">${titleText}</p>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    Date: ${dateText}
-                                </p>
-                                <a href="${imageURL}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">🔗 Full Image Link</a>
-                            </div>
-                        </div>
-                        <button onclick="deleteItem('news', '${item.key}')" class="btn-delete">🗑️ Delete</button>
-                    `; // Deleting from 'news' collection
+                    div.innerHTML = `<div class="flex-1 flex items-center gap-4"><img src="${escapeHtml(item.url)}" class="w-12 h-12 object-cover rounded-md"><p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p></div><button onclick="deleteItem('news', '${item.key}')" class="btn-delete">🗑️ Delete</button>`;
                     listElement.appendChild(div);
                 });
-            }, (error) => {
-                console.error('Error loading general gallery images:', error);
-                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
             });
         }
 
-        // HOME GALLERY LOAD FUNCTION (Reads from 'gallery')
         function loadHomeGalleryImages() {
             const listElement = document.getElementById('list-home-gallery');
-            listElement.innerHTML = '<p class="text-gray-500 text-center py-4">Loading home gallery images...</p>';
-            
-            onValue(ref(database, 'gallery'), (snapshot) => { // <-- USES /gallery
+            onValue(ref(database, 'gallery'), (snapshot) => {
                 listElement.innerHTML = '';
                 const data = snapshot.val();
-                
-                const items = Object.entries(data || {})
-                    .map(([key, value]) => ({ key, ...value }))
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
-                if (items.length === 0) {
-                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No home gallery images yet. Add one using the form above!</p>';
-                    return;
-                }
-                
+                const items = Object.entries(data || {}).map(([key, value]) => ({ key, ...value })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                if (items.length === 0) return listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No home gallery images yet.</p>';
                 items.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
-                    const imageURL = item.image ? escapeHtml(item.image) : '';
-                    const linkURL = item.url && item.url !== '#' ? escapeHtml(item.url) : 'N/A';
-
-                    div.innerHTML = `
-                        <div class="flex-1 flex items-center gap-4">
-                            <img src="${imageURL}" alt="${escapeHtml(item.title)}" class="w-12 h-12 object-cover rounded-md border border-gray-200">
-                            <div>
-                                <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    Link: ${linkURL === 'N/A' ? 'None' : `<a href="${linkURL}" target="_blank" class="text-blue-600 hover:underline">View Link</a>`}
-                                </p>
-                            </div>
-                        </div>
-                        <button onclick="deleteItem('gallery', '${item.key}')" class="btn-delete">🗑️ Delete</button>
-                    `; // <-- DELETES FROM 'gallery'
+                    div.innerHTML = `<div class="flex-1 flex items-center gap-4"><img src="${escapeHtml(item.image)}" class="w-12 h-12 object-cover rounded-md"><p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p></div><button onclick="deleteItem('gallery', '${item.key}')" class="btn-delete">🗑️ Delete</button>`;
                     listElement.appendChild(div);
                 });
-            }, (error) => {
-                console.error('Error loading home gallery images:', error);
-                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
             });
         }
-
 
         function loadCirculars() {
             const listElement = document.getElementById('list-circulars');
             onValue(ref(database, 'circulars'), (snapshot) => {
                 listElement.innerHTML = '';
                 const data = snapshot.val();
-                
-                if (!data) {
-                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No circulars yet. Add your first circular above!</p>';
-                    return;
-                }
-                
-                const items = Object.entries(data)
-                    .map(([key, value]) => ({ key, ...value }))
-                    .sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                items.forEach(item => {
+                if (!data) return listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No circulars yet.</p>';
+                Object.entries(data).map(([key, value]) => ({ key, ...value })).sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
-                    div.innerHTML = `
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-800">
-                                ${escapeHtml(item.title)} 
-                                ${item.isNew ? '<span class="text-xs bg-green-500 text-white px-2 py-1 rounded ml-2">🆕 NEW</span>' : ''}
-                            </p>
-                            <p class="text-xs text-gray-500 mt-1">📅 ${item.date}</p>
-                            <a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">📄 View PDF</a>
-                        </div>
-                        <button onclick="deleteItem('circulars', '${item.key}')" class="btn-delete">🗑️ Delete</button>
-                    `;
+                    div.innerHTML = `<div class="flex-1"><p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p><a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">📄 View PDF</a></div><button onclick="deleteItem('circulars', '${item.key}')" class="btn-delete">🗑️ Delete</button>`;
                     listElement.appendChild(div);
                 });
-            }, (error) => {
-                console.error('Error loading circulars:', error);
-                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
             });
         }
 
@@ -1267,27 +1099,13 @@
             onValue(ref(database, 'academic_links'), (snapshot) => {
                 listElement.innerHTML = '';
                 const data = snapshot.val();
-                
-                if (!data) {
-                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No academic links yet. Add links using the form above!</p>';
-                    return;
-                }
-                
+                if (!data) return listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No links yet.</p>';
                 Object.entries(data).forEach(([key, item]) => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
-                    div.innerHTML = `
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
-                            <a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">🔗 ${escapeHtml(item.url)}</a>
-                        </div>
-                        <button onclick="deleteItem('academic_links', '${key}')" class="btn-delete">🗑️ Delete</button>
-                    `;
+                    div.innerHTML = `<div class="flex-1"><p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p><a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline">Link</a></div><button onclick="deleteItem('academic_links', '${key}')" class="btn-delete">🗑️ Delete</button>`;
                     listElement.appendChild(div);
                 });
-            }, (error) => {
-                console.error('Error loading academic links:', error);
-                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
             });
         }
 
@@ -1296,27 +1114,13 @@
             onValue(ref(database, 'downloads'), (snapshot) => {
                 listElement.innerHTML = '';
                 const data = snapshot.val();
-                
-                if (!data) {
-                    listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No downloads yet. Add documents using the form above!</p>';
-                    return;
-                }
-                
+                if (!data) return listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No downloads yet.</p>';
                 Object.entries(data).forEach(([key, item]) => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
-                    div.innerHTML = `
-                        <div class="flex-1">
-                            <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
-                            <a href="${escapeHtml(item.url)}" target="_blank" class="text-xs text-blue-600 hover:underline mt-1 inline-block">📥 Download Link</a>
-                        </div>
-                        <button onclick="deleteItem('downloads', '${key}')" class="btn-delete">🗑️ Delete</button>
-                    `;
+                    div.innerHTML = `<div class="flex-1"><p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p></div><button onclick="deleteItem('downloads', '${key}')" class="btn-delete">🗑️ Delete</button>`;
                     listElement.appendChild(div);
                 });
-            }, (error) => {
-                console.error('Error loading downloads:', error);
-                listElement.innerHTML = '<p class="text-red-500 text-center py-4">Error loading data. Check console.</p>';
             });
         }
     </script>
