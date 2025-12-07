@@ -448,6 +448,9 @@
                 <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     📚 Available Tests
                 </h2>
+                <div class="mb-4">
+                    <input type="text" id="search-input" placeholder="Search for a test by name..." onkeyup="loadAllTests()" class="w-full">
+                </div>
                 <div id="test-list-container">
                     <p class="text-center text-slate-500 py-6">
                         <span class="loading"></span>
@@ -576,53 +579,103 @@
         let currentTestData = null;
         let currentStudentData = null;
 
+        // Global variable to store all tests once fetched
+        let allTests = [];
+
         window.onload = function() {
-            loadAllTests();
+            // Initial call to load tests
+            fetchAndLoadTests();
         };
+        
+        // Function to fetch all tests once, and then call loadAllTests to render/filter
+        function fetchAndLoadTests() {
+             const listContainer = document.getElementById('test-list-container');
+             listContainer.innerHTML = '<p class="text-center text-slate-500 py-6"><span class="loading"></span><span class="ml-2">Loading tests...</span></p>';
+
+             dbTests.ref('tests').once('value').then((snapshot) => {
+                const testsObject = snapshot.val();
+                allTests = [];
+
+                if (testsObject) {
+                    // Convert the object of tests into an array of objects including the test ID (key)
+                    allTests = Object.keys(testsObject).map(key => ({
+                        id: key,
+                        ...testsObject[key]
+                    }));
+
+                    // Sort the tests by ID in descending order to show the latest first.
+                    // Firebase push keys are time-based, so a reverse sort often works for "latest first."
+                    allTests.sort((a, b) => b.id.localeCompare(a.id)); 
+                }
+                
+                // Now render the list (this will handle the search filter)
+                loadAllTests();
+
+             }).catch(error => {
+                console.error("Error fetching tests:", error);
+                listContainer.innerHTML = '<p class="text-center text-red-600 py-6">Error loading tests. Please refresh.</p>';
+             });
+        }
+
 
         function loadAllTests() {
             const listContainer = document.getElementById('test-list-container');
+            const searchInput = document.getElementById('search-input');
+            const searchTerm = searchInput.value.toLowerCase().trim();
             
-            dbTests.ref('tests').on('value', (snapshot) => {
-                listContainer.innerHTML = '';
-                const tests = snapshot.val();
+            listContainer.innerHTML = '';
+            
+            if (allTests.length === 0) {
+                listContainer.innerHTML = '<p class="text-center text-slate-500 py-6">No active tests found.</p>';
+                return;
+            }
 
-                if (!tests) {
-                    listContainer.innerHTML = '<p class="text-center text-slate-500 py-6">No active tests found.</p>';
-                    return;
-                }
+            // Filter the tests based on the search term
+            const filteredTests = allTests.filter(t => 
+                (t.testName || 'Untitled Test').toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredTests.length === 0) {
+                 listContainer.innerHTML = `<p class="text-center text-slate-500 py-6">No tests found matching "${searchInput.value}".</p>`;
+                 return;
+            }
 
-                Object.keys(tests).forEach((key, index) => {
-                    const t = tests[key];
-                    const div = document.createElement('div');
-                    div.className = 'test-item flex justify-between items-center';
-                    div.style.animationDelay = `${index * 0.1}s`;
-                    div.classList.add('slide-in');
-                    div.innerHTML = `
-                        <div class="test-info flex-1">
-                            <h3 class="flex items-center text-base font-bold text-slate-800 mb-1">
-                                <img src="images/logo.png" alt="Test Icon" class="w-4 h-4 mr-2"> 
-                                ${t.testName || 'Untitled Test'}
-                            </h3>
-                            <span class="badge">${t.questions ? t.questions.length : 0} Questions</span>
-                        </div>
-                        <button class="btn" onclick="openLoginModal('${key}')">
-                            Start Test →
-                        </button>
-                    `;
-                    listContainer.appendChild(div);
-                });
+            filteredTests.forEach((t, index) => {
+                // Use the test 'id' stored in the array for the key
+                const key = t.id;
+                const div = document.createElement('div');
+                div.className = 'test-item flex justify-between items-center';
+                div.style.animationDelay = `${index * 0.1}s`;
+                div.classList.add('slide-in');
+                div.innerHTML = `
+                    <div class="test-info flex-1">
+                        <h3 class="flex items-center text-base font-bold text-slate-800 mb-1">
+                            <img src="images/logo.png" alt="Test Icon" class="w-4 h-4 mr-2"> 
+                            ${t.testName || 'Untitled Test'}
+                        </h3>
+                        <span class="badge">${t.questions ? t.questions.length : 0} Questions</span>
+                    </div>
+                    <button class="btn" onclick="openLoginModal('${key}')">
+                        Start Test →
+                    </button>
+                `;
+                listContainer.appendChild(div);
             });
         }
 
         function openLoginModal(testId) {
             currentTestId = testId;
-            dbTests.ref('tests/' + testId).once('value').then(snap => {
-                currentTestData = snap.val();
-                switchView('view-login');
-                document.getElementById('roll-input').value = '';
-                document.getElementById('login-error').innerText = '';
-            });
+            // Find the test data from the 'allTests' array using the testId
+            currentTestData = allTests.find(t => t.id === testId);
+            
+            if (!currentTestData) {
+                 alert("Error: Test data not found.");
+                 return;
+            }
+
+            switchView('view-login');
+            document.getElementById('roll-input').value = '';
+            document.getElementById('login-error').innerText = '';
         }
 
         function verifyStudent() {
