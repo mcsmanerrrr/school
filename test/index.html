@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maner Central School - Students Online Test</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* --- LIGHT THEME UPDATE --- */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            /* Light Background */
+            background: #f1f5f9; /* Slate 100 */
+            background-attachment: fixed;
+            color: #1e293b; /* Slate 800 */
+            min-height: 100vh;
+        }
+
+        /* Animated gradient background - Adjust for light theme */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 1.5rem; 
+            position: relative;
+            z-index: 1;
+        }
+
+        .hidden { display: none !important; }
+        
+        /* Smooth Animations (kept as is) */
+        .fade-in { 
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; 
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        /* --- HEADER UPDATE: COMPACT VERSION --- */
+        .app-header {
+            /* Kept the blue gradient for branding, but text is dark on light theme */
+            background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+            border-bottom: 2px solid #60a5fa;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            padding-top: 0.75rem; /* Reduced Padding */
+            padding-bottom: 0.75rem; /* Reduced Padding */
+            margin-bottom: 1.5rem; /* Reduced Margin */
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+            pointer-events: none;
+        }
+
+        .school-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Logo size update: 50px */
+        .school-logo {
+            width: 50px; 
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            padding: 3px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .school-logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Title size update: 1.25rem */
+        .school-info h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Subtitle size update: 0.875rem */
+        .school-info p {
+            color: #bfdbfe;
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        /* --- GLASS CARD UPDATE: MORE COMPACT FOR LIGHT THEME --- */
+        .glass-card { 
+            /* Light Glass Effect */
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 1rem; /* Reduced Border Radius */
+            padding: 1.5rem; /* Reduced Padding */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            /* Reduced hover effect */
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Input Styling - Adjust for light theme */
+        input[type="text"] {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            color: #1e293b;
+            padding: 0.75rem; /* Reduced Padding */
+            border-radius: 0.5rem; /* Reduced Border Radius */
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        input[type="text"]::placeholder {
+            color: #64748b;
+        }
+
+        /* Button Styles (kept colors, ensured text is visible on light background) */
+        .btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem; /* Reduced Padding */
+            border-radius: 0.5rem; /* Reduced Border Radius */
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px); /* Reduced hover lift effect */
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #6366f1;
+            color: #6366f1; /* Changed text color for light theme */
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Test Item Card - Adjust for light theme */
+        .test-item {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem; /* Reduced Border Radius */
+            padding: 1rem; /* Reduced Padding */
+            margin-bottom: 0.75rem; /* Reduced Margin */
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-item:hover {
+            transform: translateX(4px); /* Reduced hover effect */
+            border-color: rgba(99, 102, 241, 0.5);
+            background: #f8fafc; /* Slightly darker white on hover */
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+        }
+
+        .test-info h3 {
+            color: #1e293b; /* Dark text */
+        }
+
+        /* Question Options - Adjust for light theme */
+        .option-label {
+            display: flex;
+            align-items: start;
+            padding: 1rem; /* Reduced Padding */
+            background: #f8fafc; /* Light background */
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem; /* Reduced Border Radius */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem; /* Reduced Margin */
+        }
+
+        .option-label:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateX(2px);
+        }
+
+        .option-label input[type="radio"] {
+            margin-right: 1rem;
+            width: 18px;
+            height: 18px;
+            accent-color: #6366f1;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .option-label:has(input:checked) {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .option-label span {
+            color: #1e293b; /* Dark text */
+        }
+
+        /* Student Badge - Adjust for light theme */
+        .student-badge {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 0.75rem; /* Reduced Border Radius */
+            padding: 1.25rem; /* Reduced Padding */
+            align-items: center;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem; /* Reduced Margin */
+        }
+
+        .student-badge img {
+            width: 60px; /* Reduced Image Size */
+            height: 60px; /* Reduced Image Size */
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #6366f1;
+            box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .student-badge h3 {
+            color: #4f46e5; /* Adjusted color for light theme visibility */
+        }
+
+        .student-badge p {
+            color: #64748b;
+        }
+
+        .student-badge .font-semibold {
+            color: #1e293b; /* Dark text for emphasis */
+        }
+
+        /* Question Block - Adjust for light theme */
+        .question-block {
+            background: #ffffff;
+            border-left: 4px solid #6366f1;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .question-block:hover {
+            background: #f8fafc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .question-block .font-semibold {
+            color: #1e293b; /* Dark text */
+        }
+
+        /* --- RESULT SCORE UPDATE: SMALLER & RESPONSIVE --- */
+        .result-score {
+            font-size: 3.5rem; /* Updated Size */
+            font-weight: 900;
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%); /* Darker gradient for text on light background */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @media (max-width: 768px) {
+            /* Responsive update for result score */
+            .result-score {
+                font-size: 3rem; 
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Leaderboard - Adjust for light theme */
+        table {
+            border-spacing: 0 0.35rem; /* Slightly smaller gap */
+        }
+
+        th {
+            color: #64748b; /* Adjusted color */
+            padding: 0.75rem;
+        }
+
+        td {
+            padding: 0.75rem;
+            background: #ffffff;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            color: #1e293b; /* Dark text */
+        }
+
+        tr td:first-child {
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 0.5rem 0 0 0.5rem;
+        }
+
+        tr td:last-child {
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .rank-1 { color: #d97706; font-size: 1.25rem; } /* Adjusted colors for visibility */
+        .rank-2 { color: #4b5563; font-size: 1.1rem; }
+        .rank-3 { color: #c2410c; font-size: 1.1rem; }
+
+        /* Badge Styles - Adjust for light theme */
+        .badge {
+            padding: 0.3rem 0.75rem;
+            font-size: 0.8rem;
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* Loading Animation - Adjust for light theme */
+        .loading {
+            border: 3px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #6366f1;
+        }
+
+        /* Scrollbar (kept dark theme scrollbar as is for contrast) */
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .school-logo-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .school-info h1 {
+                font-size: 1.1rem; /* Slightly smaller on mobile */
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="container">
+            <div class="school-logo-container">
+                <img src="https://via.placeholder.com/80x80/ffffff/1e3a8a?text=MCS" alt="School Logo" class="school-logo">
+                <div class="school-info">
+                    <h1>Maner Central School</h1>
+                    <p>Patna, Bihar (CBSE)</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div id="view-test-list" class="fade-in">
+            <div class="glass-card">
+                <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    📚 Available Tests
+                </h2>
+                <div id="test-list-container">
+                    <p class="text-center text-slate-500 py-6">
+                        <span class="loading"></span>
+                        <span class="ml-2">Loading tests...</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-login" class="glass-card hidden fade-in mx-auto" style="max-width: 480px;">
+            <div class="text-center mb-6">
+                <div class="text-5xl mb-3">🎓</div>
+                <h2 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">
+                    Student Verification
+                </h2>
+                <p class="text-slate-500 text-sm">Enter your Roll Number to begin</p>
+            </div>
+            <input type="text" id="roll-input" placeholder="Roll Number (e.g., 101)" autocomplete="off" class="mb-3">
+            <button class="btn w-full mb-2" onclick="verifyStudent()">Verify & Start Test</button>
+            <p id="login-error" class="text-red-600 text-sm text-center mb-2"></p>
+            <button class="btn btn-outline w-full" onclick="goHome()">Cancel</button>
+        </div>
+
+        <div id="view-quiz" class="hidden fade-in">
+            <div class="student-badge slide-in">
+                <img id="quiz-stu-img" src="https://via.placeholder.com/80" alt="Student">
+                <div>
+                    <h3 id="quiz-stu-name" class="text-xl font-bold">Student Name</h3>
+                    <p class="text-slate-500">
+                        Roll: <span id="quiz-stu-roll" class="font-semibold">--</span> | 
+                        Class: <span id="quiz-stu-class" class="font-semibold">--</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2 id="quiz-title" class="text-xl font-bold mb-4 pb-3 border-b border-slate-200">Test Title</h2>
+                <div id="questions-container"></div>
+                <button class="btn btn-success w-full mt-4" onclick="submitTest()">
+                    🎯 Submit Test
+                </button>
+            </div>
+        </div>
+
+        <div id="view-result" class="hidden fade-in">
+            <div class="glass-card text-center mb-4" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);">
+                <div class="text-5xl mb-3">🎉</div>
+                <h2 class="text-3xl font-extrabold mb-4">Test Completed!</h2>
+                <div class="result-score my-4">
+                    <span id="res-score">0</span>/<span id="res-total">0</span>
+                </div>
+                <p id="res-msg" class="text-xl font-semibold text-slate-600">Great Work!</p>
+            </div>
+
+            <div class="glass-card mb-4">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <span>🏆</span>
+                    <span class="bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                        Top Performers
+                    </span>
+                </h3>
+                <div class="overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="15%">Rank</th>
+                                <th>Student</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <tr>
+                                <td colspan="3" class="text-center text-slate-500">
+                                    <span class="loading"></span>
+                                    <span class="ml-2">Loading rankings...</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3 class="text-xl font-bold mb-4">📊 Detailed Analysis</h3>
+                <div id="analytics-container"></div>
+                <button class="btn btn-outline w-full mt-4" onclick="goHome()">
+                    ← Back to Home
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Firebase Configuration (No changes here, kept as is)
+        const testConfig = {
+            apiKey: "AIzaSyBOlLdFHePu9BeAg-hgpefTez1leuNcGg4",
+            authDomain: "mcs-school1.firebaseapp.com",
+            databaseURL: "https://mcs-school1-default-rtdb.firebaseio.com",
+            projectId: "mcs-school1",
+            storageBucket: "mcs-school1.firebasestorage.app",
+            messagingSenderId: "867300205787",
+            appId: "1:867300205787:web:2127d06bfede974be458fe"
+        };
+
+        const studentConfig = {
+            apiKey: "AIzaSyDJfzkrdZqHWi0y9OTPQ-IpaJbA8JJkRSg",
+            authDomain: "paymcs-371be.firebaseapp.com",
+            databaseURL: "https://paymcs-371be-default-rtdb.firebaseio.com",
+            projectId: "paymcs-371be",
+            storageBucket: "paymcs-371be.firebasestorage.app",
+            messagingSenderId: "676822362839",
+            appId: "1:676822362839:web:cc55be2492db86b5469e92"
+        };
+
+        const testApp = firebase.initializeApp(testConfig, "testApp");
+        const dbTests = testApp.database();
+
+        const stuApp = firebase.initializeApp(studentConfig, "stuApp");
+        const dbStudents = stuApp.database();
+
+        let currentTestId = null;
+        let currentTestData = null;
+        let currentStudentData = null;
+
+        window.onload = function() {
+            loadAllTests();
+        };
+
+        function loadAllTests() {
+            const listContainer = document.getElementById('test-list-container');
+            
+            dbTests.ref('tests').on('value', (snapshot) => {
+                listContainer.innerHTML = '';
+                const tests = snapshot.val();
+
+                if (!tests) {
+                    listContainer.innerHTML = '<p class="text-center text-slate-500 py-6">No active tests found.</p>';
+                    return;
+                }
+
+                Object.keys(tests).forEach((key, index) => {
+                    const t = tests[key];
+                    const div = document.createElement('div');
+                    div.className = 'test-item flex justify-between items-center';
+                    div.style.animationDelay = `${index * 0.1}s`;
+                    div.classList.add('slide-in');
+                    div.innerHTML = `
+                        <div class="test-info flex-1">
+                            <h3 class="flex items-center text-base font-bold text-slate-800 mb-1">
+                                <img src="https://via.placeholder.com/16x16/6366f1/ffffff?text=T" alt="Test Icon" class="w-4 h-4 mr-2"> 
+                                ${t.testName || 'Untitled Test'}
+                            </h3>
+                            <span class="badge">${t.questions ? t.questions.length : 0} Questions</span>
+                        </div>
+                        <button class="btn" onclick="openLoginModal('${key}')">
+                            Start Test →
+                        </button>
+                    `;
+                    listContainer.appendChild(div);
+                });
+            });
+        }
+
+        function openLoginModal(testId) {
+            currentTestId = testId;
+            dbTests.ref('tests/' + testId).once('value').then(snap => {
+                currentTestData = snap.val();
+                switchView('view-login');
+                document.getElementById('roll-input').value = '';
+                document.getElementById('login-error').innerText = '';
+            });
+        }
+
+        function verifyStudent() {
+            const rollInput = document.getElementById('roll-input').value.trim();
+            const errorText = document.getElementById('login-error');
+            const btn = document.querySelector('#view-login .btn:not(.btn-outline)');
+
+            if (!rollInput) {
+                errorText.innerText = "⚠️ Please enter a roll number.";
+                return;
+            }
+
+            btn.innerHTML = '<span class="loading"></span> <span class="ml-2">Verifying...</span>';
+            btn.disabled = true;
+            
+            dbStudents.ref('students')
+                .orderByChild('rollNo')
+                .equalTo(rollInput)
+                .once('value')
+                .then(snapshot => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        const uniqueKey = Object.keys(data)[0]; 
+                        currentStudentData = data[uniqueKey];
+                        startQuiz();
+                    } else {
+                        errorText.innerText = "❌ Roll number not found. Please check and try again.";
+                        btn.innerText = "Verify & Start Test";
+                        btn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    errorText.innerText = "⚠️ Connection error. Please try again.";
+                    btn.innerText = "Verify & Start Test";
+                    btn.disabled = false;
+                });
+        }
+
+        function startQuiz() {
+            const studentName = currentStudentData.name || "Student";
+            const studentRoll = currentStudentData.rollNo || "N/A";
+            const studentClass = currentStudentData.class || "N/A";
+            const studentPhoto = currentStudentData.photo || "https://via.placeholder.com/80";
+
+            document.getElementById('quiz-stu-name').innerText = studentName;
+            document.getElementById('quiz-stu-roll').innerText = studentRoll;
+            document.getElementById('quiz-stu-class').innerText = studentClass;
+            document.getElementById('quiz-stu-img').src = studentPhoto;
+
+            document.getElementById('quiz-title').innerText = currentTestData.testName;
+            const qContainer = document.getElementById('questions-container');
+            qContainer.innerHTML = '';
+
+            if(!currentTestData.questions) {
+                alert("Error: No questions in this test.");
+                return;
+            }
+
+            currentTestData.questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question-block fade-in';
+                qDiv.style.animationDelay = `${index * 0.1}s`;
+                
+                let optionsHtml = '';
+                const opts = ['option1', 'option2', 'option3', 'option4'];
+                
+                opts.forEach((optKey) => {
+                    if(q[optKey]) {
+                        optionsHtml += `
+                            <label class="option-label">
+                                <input type="radio" name="q_${index}" value="${optKey}">
+                                <span class="text-slate-800">${q[optKey]}</span>
+                            </label>
+                        `;
+                    }
+                });
+
+                qDiv.innerHTML = `
+                    <div class="text-base font-semibold text-slate-800 mb-3">
+                        ${index + 1}. ${q.question}
+                    </div>
+                    <div class="options-list">${optionsHtml}</div>
+                `;
+                qContainer.appendChild(qDiv);
+            });
+
+            switchView('view-quiz');
+        }
+
+        function submitTest() {
+            if(!confirm("⚠️ Are you sure you want to submit? You cannot change answers after submission.")) return;
+            
+            const btn = document.querySelector('#view-quiz button');
+            btn.innerHTML = '<span class="loading"></span> <span class="ml-2">Submitting...</span>';
+            btn.disabled = true;
+
+            let score = 0;
+            let total = currentTestData.questions.length;
+            let userAnswers = [];
+
+            currentTestData.questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q_${index}"]:checked`);
+                const userVal = selected ? selected.value : null;
+                
+                if (userVal === q.correctOption) {
+                    score++;
+                }
+
+                userAnswers.push({
+                    question: q.question,
+                    userSelected: userVal,
+                    correctKey: q.correctOption,
+                    options: {
+                        option1: q.option1,
+                        option2: q.option2,
+                        option3: q.option3,
+                        option4: q.option4
+                    }
+                });
+            });
+
+            const resultData = {
+                studentName: currentStudentData.name || currentStudentData.rollNo, 
+                rollNo: currentStudentData.rollNo,
+                photo: currentStudentData.photo || "",
+                score: score,
+                total: total,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            dbTests.ref(`results/${currentTestId}/${currentStudentData.rollNo}`).set(resultData)
+                .then(() => {
+                    btn.innerHTML = '🎯 Submit Test';
+                    btn.disabled = false;
+                    showAnalytics(score, total, userAnswers);
+                })
+                .catch(error => {
+                    btn.innerHTML = '🎯 Submit Test';
+                    btn.disabled = false;
+                    console.error("Firebase Submission Error:", error);
+                    alert("⚠️ Error submitting test. Please contact the administrator. (Error: " + error.message + ")");
+                });
+        }
+
+        function showAnalytics(score, total, userAnswers) {
+            document.getElementById('res-score').innerText = score;
+            document.getElementById('res-total').innerText = total;
+            
+            const percentage = (score / total) * 100;
+            const msgEl = document.getElementById('res-msg');
+            
+            if (percentage >= 90) {
+                msgEl.innerText = "🌟 Outstanding Performance!";
+            } else if (percentage >= 75) {
+                msgEl.innerText = "🎉 Excellent Work!";
+            } else if (percentage >= 60) {
+                msgEl.innerText = "👍 Good Job!";
+            } else if (percentage >= 40) {
+                msgEl.innerText = "💪 Keep Practicing!";
+            } else {
+                msgEl.innerText = "📚 Need More Practice!";
+            }
+            
+            const container = document.getElementById('analytics-container');
+            container.innerHTML = '';
+
+            userAnswers.forEach((item, idx) => {
+                const isCorrect = item.userSelected === item.correctKey;
+                
+                const div = document.createElement('div');
+                div.className = 'question-block fade-in';
+                div.style.animationDelay = `${idx * 0.05}s`;
+                
+                if (isCorrect) {
+                    div.style.borderLeft = "4px solid #10b981"; /* Green */
+                    div.style.background = "rgba(16, 185, 129, 0.05)";
+                } else {
+                    div.style.borderLeft = "4px solid #ef4444"; /* Red */
+                    div.style.background = "rgba(239, 68, 68, 0.05)";
+                }
+
+                const userAnsText = item.userSelected ? item.options[item.userSelected] : "<span class='text-red-600 font-semibold'>Not Answered</span>";
+                const correctAnsText = item.options[item.correctKey];
+
+                let html = `<div class="text-base font-semibold text-slate-800 mb-3">${idx+1}. ${item.question}</div>`;
+                
+                if(isCorrect) {
+                    html += `<div class="text-sm text-green-600 font-medium mt-2">✅ Your Answer: ${userAnsText} (Correct)</div>`;
+                } else {
+                    html += `<div class="text-sm text-red-600 font-medium mt-2">❌ Your Answer: ${userAnsText}</div>`;
+                    html += `<div class="text-sm text-green-600 font-medium mt-1">💡 Correct Answer: ${correctAnsText}</div>`;
+                }
+
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
+
+            loadLeaderboard();
+            switchView('view-result');
+        }
+
+        function loadLeaderboard() {
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-slate-500"><span class="loading"></span> <span class="ml-2">Loading rankings...</span></td></tr>';
+
+            dbTests.ref(`results/${currentTestId}`).orderByChild('score').limitToLast(10).once('value')
+                .then(snap => {
+                    tbody.innerHTML = '';
+                    const results = [];
+                    snap.forEach(child => {
+                        results.push(child.val());
+                    });
+
+                    results.sort((a, b) => b.score - a.score); // Re-sort in JS to handle ties correctly for ranking display
+
+                    if(results.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-slate-500">No results yet.</td></tr>';
+                        return;
+                    }
+
+                    results.forEach((r, i) => {
+                        const rankClass = i === 0 ? 'rank-1' : (i === 1 ? 'rank-2' : (i === 2 ? 'rank-3' : ''));
+                        const tr = document.createElement('tr');
+                        tr.className = 'fade-in';
+                        tr.style.animationDelay = `${i * 0.1}s`;
+                        
+                        let rankIcon = '';
+                        if (i === 0) rankIcon = '🥇';
+                        else if (i === 1) rankIcon = '🥈';
+                        else if (i === 2) rankIcon = '🥉';
+                        
+                        tr.innerHTML = `
+                            <td class="${rankClass} text-center font-extrabold">
+                                ${rankIcon} #${i+1}
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <img src="${r.photo || 'https://via.placeholder.com/30'}" alt="Photo" class="w-8 h-8 rounded-full object-cover border-2 border-indigo-400">
+                                    <span class="font-medium text-slate-800">${r.studentName}</span>
+                                </div>
+                            </td>
+                            <td><strong class="text-lg text-indigo-600">${r.score}/${r.total}</strong></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(error => {
+                    console.error("Leaderboard loading error:", error);
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-red-600 text-center">⚠️ Error loading leaderboard.</td></tr>';
+                });
+        }
+
+        function switchView(viewId) {
+            ['view-test-list', 'view-login', 'view-quiz', 'view-result'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goHome() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
