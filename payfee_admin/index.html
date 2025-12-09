@@ -672,20 +672,35 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Saving...';
             
+            // Collect subject data and validate completeness
+            const subjects = [];
+            const subjectRows = document.querySelectorAll('#subjects-container > div');
+            subjectRows.forEach(row => {
+                const nameInput = row.querySelector('.subject-name');
+                const marksInput = row.querySelector('.subject-marks');
+                const gradeInput = row.querySelector('.subject-grade');
+                
+                const name = nameInput ? nameInput.value.trim() : '';
+                const marks = marksInput ? parseInt(marksInput.value) : NaN;
+                const grade = gradeInput ? gradeInput.value.trim() : '';
+                
+                // Only count subjects that have all three required fields filled and valid marks (0-100)
+                if (name && !isNaN(marks) && marks >= 0 && marks <= 100 && grade) {
+                    subjects.push({ name, marks, grade });
+                }
+            });
+
+            // *** NEW VALIDATION LOGIC FOR ACADEMIC PERFORMANCE ***
+            if (subjects.length < 2) {
+                showNotification('Please add at least two complete subjects (Name, Marks, Grade) in Academic Performance to save.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Student';
+                return; // Stop form submission
+            }
+            // ***************************************************
+            
             try {
                 const studentKey = document.getElementById('student-key').value || 'student_' + Date.now();
-                
-                // Collect subject data
-                const subjects = [];
-                const subjectRows = document.querySelectorAll('#subjects-container > div');
-                subjectRows.forEach(row => {
-                    const name = row.querySelector('.subject-name').value;
-                    const marks = parseInt(row.querySelector('.subject-marks').value);
-                    const grade = row.querySelector('.subject-grade').value;
-                    if (name && marks >= 0 && grade) {
-                        subjects.push({ name, marks, grade });
-                    }
-                });
                 
                 const totalFee = parseFloat(document.getElementById('fee-total').value);
                 const paidFee = parseFloat(document.getElementById('fee-paid').value);
