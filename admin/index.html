@@ -300,11 +300,13 @@
             <nav>
                 <a href="#" class="nav-link active" data-section="marquee-management-section">Marquee & Notices</a>
                 <a href="#" class="nav-link" data-section="news-management-section">News & Events</a>
-                <a href="#" class="nav-link" data-section="test-management-section">Manage Tests 📝</a> <a href="#" class="nav-link" data-section="circulars-management-section">Circulars</a>
+                <a href="#" class="nav-link" data-section="test-management-section">Manage Tests 📝</a>
+                <a href="#" class="nav-link" data-section="circulars-management-section">Circulars</a>
                 <a href="#" class="nav-link" data-section="academic-management-section">Academic Links</a>
                 <a href="#" class="nav-link" data-section="downloads-management-section">Downloads</a>
                 <a href="#" class="nav-link" data-section="gallery-management-section">Gallery 📸</a>
                 <a href="#" class="nav-link" data-section="home-gallery-management-section">Home Gallery 🖼️</a>
+                <a href="#" class="nav-link" data-section="toppers-management-section">Toppers Management 🏆</a>
                 <a href="#" class="nav-link" data-section="banner-management-section">Home Banner 📢</a>
             </nav>
             <div class="p-6 border-t border-gray-700 mt-auto">
@@ -553,7 +555,44 @@
                     <div id="list-home-gallery"></div>
                 </div>
             </section>
+            
+            <section id="toppers-management-section" class="space-y-6 hidden">
+                <div class="section-card">
+                    <div class="card-header">Add New Academic Topper</div>
+                    <form id="form-toppers" class="space-y-4">
+                        <div>
+                            <label class="label-text">Topper's Name</label>
+                            <input type="text" id="topper-name" required class="input-field" placeholder="E.g., Sneha Kumari">
+                        </div>
+                        <div>
+                            <label class="label-text">Percentage/Score</label>
+                            <input type="text" id="topper-percentage" required class="input-field" placeholder="E.g., 97% or 485/500">
+                        </div>
+                        <div>
+                            <label class="label-text">Position</label>
+                            <input type="text" id="topper-position" required class="input-field" placeholder="E.g., 1st Position">
+                        </div>
+                        <div>
+                            <label class="label-text">Detail/Class (E.g., 10th CBSE)</label>
+                            <input type="text" id="topper-detail" required class="input-field" placeholder="E.g., 10th C.B.S.E. or 12th Science">
+                        </div>
+                        <div>
+                            <label class="label-text">Image URL (Direct Link - Portrait format recommended)</label>
+                            <input type="url" id="topper-image-url" required class="input-field" placeholder="https://mcs.in/images/topper.jpg">
+                        </div>
+                        <div>
+                            <label class="label-text">Display Order (Lower number appears first)</label>
+                            <input type="number" id="topper-order" class="input-field" value="1" min="1">
+                        </div>
+                        <button type="submit" class="btn-primary">Add Topper</button>
+                    </form>
+                </div>
 
+                <div class="section-card">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">🏆 Current Academic Toppers</h3>
+                    <div id="list-toppers"></div>
+                </div>
+            </section>
             <section id="banner-management-section" class="space-y-6 hidden">
                 <div class="section-card">
                     <div class="card-header">Home Popup Banner Content</div>
@@ -675,7 +714,7 @@
                 const targetSection = document.getElementById(targetId);
                 if (targetSection) {
                     targetSection.classList.remove('hidden');
-                    document.getElementById('section-title').textContent = titleText.replace(/📸|🖼️|📢|📝/g, '').trim() + ' Management';
+                    document.getElementById('section-title').textContent = titleText.replace(/📸|🖼️|📢|📝|🏆/g, '').trim() + ' Management';
                 }
 
                 switch(targetId) {
@@ -686,8 +725,9 @@
                     case 'downloads-management-section': loadDownloads(); break;
                     case 'gallery-management-section': loadGalleryImages(); break;
                     case 'home-gallery-management-section': loadHomeGalleryImages(); break;
+                    case 'toppers-management-section': loadToppers(); break; // NEW
                     case 'banner-management-section': loadBannerData(); break;
-                    case 'test-management-section': loadTests(); break; // NEW
+                    case 'test-management-section': loadTests(); break;
                 }
             });
         });
@@ -817,6 +857,37 @@
                     document.getElementById('form-downloads').reset();
                     showToast('Download added!');
                 } catch (error) { showToast(error.message, 'error'); }
+            });
+            
+            // --- NEW: TOPPERS FORM HANDLER ---
+            document.getElementById('form-toppers').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('topper-name').value;
+                const percentage = document.getElementById('topper-percentage').value;
+                const position = document.getElementById('topper-position').value;
+                const detail = document.getElementById('topper-detail').value;
+                const imageUrl = document.getElementById('topper-image-url').value;
+                const order = document.getElementById('topper-order').value;
+
+                if (!name.trim() || !percentage.trim() || !position.trim() || !detail.trim() || !imageUrl.trim()) {
+                    return showToast('Please fill all required fields.', 'info');
+                }
+
+                try {
+                    await set(push(ref(database, 'toppers')), { 
+                        name: name.trim(), 
+                        percentage: percentage.trim(), 
+                        position: position.trim(),
+                        detail: detail.trim(),
+                        imageURL: imageUrl.trim(),
+                        order: parseInt(order) || 1,
+                        createdAt: new Date().toISOString()
+                    });
+                    document.getElementById('form-toppers').reset();
+                    showToast('Topper added successfully!');
+                } catch (error) { 
+                    showToast(error.message, 'error'); 
+                }
             });
         }
         
@@ -1078,6 +1149,36 @@
                 });
             });
         }
+        
+        // --- NEW: TOPPERS LIST LOADER ---
+        function loadToppers() {
+            const listElement = document.getElementById('list-toppers');
+            onValue(ref(database, 'toppers'), (snapshot) => {
+                listElement.innerHTML = '';
+                const data = snapshot.val();
+                if (!data) return listElement.innerHTML = '<p class="text-gray-500 text-center py-4">No toppers added yet.</p>';
+                
+                Object.entries(data).map(([key, value]) => ({ key, ...value }))
+                    .sort((a, b) => (a.order || 999) - (b.order || 999))
+                    .forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.innerHTML = `
+                        <div class="flex-1 flex items-center gap-4">
+                            <img src="${escapeHtml(item.imageURL || 'https://placehold.co/50x70?text=No+Image')}" class="w-12 h-16 object-cover rounded-md">
+                            <div>
+                                <p class="font-semibold text-gray-800">${escapeHtml(item.name)} (${escapeHtml(item.percentage)})</p>
+                                <p class="text-xs text-gray-500 mt-1">${escapeHtml(item.position)} - ${escapeHtml(item.detail)} (Order: ${item.order || 1})</p>
+                            </div>
+                        </div>
+                        <button onclick="deleteItem('toppers', '${item.key}')" class="btn-delete">🗑️ Delete</button>
+                    `;
+                    listElement.appendChild(div);
+                });
+            });
+        }
+        // --- END: NEW TOPPERS LIST LOADER ---
+
 
         function loadCirculars() {
             const listElement = document.getElementById('list-circulars');
