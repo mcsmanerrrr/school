@@ -90,7 +90,6 @@
             from { transform: scale(1); opacity: 1; }
             to { transform: scale(0.8); opacity: 0; }
         }
-        /* ADDED: For "live image" look */
         @keyframes pulse-live {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.01); }
@@ -99,6 +98,129 @@
             animation: pulse-live 3s ease-in-out infinite;
         }
         /* END: New Popup Banner Styles */
+        
+        /* UPDATED: Topper Styles (Compact) */
+        .topper-card {
+            scroll-snap-align: start;
+            flex: 0 0 45%; 
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            cursor: pointer;
+            padding: 0.5rem; 
+        }
+        .topper-card:hover {
+             transform: translateY(-5px);
+             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+        }
+        .topper-image-container {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2 px 4px -2px rgba(0, 0, 0, 0.1);
+            position: relative;
+            border: 3px solid #00b8e6; 
+        }
+        .topper-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            aspect-ratio: 1 / 1.25; 
+            display: block;
+        }
+        .topper-caption {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            right: 0;
+            background: rgba(0, 184, 230, 0.9); 
+            color: white;
+            padding: 0.25rem 0.25rem; 
+            font-weight: 800; 
+            text-align: center;
+            font-size: 0.75rem; 
+            line-height: 1.2;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
+        }
+        /* Topper Slider Container */
+        .toppers-scroll-container {
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .toppers-scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .toppers-scroll-container::-webkit-scrollbar-thumb {
+            background: #00b8e6;
+            border-radius: 10px;
+        }
+        .toppers-scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        @media (min-width: 640px) { /* sm */
+            .topper-card {
+                flex: 0 0 30%; 
+            }
+        }
+        @media (min-width: 1024px) { /* lg */
+            .topper-card {
+                flex: 0 0 18%; 
+            }
+        }
+
+        /* NEW: Celebration Overlay Styles (Pure JS/CSS Confetti Method) */
+        #celebration-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999 !important; 
+            pointer-events: none !important; 
+            overflow: hidden; 
+            transition: opacity 0.5s ease-out; 
+            background: rgba(255, 255, 255, 0); 
+        }
+
+        .confetti-particle {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 1;
+            /* Use transition for the animation effect */
+            transition: transform 0ms linear, opacity 0ms linear; 
+            will-change: transform, opacity;
+        }
+        
+        /* NEW: Congratulatory Message Styles */
+        .celebration-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem; /* Large size */
+            font-weight: 900;
+            color: #FFF; /* White text */
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7);
+            opacity: 0; /* Starts hidden */
+            animation: fadeInOut 15s ease-in-out forwards;
+            pointer-events: none;
+            text-align: center;
+            z-index: 10000;
+            line-height: 1.2;
+            font-family: 'Inter', sans-serif;
+            background-color: rgba(52, 58, 64, 0.8); /* Semi-transparent dark background for readability */
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            box-sizing: border-box;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            5% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            95% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
+        }
+        /* END: Congratulatory Message Styles */
     </style>
    <link rel="apple-touch-icon" sizes="180x180" href="https://manercentralschool.in/images/logo.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://manercentralschool.in/images/logo.png">
@@ -301,6 +423,16 @@
             </div>
         </section>
 
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 bg-gray-50 rounded-lg shadow-inner">
+            <h2 class="text-2xl sm:text-3xl font-extrabold school-primary-text mb-6 institutional-border inline-block pb-2">
+                <span class="school-accent-text">✨</span> OUR ACADEMIC LEADERS <span class="school-accent-text">🏆</span>
+            </h2>
+            
+            <div id="toppers-list-container" class="toppers-scroll-container flex space-x-4 pb-4">
+                <div class="flex-shrink-0 w-full text-center text-gray-500 py-10">Loading Toppers...</div>
+            </div>
+            
+        </section>
         <section class="school-primary py-10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-xl sm:text-3xl font-extrabold text-white mb-2">Affiliated to the Central Board of Secondary Education (CBSE)</h2>
@@ -370,6 +502,9 @@
             </a>
         </div>
     </div>
+    
+    <div id="celebration-overlay" class="hidden"></div>
+    
     <script type="module">
         const firebaseConfig = {
             databaseURL: "https://mcs-school1-default-rtdb.firebaseio.com/"
@@ -555,13 +690,140 @@
             });
         }
         
-        // --- START: NEW POPUP BANNER FUNCTION (UPDATED) ---
+        // celebt
+        function triggerCelebrationAnimation(name) {
+            const overlay = document.getElementById('celebration-overlay');
+            if (!overlay) return;
+
+            const confettiCharacters = ['🎉', '🎈', '✨', '⭐', '🏆', '💯', '💙', '🟡'];
+            const numParticles = 80; 
+            const duration = 100000; // **MODIFIED: Increased to 15000ms**
+
+            // Show the overlay
+            overlay.classList.remove('hidden');
+            overlay.innerHTML = ''; 
+            
+            // Add the congratulatory message
+            const message = document.createElement('div');
+            message.className = 'celebration-message';
+            // **MODIFIED: Display "Congratulations!" with the student's name**
+            message.innerHTML = `Congratulations!<br><span class="school-accent-text">${name}</span>`; 
+            overlay.appendChild(message);
+
+
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'confetti-particle';
+                particle.textContent = confettiCharacters[Math.floor(Math.random() * confettiCharacters.length)];
+
+                // Initial position: center of the screen, slightly randomized
+                const startX = (Math.random() * 50) + 25; // 25% to 75%
+                const startY = (Math.random() * 50) + 25; // 25% to 75%
+                
+                particle.style.left = startX + 'vw';
+                particle.style.top = startY + 'vh';
+                
+                // Set initial transform (opacity and position for animation)
+                particle.style.transform = `translate(0px, 0px) rotate(0deg)`;
+                particle.style.opacity = 1;
+                
+                overlay.appendChild(particle);
+
+                // Calculate final position
+                const endY = window.innerHeight * 1.5; // Falls off screen
+                const endXDrift = (Math.random() - 0.5) * window.innerWidth; // Drifts horizontally
+                const rotation = (Math.random() * 1080) + 720; // Spins a few times
+
+                // Set the transition property AFTER the element is placed with its starting styles
+                particle.style.transition = `transform ${duration}ms cubic-bezier(0.1, 1, 0.5, 1), opacity ${duration}ms ease-out`;
+
+                // Start the animation in the next event loop cycle
+                setTimeout(() => {
+                    particle.style.transform = `translate(${endXDrift}px, ${endY}px) rotate(${rotation}deg)`;
+                    particle.style.opacity = 0;
+                }, 50 + (Math.random() * 50)); // Stagger the start slightly
+
+                // Clean up the particle
+                setTimeout(() => {
+                    particle.remove();
+                }, duration + 50); 
+            }
+
+            // Hide the overlay container after all animations are done (plus a buffer)
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, duration + 500); 
+        }
+        // --- END: Final Pure JS Animation ---
+
+
+        // --- UPDATED TOPPER FUNCTION (Passing Name) ---
+        function fetchAndRenderToppers() {
+            const container = document.getElementById('toppers-list-container');
+            if (!container || !isDbReady) return;
+            
+            // Set up a reference to the 'toppers' node
+            const toppersRef = ref(database, 'toppers');
+            
+            onValue(toppersRef, (snapshot) => {
+                container.innerHTML = ''; 
+                let items = [];
+                const data = snapshot.val();
+                
+                if (data) {
+                    items = Object.values(data);
+                    items.sort((a, b) => (a.order || 0) - (b.order || 0));
+                }
+                
+                if (items.length === 0) {
+                    container.innerHTML = '<div class="flex-shrink-0 w-full text-center text-gray-500 py-10">No academic toppers have been added yet.</div>';
+                    return;
+                }
+                
+                items.forEach(item => {
+                    const name = item.name || 'Student Topper';
+                    const percentage = item.percentage ? `${item.percentage}` : 'N/A';
+                    const position = item.position || 'Merit';
+                    const detail = item.detail || 'Academic Achievement'; 
+                    const imageURL = item.imageURL || 'https://placehold.co/300x400/00b8e6/343a40?text=Topper'; 
+                    
+                    const card = document.createElement('div');
+                    card.className = "topper-card rounded-lg bg-white shadow-lg flex-shrink-0"; 
+                    
+                    // Attach the animation trigger to the card, passing the name
+                    card.onclick = () => triggerCelebrationAnimation(name); 
+                    
+                    // Updated card structure for smaller, more concise display
+                    card.innerHTML = `
+                        <div class="text-center">
+                            <div class="topper-image-container mb-1">
+                                <img class="topper-image" 
+                                     src="${imageURL}" 
+                                     alt="${name}">
+                                <div class="topper-caption">${name}</div>
+                            </div>
+                            <p class="school-primary-text text-xs font-extrabold leading-tight">${position}</p>
+                            <p class="school-accent-text text-xs font-bold leading-tight">${percentage}</p>
+                            <p class="text-[0.6rem] text-gray-600">${detail}</p>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+
+            }, (error) => {
+                console.error('Database Error for Toppers:', error);
+                container.innerHTML = '<div class="flex-shrink-0 w-full text-center text-red-500 py-10">Error loading toppers data.</div>';
+            });
+        }
+        // --- END: UPDATED TOPPER FUNCTION ---
+        
+        // --- START: POPUP BANNER FUNCTION (NO CHANGE) ---
         function fetchAndRenderPopupBanner() {
             const container = document.getElementById('popup-banner-container');
             const closeBtn = document.getElementById('popup-close-btn');
             const link = document.getElementById('popup-link');
             const image = document.getElementById('popup-image');
-            // const titleElement = document.getElementById('popup-title'); // Element removed per request
             const banner = document.getElementById('popup-banner');
 
             if (!container || !isDbReady) return;
@@ -570,31 +832,23 @@
             onValue(bannerRef, (snapshot) => {
                 const data = snapshot.val();
                 
-                // Check if the banner is active and content is available
                 if (data && data.isActive && data.imageURL) {
-                    // Check if the user has already closed the banner for this session
                     if (sessionStorage.getItem('mcs_popup_closed') === 'true') {
                         container.classList.add('hidden');
                         return;
                     }
                     
-                    // Populate content
                     link.href = data.linkURL || '#';
                     image.src = data.imageURL;
                     image.alt = data.title || 'Popup Banner';
-
-                    // Title logic REMOVED as per user request
                     
-                    // Show container and animate in
                     container.classList.remove('hidden');
-                    // Use CSS animation classes for smooth entry
                     banner.classList.remove('animate-scale-out'); 
                     setTimeout(() => {
                         banner.classList.add('animate-scale-in');
                     }, 50); 
 
                 } else {
-                    // Hide the banner if not active
                     container.classList.add('hidden');
                     banner.classList.remove('animate-scale-in');
                     banner.classList.remove('animate-scale-out');
@@ -603,31 +857,26 @@
                 console.error('Database Error:', error);
             });
 
-            // Close button functionality
             closeBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation(); 
                 
-                // Use CSS animation class for smooth exit
                 banner.classList.remove('animate-scale-in');
                 banner.classList.add('animate-scale-out');
                 
-                // Hide container after animation completes (300ms matches animate-scale-out duration)
                 setTimeout(() => {
                     container.classList.add('hidden');
-                    // Set a session cookie so it doesn't pop up again until the browser is closed
                     sessionStorage.setItem('mcs_popup_closed', 'true');
                 }, 300);
             });
 
-            // Allow clicking outside the banner to close it
             container.addEventListener('click', (e) => {
                 if (e.target === container) {
-                    closeBtn.click(); // Use the existing close logic
+                    closeBtn.click(); 
                 }
             });
         }
-        // --- END: NEW POPUP BANNER FUNCTION (UPDATED) ---
+        // --- END: POPUP BANNER FUNCTION (NO CHANGE) ---
 
         async function initApp() {
             try {
@@ -643,19 +892,23 @@
                 fetchAndRenderNews();
                 fetchAndRenderCirculars();
                 fetchAndRenderGallery(); 
+                fetchAndRenderToppers(); 
                 fetchAndRenderPopupBanner(); 
                 
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
-                const errorMessage = "Error: Database connection failed.";
+                const errorMessage = "Error: Database connection failed. (Check console for details)";
                 document.getElementById('marquee-notices').textContent = errorMessage;
-                document.getElementById('latest-news-list').innerHTML = `<div class="text-sm text-red-500">${errorMessage}</div>`;
-                document.getElementById('official-circulars-list').innerHTML = `<li class="text-sm text-red-500 p-2">${errorMessage}</li>`;
-                document.getElementById('academic-links-list').innerHTML = `<li class="text-sm text-red-500 p-2">${errorMessage}</li>`;
-                document.getElementById('downloads-list').innerHTML = `<li class="text-sm text-red-500 p-2">${errorMessage}</li>`;
-                // Error handling for gallery
+                document.getElementById('latest-news-list').innerHTML = `<div class=\"text-sm text-red-500\">${errorMessage}</div>`;
+                document.getElementById('official-circulars-list').innerHTML = `<li class=\"text-sm text-red-500 p-2\">${errorMessage}</li>`;
+                document.getElementById('academic-links-list').innerHTML = `<li class=\"text-sm text-red-500 p-2\">${errorMessage}</li>`;
+                document.getElementById('downloads-list').innerHTML = `<li class=\"text-sm text-red-500 p-2\">${errorMessage}</li>`;
+                
                 const galleryErr = document.getElementById('gallery-grid');
-                if(galleryErr) galleryErr.innerHTML = `<div class="col-span-full text-center text-red-500 py-10">${errorMessage}</div>`;
+                if(galleryErr) galleryErr.innerHTML = `<div class=\"col-span-full text-center text-red-500 py-10\">${errorMessage}</div>`;
+                
+                const toppersErr = document.getElementById('toppers-list-container');
+                if(toppersErr) toppersErr.innerHTML = `<div class=\"flex-shrink-0 w-full text-center text-red-500 py-10\">${errorMessage}</div>`;
             }
             
             document.getElementById('mobile-menu-btn').addEventListener('click', function() {
@@ -669,4 +922,3 @@
 
 </body>
 </html>
-
