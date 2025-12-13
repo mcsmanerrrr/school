@@ -189,38 +189,6 @@
             transition: transform 0ms linear, opacity 0ms linear; 
             will-change: transform, opacity;
         }
-        
-        /* NEW: Congratulatory Message Styles */
-        .celebration-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem; /* Large size */
-            font-weight: 900;
-            color: #FFF; /* White text */
-            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7);
-            opacity: 0; /* Starts hidden */
-            animation: fadeInOut 15s ease-in-out forwards;
-            pointer-events: none;
-            text-align: center;
-            z-index: 10000;
-            line-height: 1.2;
-            font-family: 'Inter', sans-serif;
-            background-color: rgba(52, 58, 64, 0.8); /* Semi-transparent dark background for readability */
-            padding: 1rem 2rem;
-            border-radius: 0.5rem;
-            max-width: 90%;
-            box-sizing: border-box;
-        }
-
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            5% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            95% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
-        }
-        /* END: Congratulatory Message Styles */
     </style>
    <link rel="apple-touch-icon" sizes="180x180" href="https://manercentralschool.in/images/logo.png">
 <link rel="icon" type="image/png" sizes="32x32" href="https://manercentralschool.in/images/logo.png">
@@ -690,26 +658,18 @@
             });
         }
         
-        // celebt
-        function triggerCelebrationAnimation(name) {
+        // FINAL FIX: Celebration Animation Logic (USING PURE JS/CSS METHOD)
+        function triggerCelebrationAnimation() {
             const overlay = document.getElementById('celebration-overlay');
             if (!overlay) return;
 
             const confettiCharacters = ['🎉', '🎈', '✨', '⭐', '🏆', '💯', '💙', '🟡'];
             const numParticles = 80; 
-            const duration = 100000; // **MODIFIED: Increased to 15000ms**
+            const duration = 10; // **MODIFIED: Increased from 3500ms to 6000ms for a slower animation**
 
             // Show the overlay
             overlay.classList.remove('hidden');
             overlay.innerHTML = ''; 
-            
-            // Add the congratulatory message
-            const message = document.createElement('div');
-            message.className = 'celebration-message';
-            // **MODIFIED: Display "Congratulations!" with the student's name**
-            message.innerHTML = `Congratulations!<br><span class="school-accent-text">${name}</span>`; 
-            overlay.appendChild(message);
-
 
             for (let i = 0; i < numParticles; i++) {
                 const particle = document.createElement('div');
@@ -741,7 +701,7 @@
                 setTimeout(() => {
                     particle.style.transform = `translate(${endXDrift}px, ${endY}px) rotate(${rotation}deg)`;
                     particle.style.opacity = 0;
-                }, 50 + (Math.random() * 50)); // Stagger the start slightly
+                }, 50); 
 
                 // Clean up the particle
                 setTimeout(() => {
@@ -757,7 +717,7 @@
         // --- END: Final Pure JS Animation ---
 
 
-        // --- UPDATED TOPPER FUNCTION (Passing Name) ---
+        // --- UPDATED TOPPER FUNCTION (No change here, just calling the new function) ---
         function fetchAndRenderToppers() {
             const container = document.getElementById('toppers-list-container');
             if (!container || !isDbReady) return;
@@ -790,8 +750,8 @@
                     const card = document.createElement('div');
                     card.className = "topper-card rounded-lg bg-white shadow-lg flex-shrink-0"; 
                     
-                    // Attach the animation trigger to the card, passing the name
-                    card.onclick = () => triggerCelebrationAnimation(name); 
+                    // Attach the animation trigger to the card
+                    card.onclick = triggerCelebrationAnimation; 
                     
                     // Updated card structure for smaller, more concise display
                     card.innerHTML = `
