@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Developer Message | Maner Central School Website</title>
-    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configure Tailwind for simple, clean UI -->
     <script>
         tailwind.config = {
             theme: {
@@ -32,7 +30,6 @@
 </head>
 <body class="min-h-screen antialiased">
 
-    <!-- Header/Navigation Bar (Minimal, just to link back) -->
     <header class="bg-school-blue shadow-md">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
             <h1 class="text-xl font-semibold text-white">
@@ -46,18 +43,27 @@
 
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        <!-- Main Content: Introduction and Message from Developer -->
         <section id="developer-message" class="mb-8">
             <div class="bg-white rounded-lg shadow-xl p-6 sm:p-10 border border-gray-200">
                 
-                <!-- Profile and Title -->
                 <div class="flex flex-col items-center text-center pb-8 border-b border-gray-200 mb-8">
                     
-                    <!-- Developer Profile Placeholder (Simplified) -->
-                    <img class="h-24 w-24 rounded-full object-cover mb-4 border-2 border-school-blue" 
-                         src="hs.png" 
-                         alt="Developer Profile Picture"
-                         onerror="this.onerror=null;this.src='hs.png';">
+                    <div class="relative group cursor-pointer mb-4">
+                        <a href="https://instagram.com/iknowharshit" target="_blank" rel="noopener noreferrer" class="block relative">
+                            <img class="h-24 w-24 rounded-full object-cover border-2 border-school-blue transition duration-300 group-hover:ring-4 group-hover:ring-blue-100" 
+                                 src="hs.png" 
+                                 alt="Developer Profile Picture"
+                                 onerror="this.onerror=null;this.src='hs.png';">
+                            
+                            <div class="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-lg border border-gray-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
                     
                     <p class="text-base font-medium uppercase tracking-wider text-school-blue mb-1">
                         A Message From The Developer
@@ -67,19 +73,29 @@
                     </h2>
                 </div>
 
-                <!-- Developer Message Content -->
                 <div class="text-lg text-gray-700 leading-relaxed space-y-6">
                     <p>
-                        It was an honor and a true privilege to be entrusted with the opportunity to design and develop the school's official digital home. <strong>As an alumnus of Maner Central School,</strong> this project carried immense personal significance. My primary motivation was deeply rooted in the desire to give back to the very institution that shaped my early life and career. I saw this as a chance to create a lasting digital presence a website that reflects the school's modern standards, vibrant community, and commitment to excellence. I poured my skills and dedication into every line of code to deliver a fast, accessible, and beautiful platform for everyone. I hope you find the website useful and that you like the work I've done.
+                        It was an honor and a true privilege to be entrusted with the opportunity to design and develop the school's official digital home. <strong>As an alumnus of Maner Central School,</strong> this project carried immense personal significance. My primary motivation was deeply rooted in the desire to give back to the very institution that shaped my early life and career.
                     </p>
                     <p>
-                        I sincerely hope that the entire Maner Central School community current students, teachers, parents, and alumni finds the new website useful, intuitive, and a source of pride. <strong>I hope you liked it.</strong>
+                        I sincerely hope that the entire Maner Central School community finds the new website useful, intuitive, and a source of pride. <strong>I hope you liked it.</strong>
                     </p>
                 </div>
                 
-                <!-- Simple Signature Block (Replacing Contact Button) -->
-                <div class="mt-8 pt-6 border-t border-gray-200 text-center text-xl font-semibold text-gray-800">
-                    Sincerely, Harshit Singh
+                <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col items-center space-y-4">
+                    <div class="text-xl font-semibold text-gray-800">
+                        Sincerely, Harshit Singh
+                    </div>
+                    
+                    <a href="https://instagram.com/iknowharshit" target="_blank" rel="noopener noreferrer" 
+                       class="inline-flex items-center px-6 py-2 bg-school-blue text-white font-medium rounded-full shadow-md hover:bg-opacity-90 transition duration-300 space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                        </svg>
+                        <span>Follow me on Instagram</span>
+                    </a>
                 </div>
 
             </div>
@@ -87,7 +103,6 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="mt-10 bg-white border-t border-gray-200 py-4">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
             <p>&copy; 2024 Harshit Singh. Dedicated developer for Maner Central School.</p>
@@ -96,5 +111,3 @@
 
 </body>
 </html>
-
-
