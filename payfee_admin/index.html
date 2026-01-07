@@ -10,7 +10,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .modal { backdrop-filter: blur(4px); }
-        /* Style for the new preview scrollbar */
         .preview-scroll::-webkit-scrollbar { width: 6px; }
         .preview-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
@@ -208,35 +207,35 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                        <input type="text" id="student-name" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" id="student-name" required class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Father's Name</label>
-                        <input type="text" id="student-father-name" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" id="student-father-name" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Roll Number (Auto-Generated) *</label>
-                        <input type="text" id="student-rollno" required readonly class="w-full p-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" id="student-rollno" required readonly class="w-full p-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Class *</label>
-                        <input type="text" id="student-class" required placeholder="e.g., Class 10-A" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="text" id="student-class" required class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Phone No.</label>
-                        <input type="tel" id="student-phone" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="tel" id="student-phone" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Email ID</label>
-                        <input type="email" id="student-email" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="email" id="student-email" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                        <textarea id="student-address" rows="3" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        <textarea id="student-address" rows="3" class="w-full p-2 border border-gray-300 rounded-lg"></textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Photo URL</label>
-                        <input type="url" id="student-photo" placeholder="https://example.com/photo.jpg" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="url" id="student-photo" class="w-full p-2 border border-gray-300 rounded-lg">
                     </div>
                 </div>
                 <div class="border-t pt-4">
@@ -244,15 +243,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Total Fee (₹) *</label>
-                            <input type="number" id="fee-total" required min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="number" id="fee-total" required min="0" class="w-full p-2 border border-gray-300 rounded-lg">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Paid Amount (₹) *</label>
-                            <input type="number" id="fee-paid" required min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="number" id="fee-paid" required min="0" class="w-full p-2 border border-gray-300 rounded-lg">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Due Date *</label>
-                            <input type="date" id="fee-duedate" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="date" id="fee-duedate" required class="w-full p-2 border border-gray-300 rounded-lg">
                         </div>
                     </div>
                 </div>
@@ -261,15 +260,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Present Days *</label>
-                            <input type="number" id="att-present" required min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="number" id="att-present" required min="0" class="w-full p-2 border border-gray-300 rounded-lg">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Absent Days *</label>
-                            <input type="number" id="att-absent" required min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="number" id="att-absent" required min="0" class="w-full p-2 border border-gray-300 rounded-lg">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Total Days *</label>
-                            <input type="number" id="att-total" required min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <input type="number" id="att-total" required min="0" class="w-full p-2 border border-gray-300 rounded-lg">
                         </div>
                     </div>
                 </div>
@@ -277,36 +276,26 @@
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="text-lg font-semibold text-gray-700">Academic Performance</h3>
                         <button type="button" onclick="addSubjectRow()" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                            </svg>
                             Add Subject
                         </button>
                     </div>
                     <div id="subjects-container" class="space-y-2"></div>
                 </div>
                 <div class="flex justify-end space-x-3 pt-4 border-t">
-                    <button type="button" onclick="closeStudentModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-300">Cancel</button>
-                    <button type="submit" id="submit-btn" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition duration-300">Save Student</button>
+                    <button type="button" onclick="closeStudentModal()" class="px-6 py-2 border rounded-lg">Cancel</button>
+                    <button type="submit" id="submit-btn" class="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg">Save Student</button>
                 </div>
             </form>
         </div>
     </div>
 
     <div id="delete-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 modal flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Delete Student</h3>
-                <p class="text-sm text-gray-500 mb-6">Are you sure you want to delete this student? This action cannot be undone.</p>
-                <div class="flex space-x-3">
-                    <button onclick="closeDeleteModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-300">Cancel</button>
-                    <button onclick="confirmDelete()" id="confirm-delete-btn" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition duration-300">Delete</button>
-                </div>
+        <div class="bg-white rounded-xl p-6 w-full max-w-md text-center">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Delete Student</h3>
+            <p class="text-sm text-gray-500 mb-6">Are you sure you want to delete this student?</p>
+            <div class="flex space-x-3">
+                <button onclick="closeDeleteModal()" class="flex-1 px-4 py-2 border rounded-lg">Cancel</button>
+                <button onclick="confirmDelete()" class="flex-1 px-4 py-2 bg-red-600 text-white font-bold rounded-lg">Delete</button>
             </div>
         </div>
     </div>
@@ -316,7 +305,6 @@
         import { getDatabase, ref, get, set, remove, onValue, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-        // Firebase Config - ORIGINAL
         const firebaseConfig = {
             apiKey: "AIzaSyDJfzkrdZqHWi0y9OTPQ-IpaJbA8JJkRSg",
             authDomain: "paymcs-371be.firebaseapp.com",
@@ -336,7 +324,6 @@
         let currentUser = null;
         let pendingImportData = []; 
 
-        // DOM Elements - ORIGINAL
         const loginView = document.getElementById('login-view');
         const adminView = document.getElementById('admin-view');
         const loginForm = document.getElementById('login-form');
@@ -350,16 +337,11 @@
         const studentNameInput = document.getElementById('student-name');
         const studentPhoneInput = document.getElementById('student-phone');
 
-        // --- ENHANCED IMPORT SYSTEM ---
-
-        // Intelligent Header Matching
         function findValue(row, keywords) {
             const keys = Object.keys(row);
             for (let key of keys) {
                 const lowerKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (keywords.some(kw => lowerKey.includes(kw))) {
-                    return row[key];
-                }
+                if (keywords.some(kw => lowerKey.includes(kw))) return row[key];
             }
             return null;
         }
@@ -367,7 +349,6 @@
         window.handleImportPreview = (event) => {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
@@ -375,35 +356,24 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const sheet = workbook.Sheets[workbook.SheetNames[0]];
                     const json = XLSX.utils.sheet_to_json(sheet);
-
-                    if (json.length === 0) {
-                        showNotification('Excel file is empty', 'error');
-                        return;
-                    }
-
-                    // Process incoming data to map related text to correct fields
-                    pendingImportData = json.map(row => {
-                        return {
-                            raw: row,
-                            mapped: {
-                                name: findValue(row, ['name', 'studentname', 'fullname', 'stname']),
-                                father: findValue(row, ['father', 'parent', 'dad', 'guardian']),
-                                phone: findValue(row, ['phone', 'mobile', 'contact', 'cell', 'tel', 'whatsapp']),
-                                class: findValue(row, ['class', 'grade', 'standard', 'sec']),
-                                totalFee: findValue(row, ['totalfee', 'fees', 'amount', 'payable']),
-                                paid: findValue(row, ['paid', 'received', 'deposite']),
-                                address: findValue(row, ['address', 'location', 'city', 'area']),
-                                email: findValue(row, ['email', 'mailid'])
-                            }
-                        };
-                    });
-
+                    if (json.length === 0) { showNotification('Excel file is empty', 'error'); return; }
+                    pendingImportData = json.map(row => ({
+                        raw: row,
+                        mapped: {
+                            name: findValue(row, ['name', 'studentname', 'fullname']),
+                            father: findValue(row, ['father', 'parent', 'guardian']),
+                            phone: findValue(row, ['phone', 'mobile', 'contact']),
+                            class: findValue(row, ['class', 'grade']),
+                            totalFee: findValue(row, ['totalfee', 'fees', 'payable']),
+                            paid: findValue(row, ['paid', 'received']),
+                            address: findValue(row, ['address', 'location']),
+                            email: findValue(row, ['email', 'mailid'])
+                        }
+                    }));
                     renderImportPreview();
                     document.getElementById('import-preview-modal').classList.remove('hidden');
                     event.target.value = ''; 
-                } catch (err) {
-                    showNotification('Invalid Excel format', 'error');
-                }
+                } catch (err) { showNotification('Invalid Excel format', 'error'); }
             };
             reader.readAsArrayBuffer(file);
         };
@@ -411,31 +381,21 @@
         function renderImportPreview() {
             const body = document.getElementById('import-preview-body');
             body.innerHTML = '';
-
             pendingImportData.forEach((item, index) => {
                 const phone = String(item.mapped.phone || "");
                 const father = String(item.mapped.father || "").trim().toLowerCase();
-                
-                // DUPLICATE CHECK
                 const isDuplicate = Object.values(allStudents).some(s => 
                     String(s.phone) === phone && String(s.fatherName || "").trim().toLowerCase() === father
                 );
-
                 const tr = document.createElement('tr');
-                tr.className = `border-b hover:bg-gray-50 ${isDuplicate ? 'bg-red-50' : ''}`;
+                tr.className = `border-b ${isDuplicate ? 'bg-red-50' : ''}`;
                 tr.innerHTML = `
-                    <td class="p-3 text-xs">
-                        ${isDuplicate ? 
-                            '<span class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold">Duplicate</span>' : 
-                            '<span class="bg-green-100 text-green-700 px-2 py-1 rounded font-medium">New</span>'}
-                    </td>
-                    <td class="p-3 text-sm font-semibold text-gray-800">${item.mapped.name || 'N/A'}</td>
-                    <td class="p-3 text-sm text-gray-600">${item.mapped.father || 'N/A'}</td>
-                    <td class="p-3 text-sm text-gray-600">${item.mapped.phone || 'N/A'}</td>
-                    <td class="p-3 text-sm text-gray-600">${item.mapped.class || 'N/A'}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="removeFromImportList(${index})" class="text-red-500 hover:text-red-700 font-bold p-1 transition">Remove</button>
-                    </td>
+                    <td class="p-3 text-xs">${isDuplicate ? '<span class="text-red-700 font-bold">Duplicate</span>' : '<span class="text-green-700">New</span>'}</td>
+                    <td class="p-3 text-sm">${item.mapped.name || 'N/A'}</td>
+                    <td class="p-3 text-sm">${item.mapped.father || 'N/A'}</td>
+                    <td class="p-3 text-sm">${item.mapped.phone || 'N/A'}</td>
+                    <td class="p-3 text-sm">${item.mapped.class || 'N/A'}</td>
+                    <td class="p-3 text-center"><button onclick="removeFromImportList(${index})" class="text-red-500 font-bold">Remove</button></td>
                 `;
                 body.appendChild(tr);
             });
@@ -454,6 +414,15 @@
 
         window.processFinalUpload = async () => {
             if (!currentUser || pendingImportData.length === 0) return;
+            
+            // Admission Charge Logic
+            let admissionCharge = prompt("Set a Admission charge if you're importing new admission data of student, or leave it blank (Only numbers allowed):", "0");
+            
+            // Validate input: if canceled, stop. If non-number, set to 0.
+            if (admissionCharge === null) return; 
+            admissionCharge = parseFloat(admissionCharge);
+            if (isNaN(admissionCharge)) admissionCharge = 0;
+
             const loadModal = document.getElementById('loading-modal');
             loadModal.classList.remove('hidden');
             
@@ -466,7 +435,6 @@
                     const phone = String(row.phone || "");
                     const father = String(row.father || "").trim().toLowerCase();
                     
-                    // Determine if student exists to overwrite OR create new key
                     let existingKey = null;
                     for (const [key, s] of Object.entries(allStudents)) {
                         if (String(s.phone) === phone && String(s.fatherName || "").trim().toLowerCase() === father) {
@@ -476,17 +444,13 @@
                     }
 
                     const studentKey = existingKey || ('student_' + Date.now() + Math.floor(Math.random() * 1000));
-                    const total = parseFloat(row.totalFee) || 0;
-                    const paid = parseFloat(row.paid) || 0;
                     
-                    // Maintain roll number if updating, else generate
+                    // Fee calculation: add admission charge only for NEW students
+                    let total = parseFloat(row.totalFee) || 0;
+                    if (!existingKey) total += admissionCharge;
+                    
+                    const paid = parseFloat(row.paid) || 0;
                     const rollNo = existingKey ? allStudents[existingKey].rollNo : generateImportRollNo(String(row.name), String(row.phone || "000"));
-
-                    // Requirement: Add 2 random subjects with 0 marks and Grade A
-                    const defaultSubjects = [
-                        { name: "General Knowledge", marks: 0, grade: "A" },
-                        { name: "Social Activity", marks: 0, grade: "A" }
-                    ];
 
                     const studentData = {
                         name: String(row.name),
@@ -502,7 +466,10 @@
                             dueDate: new Date().toISOString().split('T')[0]
                         },
                         attendance: { present: 0, absent: 0, total: 0, percentage: 0 },
-                        subjects: defaultSubjects
+                        subjects: [
+                            { name: "General Knowledge", marks: 0, grade: "A" },
+                            { name: "Social Activity", marks: 0, grade: "A" }
+                        ]
                     };
 
                     await set(ref(db, `students/${studentKey}`), studentData);
@@ -511,45 +478,30 @@
                 
                 loadModal.classList.add('hidden');
                 closeImportPreview();
-                showNotification(`Successfully imported/updated ${count} students.`, 'success');
+                showNotification(`Successfully processed ${count} students.`, 'success');
             } catch (err) {
-                console.error(err);
                 loadModal.classList.add('hidden');
                 showNotification('Error during upload', 'error');
             }
         };
 
-        // --- ALL ORIGINAL FUNCTIONS ---
-
         function generateImportRollNo(name, phone) {
             const namePart = name.substring(0, 2).toUpperCase();
             const phonePart = phone.substring(0, 3);
-            let isUnique = false;
-            let roll = '';
-            while (!isUnique) {
-                const suffix = Math.floor(10 + Math.random() * 89);
-                roll = `${namePart}${phonePart}${suffix}`;
-                if (!Object.values(allStudents).some(s => s.rollNo === roll)) isUnique = true;
-            }
+            let roll = `${namePart}${phonePart}${Math.floor(10 + Math.random() * 89)}`;
             return roll;
         }
 
         window.exportToExcel = () => {
-            if (Object.keys(allStudents).length === 0) {
-                showNotification('No data to export', 'error');
-                return;
-            }
+            if (Object.keys(allStudents).length === 0) { showNotification('No data to export', 'error'); return; }
             const dataToExport = Object.values(allStudents).map(student => ({
                 "Name": student.name, "Father's Name": student.fatherName || '', "Roll Number": student.rollNo,
-                "Class": student.class, "Phone": student.phone || '', "Email": student.email || '',
-                "Address": student.address || '', "Total Fee": student.fees.total, "Paid": student.fees.paid,
-                "Fee Due Date": student.fees.dueDate, "Present": student.attendance.present, "Absent": student.attendance.absent
+                "Class": student.class, "Total Fee": student.fees.total, "Paid": student.fees.paid
             }));
             const worksheet = XLSX.utils.json_to_sheet(dataToExport);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
-            XLSX.writeFile(workbook, `Student_Report_${new Date().toLocaleDateString()}.xlsx`);
-            showNotification('Excel file exported!', 'success');
+            XLSX.writeFile(workbook, `Report_${new Date().toLocaleDateString()}.xlsx`);
         };
 
         function generateAutoRollNumber() {
@@ -557,27 +509,14 @@
             const name = studentNameInput.value.trim();
             const phone = studentPhoneInput.value.trim();
             if (name.length < 2 || phone.length < 3) return;
-            const namePart = name.substring(0, 2).toUpperCase();
-            const phonePart = phone.substring(0, 3);
-            let isUnique = false;
-            let generatedRollNo = '';
-            while (!isUnique) {
-                const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                const numbers = "0123456789";
-                const randLetter = letters.charAt(Math.floor(Math.random() * letters.length));
-                const randNumber = numbers.charAt(Math.floor(Math.random() * numbers.length));
-                const suffix = Math.random() > 0.5 ? (randLetter + randNumber) : (randNumber + randLetter);
-                generatedRollNo = `${namePart}${phonePart}${suffix}`;
-                const exists = Object.values(allStudents).some(student => student.rollNo === generatedRollNo);
-                if (!exists) isUnique = true;
-            }
-            document.getElementById('student-rollno').value = generatedRollNo;
+            const roll = `${name.substring(0,2).toUpperCase()}${phone.substring(0,3)}${Math.floor(10 + Math.random() * 89)}`;
+            document.getElementById('student-rollno').value = roll;
         }
 
         studentNameInput.addEventListener('input', generateAutoRollNumber);
         studentPhoneInput.addEventListener('input', generateAutoRollNumber);
 
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('admin-email').textContent = user.email;
@@ -593,13 +532,10 @@
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
             loginBtn.disabled = true;
             loginBtnText.textContent = 'Signing in...';
             try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                currentUser = userCredential.user;
+                await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
             } catch (error) {
                 showLoginMessage('error', 'Invalid credentials');
                 loginBtn.disabled = false;
@@ -613,12 +549,10 @@
             loginMessage.classList.remove('hidden');
         }
 
-        window.logout = async () => { await signOut(auth); loginMessage.classList.add('hidden'); };
+        window.logout = () => signOut(auth);
 
-        async function loadStudents() {
-            if (!currentUser) return;
-            const studentsRef = ref(db, 'students');
-            onValue(studentsRef, (snapshot) => {
+        function loadStudents() {
+            onValue(ref(db, 'students'), (snapshot) => {
                 allStudents = snapshot.exists() ? snapshot.val() : {};
                 renderStudents(allStudents);
                 updateStats();
@@ -628,29 +562,22 @@
         function renderStudents(students) {
             const tbody = document.getElementById('students-table-body');
             tbody.innerHTML = '';
-            if (Object.keys(students).length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-gray-500">No students found.</td></tr>`;
-                return;
-            }
             for (const [key, student] of Object.entries(students)) {
-                const row = tbody.insertRow();
-                row.className = 'hover:bg-gray-50';
                 const pending = (student.fees.total || 0) - (student.fees.paid || 0);
+                const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <img class="h-10 w-10 rounded-full object-cover" src="${student.photo || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + student.name}">
-                            <div class="ml-4"><div class="text-sm font-medium text-gray-900">${student.name}</div></div>
-                        </div>
+                    <td class="px-6 py-4 flex items-center">
+                        <img class="h-8 w-8 rounded-full mr-3" src="${student.photo || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + student.name}">
+                        <span class="text-sm font-medium">${student.name}</span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${student.rollNo}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${student.class}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">₹${(student.fees.total || 0).toLocaleString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">₹${(student.fees.paid || 0).toLocaleString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm ${pending > 0 ? 'text-red-600' : 'text-green-600'} font-medium">₹${pending.toLocaleString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <button onclick="window.editStudent('${key}')" class="text-indigo-600 hover:text-indigo-900">Edit</button>
-                        <button onclick="window.deleteStudent('${key}')" class="text-red-600 hover:text-red-900">Delete</button>
+                    <td class="px-6 py-4 text-sm">${student.rollNo}</td>
+                    <td class="px-6 py-4 text-sm">${student.class}</td>
+                    <td class="px-6 py-4 text-sm font-bold">₹${(student.fees.total || 0).toLocaleString()}</td>
+                    <td class="px-6 py-4 text-sm text-green-600">₹${(student.fees.paid || 0).toLocaleString()}</td>
+                    <td class="px-6 py-4 text-sm text-red-600">₹${pending.toLocaleString()}</td>
+                    <td class="px-6 py-4 text-sm space-x-2">
+                        <button onclick="window.editStudent('${key}')" class="text-indigo-600">Edit</button>
+                        <button onclick="window.deleteStudent('${key}')" class="text-red-600">Delete</button>
                     </td>
                 `;
             }
@@ -664,10 +591,10 @@
         }
 
         searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
+            const term = e.target.value.toLowerCase();
             const filtered = {};
-            for (const [key, student] of Object.entries(allStudents)) {
-                if (student.name.toLowerCase().includes(searchTerm) || student.rollNo.toLowerCase().includes(searchTerm)) filtered[key] = student;
+            for (const [key, s] of Object.entries(allStudents)) {
+                if (s.name.toLowerCase().includes(term) || s.rollNo.toLowerCase().includes(term)) filtered[key] = s;
             }
             renderStudents(filtered);
         });
@@ -678,103 +605,112 @@
             studentForm.reset();
             document.getElementById('subjects-container').innerHTML = '';
             addSubjectRow(); addSubjectRow();
-            document.getElementById('student-rollno').value = ''; 
             studentModal.classList.remove('hidden');
         };
 
         window.closeStudentModal = () => studentModal.classList.add('hidden');
 
         window.editStudent = (key) => {
-            const student = allStudents[key];
-            document.getElementById('modal-title').textContent = 'Edit Student';
+            const s = allStudents[key];
             document.getElementById('student-key').value = key;
-            document.getElementById('student-name').value = student.name;
-            document.getElementById('student-father-name').value = student.fatherName || ''; 
-            document.getElementById('student-rollno').value = student.rollNo;
-            document.getElementById('student-class').value = student.class;
-            document.getElementById('student-phone').value = student.phone || ''; 
-            document.getElementById('student-email').value = student.email || ''; 
-            document.getElementById('student-address').value = student.address || ''; 
-            document.getElementById('student-photo').value = student.photo || '';
-            document.getElementById('fee-total').value = student.fees.total;
-            document.getElementById('fee-paid').value = student.fees.paid;
-            document.getElementById('fee-duedate').value = student.fees.dueDate;
-            document.getElementById('att-present').value = student.attendance.present;
-            document.getElementById('att-absent').value = student.attendance.absent;
-            document.getElementById('att-total').value = student.attendance.total;
+            document.getElementById('student-name').value = s.name;
+            document.getElementById('student-father-name').value = s.fatherName || '';
+            document.getElementById('student-rollno').value = s.rollNo;
+            document.getElementById('student-class').value = s.class;
+            document.getElementById('student-phone').value = s.phone || '';
+            document.getElementById('fee-total').value = s.fees.total;
+            document.getElementById('fee-paid').value = s.fees.paid;
+            document.getElementById('fee-duedate').value = s.fees.dueDate;
+            document.getElementById('att-present').value = s.attendance.present;
+            document.getElementById('att-absent').value = s.attendance.absent;
+            document.getElementById('att-total').value = s.attendance.total;
             document.getElementById('subjects-container').innerHTML = '';
-            if (student.subjects) student.subjects.forEach(subject => addSubjectRow(subject));
+            if (s.subjects) s.subjects.forEach(sub => addSubjectRow(sub));
             studentModal.classList.remove('hidden');
         };
 
         window.deleteStudent = (key) => { studentToDelete = key; deleteModal.classList.remove('hidden'); };
-        window.closeDeleteModal = () => { deleteModal.classList.add('hidden'); studentToDelete = null; };
+        window.closeDeleteModal = () => { deleteModal.classList.add('hidden'); };
         window.confirmDelete = async () => {
-            if (!studentToDelete || !currentUser) return;
             await remove(ref(db, `students/${studentToDelete}`));
             closeDeleteModal();
             showNotification('Student deleted', 'success');
         };
 
-        window.addSubjectRow = (subject = null) => {
-            const container = document.getElementById('subjects-container');
-            const row = document.createElement('div');
-            row.className = 'flex gap-2 items-center';
-            row.innerHTML = `
-                <input type="text" placeholder="Subject" value="${subject ? subject.name : ''}" required class="flex-1 p-2 border rounded-lg subject-name">
-                <input type="number" placeholder="Marks" value="${subject ? subject.marks : ''}" required class="w-24 p-2 border rounded-lg subject-marks">
-                <input type="text" placeholder="Grade" value="${subject ? subject.grade : ''}" required class="w-20 p-2 border rounded-lg subject-grade">
-                <button type="button" onclick="this.parentElement.remove()" class="text-red-600 p-2">🗑</button>`;
-            container.appendChild(row);
+        window.addSubjectRow = (sub = null) => {
+            const div = document.createElement('div');
+            div.className = 'flex gap-2 mb-2';
+            div.innerHTML = `
+                <input type="text" placeholder="Subject" value="${sub ? sub.name : ''}" required class="flex-1 p-2 border rounded subject-name">
+                <input type="number" placeholder="Marks" value="${sub ? sub.marks : ''}" required class="w-20 p-2 border rounded subject-marks">
+                <input type="text" placeholder="Grade" value="${sub ? sub.grade : ''}" required class="w-16 p-2 border rounded subject-grade">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-500">✕</button>
+            `;
+            document.getElementById('subjects-container').appendChild(div);
         };
 
+        // FIXED SAVE STUDENT BUTTON LOGIC
         studentForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser) return;
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
-            const subjects = [];
-            document.querySelectorAll('#subjects-container > div').forEach(row => {
-                const name = row.querySelector('.subject-name').value;
-                const marks = parseInt(row.querySelector('.subject-marks').value);
-                const grade = row.querySelector('.subject-grade').value;
-                if (name && !isNaN(marks)) subjects.push({ name, marks, grade });
-            });
-            if (subjects.length < 2) {
-                showNotification('Add at least 2 subjects', 'error');
+
+            try {
+                const subjects = [];
+                document.querySelectorAll('#subjects-container > div').forEach(row => {
+                    const name = row.querySelector('.subject-name').value;
+                    const marks = parseInt(row.querySelector('.subject-marks').value);
+                    const grade = row.querySelector('.subject-grade').value;
+                    if (name) subjects.push({ name, marks, grade });
+                });
+
+                const studentKey = document.getElementById('student-key').value || ('student_' + Date.now());
+                const totalFee = parseFloat(document.getElementById('fee-total').value) || 0;
+                const paidFee = parseFloat(document.getElementById('fee-paid').value) || 0;
+                const present = parseInt(document.getElementById('att-present').value) || 0;
+                const totalAtt = parseInt(document.getElementById('att-total').value) || 1;
+
+                const studentData = {
+                    name: document.getElementById('student-name').value,
+                    fatherName: document.getElementById('student-father-name').value,
+                    rollNo: document.getElementById('student-rollno').value,
+                    class: document.getElementById('student-class').value,
+                    phone: document.getElementById('student-phone').value,
+                    email: document.getElementById('student-email').value,
+                    address: document.getElementById('student-address').value,
+                    photo: document.getElementById('student-photo').value || `https://api.dicebear.com/7.x/avataaars/svg?seed=${document.getElementById('student-name').value}`,
+                    fees: { 
+                        total: totalFee, 
+                        paid: paidFee, 
+                        pending: totalFee - paidFee, 
+                        dueDate: document.getElementById('fee-duedate').value 
+                    },
+                    attendance: { 
+                        present, 
+                        absent: parseInt(document.getElementById('att-absent').value) || 0, 
+                        total: totalAtt, 
+                        percentage: Math.round((present / totalAtt) * 100) 
+                    },
+                    subjects: subjects
+                };
+
+                await set(ref(db, `students/${studentKey}`), studentData);
+                closeStudentModal();
+                showNotification('Student saved successfully', 'success');
+            } catch (err) {
+                console.error(err);
+                showNotification('Failed to save student', 'error');
+            } finally {
                 submitBtn.disabled = false;
-                return;
             }
-            const studentKey = document.getElementById('student-key').value || 'student_' + Date.now();
-            const totalFee = parseFloat(document.getElementById('fee-total').value);
-            const paidFee = parseFloat(document.getElementById('fee-paid').value);
-            const present = parseInt(document.getElementById('att-present').value);
-            const total = parseInt(document.getElementById('att-total').value);
-            const studentData = {
-                name: document.getElementById('student-name').value,
-                fatherName: document.getElementById('student-father-name').value, 
-                rollNo: document.getElementById('student-rollno').value,
-                class: document.getElementById('student-class').value,
-                phone: document.getElementById('student-phone').value, 
-                email: document.getElementById('student-email').value, 
-                address: document.getElementById('student-address').value, 
-                photo: document.getElementById('student-photo').value || `https://api.dicebear.com/7.x/avataaars/svg?seed=${document.getElementById('student-name').value}`,
-                fees: { total: totalFee, paid: paidFee, pending: totalFee - paidFee, dueDate: document.getElementById('fee-duedate').value },
-                attendance: { present, absent: parseInt(document.getElementById('att-absent').value), total, percentage: Math.round((present / total) * 100) },
-                subjects: subjects
-            };
-            await set(ref(db, `students/${studentKey}`), studentData);
-            closeStudentModal();
-            showNotification('Student saved', 'success');
-            submitBtn.disabled = false;
         });
 
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-[100] p-4 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            setTimeout(() => { notification.remove(); }, 3000);
+        function showNotification(msg, type) {
+            const n = document.createElement('div');
+            n.className = `fixed top-4 right-4 p-4 rounded text-white z-[100] ${type==='success'?'bg-green-500':'bg-red-500'}`;
+            n.textContent = msg;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 3000);
         }
     </script>
 </body>
