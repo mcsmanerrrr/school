@@ -334,7 +334,7 @@
         let allStudents = {};
         let studentToDelete = null;
         let currentUser = null;
-        let pendingImportData = []; // NEW variable for preview system
+        let pendingImportData = []; 
 
         // DOM Elements - ORIGINAL
         const loginView = document.getElementById('login-view');
@@ -350,7 +350,19 @@
         const studentNameInput = document.getElementById('student-name');
         const studentPhoneInput = document.getElementById('student-phone');
 
-        // --- NEW IMPORT PREVIEW SYSTEM FUNCTIONS ---
+        // --- ENHANCED IMPORT SYSTEM ---
+
+        // Intelligent Header Matching
+        function findValue(row, keywords) {
+            const keys = Object.keys(row);
+            for (let key of keys) {
+                const lowerKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (keywords.some(kw => lowerKey.includes(kw))) {
+                    return row[key];
+                }
+            }
+            return null;
+        }
 
         window.handleImportPreview = (event) => {
             const file = event.target.files[0];
@@ -369,7 +381,23 @@
                         return;
                     }
 
-                    pendingImportData = json;
+                    // Process incoming data to map related text to correct fields
+                    pendingImportData = json.map(row => {
+                        return {
+                            raw: row,
+                            mapped: {
+                                name: findValue(row, ['name', 'studentname', 'fullname', 'stname']),
+                                father: findValue(row, ['father', 'parent', 'dad', 'guardian']),
+                                phone: findValue(row, ['phone', 'mobile', 'contact', 'cell', 'tel', 'whatsapp']),
+                                class: findValue(row, ['class', 'grade', 'standard', 'sec']),
+                                totalFee: findValue(row, ['totalfee', 'fees', 'amount', 'payable']),
+                                paid: findValue(row, ['paid', 'received', 'deposite']),
+                                address: findValue(row, ['address', 'location', 'city', 'area']),
+                                email: findValue(row, ['email', 'mailid'])
+                            }
+                        };
+                    });
+
                     renderImportPreview();
                     document.getElementById('import-preview-modal').classList.remove('hidden');
                     event.target.value = ''; 
@@ -384,11 +412,11 @@
             const body = document.getElementById('import-preview-body');
             body.innerHTML = '';
 
-            pendingImportData.forEach((row, index) => {
-                const phone = String(row.Phone || "");
-                const father = String(row["Father's Name"] || "").trim().toLowerCase();
+            pendingImportData.forEach((item, index) => {
+                const phone = String(item.mapped.phone || "");
+                const father = String(item.mapped.father || "").trim().toLowerCase();
                 
-                // DUPLICATE CHECK against current state
+                // DUPLICATE CHECK
                 const isDuplicate = Object.values(allStudents).some(s => 
                     String(s.phone) === phone && String(s.fatherName || "").trim().toLowerCase() === father
                 );
@@ -401,10 +429,10 @@
                             '<span class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold">Duplicate</span>' : 
                             '<span class="bg-green-100 text-green-700 px-2 py-1 rounded font-medium">New</span>'}
                     </td>
-                    <td class="p-3 text-sm font-semibold text-gray-800">${row.Name || 'N/A'}</td>
-                    <td class="p-3 text-sm text-gray-600">${row["Father's Name"] || 'N/A'}</td>
-                    <td class="p-3 text-sm text-gray-600">${row.Phone || 'N/A'}</td>
-                    <td class="p-3 text-sm text-gray-600">${row.Class || 'N/A'}</td>
+                    <td class="p-3 text-sm font-semibold text-gray-800">${item.mapped.name || 'N/A'}</td>
+                    <td class="p-3 text-sm text-gray-600">${item.mapped.father || 'N/A'}</td>
+                    <td class="p-3 text-sm text-gray-600">${item.mapped.phone || 'N/A'}</td>
+                    <td class="p-3 text-sm text-gray-600">${item.mapped.class || 'N/A'}</td>
                     <td class="p-3 text-center">
                         <button onclick="removeFromImportList(${index})" class="text-red-500 hover:text-red-700 font-bold p-1 transition">Remove</button>
                     </td>
@@ -431,13 +459,14 @@
             
             try {
                 let count = 0;
-                for (const row of pendingImportData) {
-                    if (!row.Name || !row.Class) continue;
+                for (const item of pendingImportData) {
+                    const row = item.mapped;
+                    if (!row.name || !row.class) continue;
 
-                    const phone = String(row.Phone || "");
-                    const father = String(row["Father's Name"] || "").trim().toLowerCase();
+                    const phone = String(row.phone || "");
+                    const father = String(row.father || "").trim().toLowerCase();
                     
-                    // Find if student exists to overwrite OR create new key
+                    // Determine if student exists to overwrite OR create new key
                     let existingKey = null;
                     for (const [key, s] of Object.entries(allStudents)) {
                         if (String(s.phone) === phone && String(s.fatherName || "").trim().toLowerCase() === father) {
@@ -447,46 +476,34 @@
                     }
 
                     const studentKey = existingKey || ('student_' + Date.now() + Math.floor(Math.random() * 1000));
-                    const total = parseFloat(row["Total Fee"]) || 0;
-                    const paid = parseFloat(row.Paid) || 0;
-                    const rollNo = row["Roll Number"] || (existingKey ? allStudents[existingKey].rollNo : generateImportRollNo(String(row.Name), String(row.Phone || "000")));
+                    const total = parseFloat(row.totalFee) || 0;
+                    const paid = parseFloat(row.paid) || 0;
+                    
+                    // Maintain roll number if updating, else generate
+                    const rollNo = existingKey ? allStudents[existingKey].rollNo : generateImportRollNo(String(row.name), String(row.phone || "000"));
 
-                    // Handle subjects: Use from row if available, else add 2 random
-                    let subjects = [];
-                    if(row.Subjects && Array.isArray(row.Subjects)) {
-                        subjects = row.Subjects;
-                    } else {
-                        subjects = [
-                            { name: "Mathematics", marks: 0, grade: "A" },
-                            { name: "English", marks: 0, grade: "A" }
-                        ];
-                    }
+                    // Requirement: Add 2 random subjects with 0 marks and Grade A
+                    const defaultSubjects = [
+                        { name: "General Knowledge", marks: 0, grade: "A" },
+                        { name: "Social Activity", marks: 0, grade: "A" }
+                    ];
 
                     const studentData = {
-                        name: String(row.Name),
-                        fatherName: String(row["Father's Name"] || ""),
+                        name: String(row.name),
+                        fatherName: String(row.father || ""),
                         rollNo: rollNo,
-                        class: String(row.Class),
-                        phone: String(row.Phone || ""),
-                        email: String(row.Email || ""),
-                        address: String(row.Address || ""),
-                        photo: row.Photo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${row.Name}`,
+                        class: String(row.class),
+                        phone: String(row.phone || ""),
+                        email: String(row.email || ""),
+                        address: String(row.address || ""),
+                        photo: `https://api.dicebear.com/7.x/avataaars/svg?seed=${row.name}`,
                         fees: {
                             total: total, paid: paid, pending: total - paid,
-                            dueDate: row["Fee Due Date"] || new Date().toISOString().split('T')[0]
+                            dueDate: new Date().toISOString().split('T')[0]
                         },
-                        attendance: {
-                            present: parseInt(row.Present) || 0,
-                            absent: parseInt(row.Absent) || 0,
-                            total: (parseInt(row.Present) || 0) + (parseInt(row.Absent) || 0),
-                            percentage: 0
-                        },
-                        subjects: subjects
+                        attendance: { present: 0, absent: 0, total: 0, percentage: 0 },
+                        subjects: defaultSubjects
                     };
-
-                    if (studentData.attendance.total > 0) {
-                        studentData.attendance.percentage = Math.round((studentData.attendance.present / studentData.attendance.total) * 100);
-                    }
 
                     await set(ref(db, `students/${studentKey}`), studentData);
                     count++;
@@ -494,7 +511,7 @@
                 
                 loadModal.classList.add('hidden');
                 closeImportPreview();
-                showNotification(`Successfully processed ${count} students.`, 'success');
+                showNotification(`Successfully imported/updated ${count} students.`, 'success');
             } catch (err) {
                 console.error(err);
                 loadModal.classList.add('hidden');
@@ -502,7 +519,7 @@
             }
         };
 
-        // --- ALL YOUR ORIGINAL FUNCTIONS (UNTOUCHED) ---
+        // --- ALL ORIGINAL FUNCTIONS ---
 
         function generateImportRollNo(name, phone) {
             const namePart = name.substring(0, 2).toUpperCase();
