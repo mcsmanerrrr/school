@@ -415,10 +415,8 @@
         window.processFinalUpload = async () => {
             if (!currentUser || pendingImportData.length === 0) return;
             
-            // Admission Charge Logic
             let admissionCharge = prompt("Set a Admission charge if you're importing new admission data of student, or leave it blank (Only numbers allowed):", "0");
             
-            // Validate input: if canceled, stop. If non-number, set to 0.
             if (admissionCharge === null) return; 
             admissionCharge = parseFloat(admissionCharge);
             if (isNaN(admissionCharge)) admissionCharge = 0;
@@ -445,7 +443,6 @@
 
                     const studentKey = existingKey || ('student_' + Date.now() + Math.floor(Math.random() * 1000));
                     
-                    // Fee calculation: add admission charge only for NEW students
                     let total = parseFloat(row.totalFee) || 0;
                     if (!existingKey) total += admissionCharge;
                     
@@ -618,6 +615,9 @@
             document.getElementById('student-rollno').value = s.rollNo;
             document.getElementById('student-class').value = s.class;
             document.getElementById('student-phone').value = s.phone || '';
+            document.getElementById('student-email').value = s.email || '';
+            document.getElementById('student-address').value = s.address || '';
+            document.getElementById('student-photo').value = s.photo || '';
             document.getElementById('fee-total').value = s.fees.total;
             document.getElementById('fee-paid').value = s.fees.paid;
             document.getElementById('fee-duedate').value = s.fees.dueDate;
@@ -649,7 +649,6 @@
             document.getElementById('subjects-container').appendChild(div);
         };
 
-        // FIXED SAVE STUDENT BUTTON LOGIC
         studentForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('submit-btn');
@@ -670,6 +669,7 @@
                 const present = parseInt(document.getElementById('att-present').value) || 0;
                 const totalAtt = parseInt(document.getElementById('att-total').value) || 1;
 
+                // CORRECTED MAPPING HERE
                 const studentData = {
                     name: document.getElementById('student-name').value,
                     fatherName: document.getElementById('student-father-name').value,
