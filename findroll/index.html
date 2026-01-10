@@ -23,27 +23,33 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="max-w-md w-full glass-card rounded-3xl p-8 transition-all duration-300">
+    <div class="max-w-md w-full glass-card rounded-3xl p-8">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Recover Roll No</h1>
-            <p class="text-gray-500 mt-2">Enter details exactly as per your admission receipt.</p>
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Find Roll No</h1>
+            <p class="text-gray-500 mt-2 text-sm">Verify details to recover your student ID.</p>
         </div>
 
-        <div class="space-y-6">
+        <div class="space-y-5">
             <div>
-                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Student Full Name</label>
-                <input type="text" id="search-name" placeholder="e.g. Chhota Harsh" 
-                    class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1 tracking-wider">Student Full Name</label>
+                <input type="text" id="search-name" placeholder="Enter Student Name" 
+                    class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Registered Phone Number</label>
-                <input type="tel" id="search-phone" placeholder="e.g. 9631261665" 
-                    class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1 tracking-wider">Father's Name</label>
+                <input type="text" id="search-father" placeholder="Enter Father's Name" 
+                    class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
             </div>
 
-            <button id="find-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transform transition hover:-translate-y-1 active:scale-95 flex justify-center items-center">
-                <span id="btn-text">Find Roll Number</span>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1 tracking-wider">Registered Phone Number</label>
+                <input type="tel" id="search-phone" placeholder="10-digit Mobile No" 
+                    class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+
+            <button id="find-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex justify-center items-center">
+                <span id="btn-text">Verify & Find Roll No</span>
                 <svg id="loader" class="animate-spin ml-2 h-5 w-5 text-white hidden" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -52,8 +58,8 @@
         </div>
 
         <div class="mt-8 pt-6 border-t border-gray-100 text-center">
-            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium transition duration-150">
-                ← Return to Parent Portal
+            <a href="index.html" class="text-blue-600 hover:underline text-sm font-medium">
+                Back to Portal Login
             </a>
         </div>
     </div>
@@ -62,34 +68,27 @@
         <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="modal-content">
             
             <div id="success-icon" class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-6">
-                <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                </svg>
+                <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
 
             <div id="error-icon" class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-100 mb-6 hidden">
-                <svg class="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
+                <svg class="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
             </div>
             
             <h2 id="modal-title" class="text-2xl font-black text-gray-900"></h2>
             
             <div id="modal-body" class="mt-4">
-                <p class="text-gray-500 font-medium">Student: <span id="res-name" class="text-gray-900"></span></p>
-                <div class="mt-6 p-6 bg-blue-50 rounded-2xl border-2 border-blue-100 relative overflow-hidden">
-                    <p class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-1">Your Roll Number</p>
-                    <div class="text-3xl font-black text-blue-700 select-all" id="res-roll">000</div>
+                <p class="text-gray-500 font-medium">Roll Number for <span id="res-name" class="text-gray-900 font-bold"></span>:</p>
+                <div class="mt-6 p-6 bg-blue-50 rounded-2xl border-2 border-blue-100">
+                    <div class="text-4xl font-black text-blue-700" id="res-roll">---</div>
                 </div>
             </div>
 
-            <p id="error-text" class="mt-4 text-gray-600 leading-relaxed hidden">
-                The details you entered do not match our database. Please double-check your admission receipt or visit the school office.
+            <p id="error-text" class="mt-4 text-gray-600 text-sm hidden">
+                Details do not match. Please try again with correct details from your admission receipt or contact the school office.
             </p>
             
-            <button onclick="closeModal()" class="mt-8 w-full bg-gray-900 text-white font-black py-4 rounded-xl hover:bg-gray-800 transition shadow-lg">
-                Close
-            </button>
+            <button onclick="closeModal()" class="mt-8 w-full bg-gray-900 text-white font-bold py-4 rounded-xl hover:bg-gray-800 transition shadow-lg">Close</button>
         </div>
     </div>
 
@@ -97,7 +96,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
-        // Configuration from your source file
+        // Using your verified configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDJfzkrdZqHWi0y9OTPQ-IpaJbA8JJkRSg",
             authDomain: "paymcs-371be.firebaseapp.com",
@@ -122,23 +121,22 @@
         };
 
         findBtn.addEventListener('click', async () => {
-            const inputName = document.getElementById('search-name').value.trim().toLowerCase();
-            const inputPhone = document.getElementById('search-phone').value.trim();
+            const inName = document.getElementById('search-name').value.trim().toLowerCase();
+            const inFather = document.getElementById('search-father').value.trim().toLowerCase();
+            const inPhone = document.getElementById('search-phone').value.trim();
 
-            if(!inputName || !inputPhone) {
-                alert("Please fill in both Name and Phone fields.");
+            if(!inName || !inFather || !inPhone) {
+                alert("Please fill all three fields accurately.");
                 return;
             }
 
-            // Start Loading
-            document.getElementById('btn-text').textContent = "Searching Database...";
+            document.getElementById('btn-text').textContent = "Checking Records...";
             document.getElementById('loader').classList.remove('hidden');
             findBtn.disabled = true;
 
             try {
                 const studentsRef = ref(db, 'students');
                 const snapshot = await get(studentsRef);
-                
                 let foundStudent = null;
 
                 if (snapshot.exists()) {
@@ -146,12 +144,13 @@
                     for (const key in data) {
                         const s = data[key];
                         
-                        // Strict data extraction based on your screenshot structure
+                        // Normalizing DB values for matching based on your screenshot
                         const dbName = s.name ? s.name.toString().trim().toLowerCase() : "";
                         const dbPhone = s.phone ? s.phone.toString().trim() : "";
+                        const dbFather = s.fatherName ? s.fatherName.toString().trim().toLowerCase() : "";
 
-                        // Comparison logic
-                        if (dbName === inputName && dbPhone === inputPhone) {
+                        // Triple Match Verification
+                        if (dbName === inName && dbPhone === inPhone && dbFather === inFather) {
                             foundStudent = s;
                             break;
                         }
@@ -159,10 +158,9 @@
                 }
                 showResult(foundStudent);
             } catch (err) {
-                console.error("Firebase Error:", err);
-                alert("Connection failed. Check your internet.");
+                alert("Database Error. Please refresh and try again.");
             } finally {
-                document.getElementById('btn-text').textContent = "Find Roll Number";
+                document.getElementById('btn-text').textContent = "Verify & Find Roll No";
                 document.getElementById('loader').classList.add('hidden');
                 findBtn.disabled = false;
             }
@@ -184,7 +182,7 @@
             if (student) {
                 sIcon.classList.remove('hidden');
                 eIcon.classList.add('hidden');
-                mTitle.textContent = "Student Found!";
+                mTitle.textContent = "Identity Verified!";
                 mTitle.className = "text-2xl font-black text-green-600";
                 mBody.classList.remove('hidden');
                 eText.classList.add('hidden');
@@ -193,7 +191,7 @@
             } else {
                 sIcon.classList.add('hidden');
                 eIcon.classList.remove('hidden');
-                mTitle.textContent = "Record Not Found";
+                mTitle.textContent = "Verification Failed";
                 mTitle.className = "text-2xl font-black text-red-600";
                 mBody.classList.add('hidden');
                 eText.classList.remove('hidden');
