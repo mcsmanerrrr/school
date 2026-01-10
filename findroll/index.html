@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Roll Number | Maner Central School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .data-section {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full data-section p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Find Student Roll No</h1>
+            <p class="text-gray-500 text-sm mt-2">Enter details exactly as per your admission receipt.</p>
+        </div>
+
+        <div class="space-y-5">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider">Student Name</label>
+                <input type="text" id="search-name" placeholder="Full Name" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider">Father's Name</label>
+                <input type="text" id="search-father" placeholder="Father's Name" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider">Registered Phone Number</label>
+                <input type="tel" id="search-phone" placeholder="10-digit Mobile No" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+            </div>
+
+            <button id="find-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transform transition active:scale-95 flex justify-center items-center">
+                <span id="btn-text">Find Roll Number</span>
+                <svg id="loader" class="animate-spin ml-2 h-5 w-5 text-white hidden" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a href="index.html" class="text-blue-600 hover:underline text-sm">Back to Portal Login</a>
+        </div>
+    </div>
+
+    <div id="result-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div id="success-icon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <div id="error-icon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4 hidden">
+                <svg class="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </div>
+            
+            <h2 id="modal-title" class="text-2xl font-bold text-gray-800">Roll Number Found!</h2>
+            <div id="modal-body" class="mt-4">
+                <p class="text-gray-500">The Roll Number for <span id="res-name" class="font-bold text-gray-800"></span> is:</p>
+                <div class="mt-4 bg-blue-50 text-blue-700 text-3xl font-black py-4 rounded-xl border-2 border-dashed border-blue-200" id="res-roll">
+                    000
+                </div>
+            </div>
+            <p id="error-text" class="mt-4 text-gray-600 hidden">No records match these details. Please check your admission receipt or contact the school office.</p>
+            
+            <button onclick="closeModal()" class="mt-8 w-full bg-gray-900 text-white font-bold py-3 rounded-lg hover:bg-gray-800 transition">Close</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+        // Using your provided config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJfzkrdZqHWi0y9OTPQ-IpaJbA8JJkRSg",
+            authDomain: "paymcs-371be.firebaseapp.com",
+            databaseURL: "https://paymcs-371be-default-rtdb.firebaseio.com/",
+            projectId: "paymcs-371be",
+            storageBucket: "paymcs-371be.firebasestorage.app",
+            messagingSenderId: "676822362839",
+            appId: "1:676822362839:web:cc55be2492db86b5469e92"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const findBtn = document.getElementById('find-btn');
+        const modal = document.getElementById('result-modal');
+
+        window.closeModal = () => modal.classList.add('hidden');
+
+        findBtn.addEventListener('click', async () => {
+            const name = document.getElementById('search-name').value.trim().toLowerCase();
+            const father = document.getElementById('search-father').value.trim().toLowerCase();
+            const phone = document.getElementById('search-phone').value.trim();
+
+            if(!name || !father || !phone) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            // UI Loading State
+            document.getElementById('btn-text').textContent = "Searching...";
+            document.getElementById('loader').classList.remove('hidden');
+            findBtn.disabled = true;
+
+            try {
+                const studentsRef = ref(db, 'students');
+                const snapshot = await get(studentsRef);
+                
+                let foundStudent = null;
+
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    for (const key in data) {
+                        const s = data[key];
+                        // MATCHING LOGIC
+                        // Checks name, father's name (if it exists in DB), and phone
+                        if (s.name.toLowerCase() === name && 
+                            String(s.fees.parentPhone) === phone &&
+                            (s.fatherName ? s.fatherName.toLowerCase() === father : true)) {
+                            foundStudent = s;
+                            break;
+                        }
+                    }
+                }
+
+                showResult(foundStudent);
+            } catch (err) {
+                console.error(err);
+                alert("Error connecting to database.");
+            } finally {
+                document.getElementById('btn-text').textContent = "Find Roll Number";
+                document.getElementById('loader').classList.add('hidden');
+                findBtn.disabled = false;
+            }
+        });
+
+        function showResult(student) {
+            modal.classList.remove('hidden');
+            const sIcon = document.getElementById('success-icon');
+            const eIcon = document.getElementById('error-icon');
+            const mTitle = document.getElementById('modal-title');
+            const mBody = document.getElementById('modal-body');
+            const eText = document.getElementById('error-text');
+
+            if (student) {
+                sIcon.classList.remove('hidden');
+                eIcon.classList.add('hidden');
+                mTitle.textContent = "Roll Number Found!";
+                mTitle.className = "text-2xl font-bold text-green-600";
+                mBody.classList.remove('hidden');
+                eText.classList.add('hidden');
+                document.getElementById('res-name').textContent = student.name;
+                document.getElementById('res-roll').textContent = student.rollNo;
+            } else {
+                sIcon.classList.add('hidden');
+                eIcon.classList.remove('hidden');
+                mTitle.textContent = "Record Not Found";
+                mTitle.className = "text-2xl font-bold text-red-600";
+                mBody.classList.add('hidden');
+                eText.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
